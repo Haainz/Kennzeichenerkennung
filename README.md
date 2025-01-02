@@ -16,3 +16,5 @@ Funktionen:
 - Offline-Modus (hier werden die Karten nicht angezeigt + Updates nicht empfangen)
 - Dark- und Lightmode
 - automatische Updates
+
+Lade dir jetzt die neuste Version hier herunter: https://github.com/Haainz/Kennzeichenerkennung/releases/
