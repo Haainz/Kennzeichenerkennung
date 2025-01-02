@@ -12,6 +12,7 @@ Funktionen:
 - Eigene Kennnzeichen erstellen und löschen
 - Karte für Ort des Kennzeichens
 - Kennzeichen des Tages
-- Offline-Modus (hier werden die Karten nicht angezeigt)
+- Widget für Kennzeichen des Tages mit Infos
+- Offline-Modus (hier werden die Karten nicht angezeigt + Updates nicht empfangen)
 - Dark- und Lightmode
 - automatische Updates
