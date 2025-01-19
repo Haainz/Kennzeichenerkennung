@@ -16,5 +16,8 @@ Funktionen:
 - Offline-Modus (hier werden die Karten nicht angezeigt + Updates nicht empfangen)
 - Dark- und Lightmode
 - automatische Updates
+- Kennzeichen liken um sie zu speichern und danach zu filtern
+
+Diese Kennzeichendaten verwendet die App: https://github.com/openpotato/kfz-kennzeichen/
 
 Lade dir jetzt die neuste Version hier herunter: https://github.com/Haainz/Kennzeichenerkennung/releases/
