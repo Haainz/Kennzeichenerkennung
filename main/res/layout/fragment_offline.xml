@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".OfflineFragment">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="top"
+        android:id="@+id/fragment_container1"
+        android:layout_marginHorizontal="11dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_offline2"
+            android:layout_gravity="center_vertical"
+            app:tint="?attr/colorTextNormal"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:textColor="?attr/colorTextNormal"
+            android:text="Oh, es sieht so aus als wärst du offline. Bitte aktiviere WLAN um Karten angezeigt zu bekommen und Updates zu empfangen."
+            android:layout_marginStart="10dp"/>
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Einstellungen"
+        android:textSize="17dp"
+        android:id="@+id/wlan_btn"
+        android:textColor="@color/white"
+        android:layout_below="@+id/fragment_container1"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/edit_text_rounded_corner_more"/>
+
+    <ImageButton
+        android:id="@+id/x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:backgroundTint="#00FFFFFF"
+        android:src="@drawable/icon_x"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorTextNormal" />
+</RelativeLayout>

@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.gallery.GalleryFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        tools:context=".ui.home.HomeFragment"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/text_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="18dp"
+            android:textAlignment="center"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            android:text="Klicke auf die Kamera um ein Bild hochzuladen oder tippe ein Kürzel ein, klicke dann auf den Button um die Stadt angezeigt zu bekommen"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.95" />
+
+        <Button
+            android:id="@+id/buttongenerate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:text="Welche Stadt ist das?"
+            android:textColor="@color/white"
+            android:background="@drawable/edit_text_rounded_corner"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/kuerzeleingabe" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="248dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="75dp"
+            android:src="@drawable/camera_pic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imagekennzeichen"
+            android:layout_width="248dp"
+            android:layout_height="144dp"
+            android:layout_marginTop="298dp"
+            android:src="@drawable/img"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/kuerzeleingabe"
+            android:layout_width="138.5dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="342.5dp"
+            android:inputType="textCapCharacters"
+            android:padding="10dp"
+            android:textColorHint="#9B9B9B"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_bias="0.531"
+            android:gravity="left|center"
+            android:textColor="@color/cardview_dark_background"
+            android:outlineSpotShadowColor="#00FFFFFF"
+            android:searchResultHighlightColor="#00FFFFFF"
+            android:outlineAmbientShadowColor="#00FFFFFF"
+            android:textColorHighlight="#00FFFFFF"
+            android:focusedSearchResultHighlightColor="#00FFFFFF" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@drawable/icon_x"
+            android:layout_marginStart="-5dp"
+            android:id="@+id/x"
+            app:layout_constraintStart_toEndOf="@+id/kuerzeleingabe"
+            app:layout_constraintTop_toTopOf="@id/kuerzeleingabe"
+            app:layout_constraintBottom_toBottomOf="@+id/kuerzeleingabe"
+            app:tint="@color/teal_700" />
+
+        <TextView
+            android:id="@+id/textViewAusgabe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text=""
+            android:textSize="25dp"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/text_home"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttongenerate"
+            android:textColor="?attr/colorTextNormal"/>
+
+        <TextView
+            android:id="@+id/textViewAusgabe2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:text=""
+            android:textColor="@color/cardview_dark_background"
+            android:textSize="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:gravity="center_horizontal" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/imageView2"
+            app:layout_constraintTop_toTopOf="@+id/imageView2">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_delete"
+                android:id="@+id/delete_btn"
+                app:tint="@color/teal_700"
+                android:layout_marginTop="55dp"
+                android:layout_marginLeft="15dp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_save"
+                android:layout_below="@id/delete_btn"
+                android:layout_marginTop="25dp"
+                android:layout_marginLeft="15dp"
+                android:id="@+id/save_btn"
+                app:tint="@color/teal_700"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_share"
+                android:layout_below="@id/save_btn"
+                android:layout_marginTop="25dp"
+                android:layout_marginLeft="15dp"
+                android:id="@+id/share_btn"
+                app:tint="@color/teal_700"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_info"
+                android:layout_below="@id/share_btn"
+                android:layout_marginTop="25dp"
+                android:layout_marginLeft="15dp"
+                android:id="@+id/picinfo_btn"
+                app:tint="@color/teal_700"/>
+
+        </RelativeLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_text_rounded_corner_more2"
+        android:backgroundTint="?attr/greyslider"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:behavior_peekHeight="83dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/sliderview"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="75dp"
+            android:layout_height="6dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/edit_text_rounded_corner_more"
+            android:backgroundTint="?attr/colorPrimaryVariant"
+            android:id="@+id/slider"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/infos"
+            app:layout_constraintTop_toBottomOf="@id/slider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp">
+
+                    <ImageView
+                        android:id="@+id/like_btn"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/icon_heartempty"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="#FF0000" />
+
+                    <ImageView
+                        android:id="@+id/liked_btn"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/icon_heartfull"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="#FF0000" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/infotitel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="20dp"
+                    android:textAlignment="textStart"
+                    android:textSize="17sp"
+                    android:textStyle="italic"
+                    android:text="Die wichtigsten Infos zu diesem Kennzeichen zusammengefasst:"
+                    android:textColor="?attr/colorTextNormal" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/fragment_container1"
+                    android:layout_marginHorizontal="12dp"
+                    android:layout_marginTop="13dp"
+                    android:layout_below="@id/infotitel">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Kürzel:  "
+                        android:textStyle="italic|bold"
+                        android:textSize="17sp"
+                        android:id="@+id/kuerzeltitel"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="17sp"
+                        android:layout_toRightOf="@id/kuerzeltitel"
+                        android:id="@+id/kuerzelwert"
+                        android:textIsSelectable="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Herleitung:  "
+                        android:textStyle="italic|bold"
+                        android:textSize="17sp"
+                        android:id="@+id/herleitungstitel"
+                        android:layout_below="@id/kuerzelwert" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="17sp"
+                        android:layout_toRightOf="@id/herleitungstitel"
+                        android:id="@+id/herleitungswert"
+                        android:layout_below="@id/kuerzelwert"
+                        android:textIsSelectable="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text ="Stadt / Kreis:  "
+                        android:textStyle="italic|bold"
+                        android:textSize="17sp"
+                        android:id="@+id/stadtoderkreistitel"
+                        android:layout_below="@id/herleitungswert" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="17sp"
+                        android:layout_toRightOf="@id/stadtoderkreistitel"
+                        android:id="@+id/stadtoderkreiswert"
+                        android:layout_below="@id/herleitungswert"
+                        android:textIsSelectable="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bundesland:  "
+                        android:textStyle="italic|bold"
+                        android:textSize="17sp"
+                        android:id="@+id/bundeslandtitel"
+                        android:layout_below="@id/stadtoderkreiswert" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="17sp"
+                        android:layout_toRightOf="@id/bundeslandtitel"
+                        android:id="@+id/bundeslandwert"
+                        android:layout_below="@id/stadtoderkreiswert"
+                        android:textIsSelectable="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bundesland (Iso3166-2):  "
+                        android:textStyle="italic|bold"
+                        android:textSize="17sp"
+                        android:id="@+id/bundesland_iso_titel"
+                        android:layout_below="@id/bundeslandwert" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" ---"
+                        android:textSize="17sp"
+                        android:layout_toRightOf="@id/bundesland_iso_titel"
+                        android:id="@+id/bundesland_iso_wert"
+                        android:layout_below="@id/bundeslandwert"
+                        android:textIsSelectable="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nationalitätskürzel:  "
+                        android:textStyle="italic|bold"
+                        android:textSize="17sp"
+                        android:id="@+id/landtitel"
+                        android:layout_below="@id/bundesland_iso_wert" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="17sp"
+                        android:layout_toRightOf="@id/landtitel"
+                        android:id="@+id/landwert"
+                        android:layout_below="@id/bundesland_iso_wert"
+                        android:textIsSelectable="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bemerkungen:  "
+                        android:textStyle="italic|bold"
+                        android:textSize="17sp"
+                        android:id="@+id/bemerkungentitel"
+                        android:layout_below="@id/landwert" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="---"
+                        android:textSize="17sp"
+                        android:layout_toRightOf="@id/bemerkungentitel"
+                        android:id="@+id/Bemerkungenwert"
+                        android:layout_below="@id/landwert"
+                        android:textIsSelectable="true"/>
+
+                    <org.osmdroid.views.MapView
+                        android:id="@+id/map"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/Bemerkungenwert"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <RelativeLayout
+                        android:id="@+id/maprel"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@id/Bemerkungenwert"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fußnoten: "
+                        android:textStyle="italic|bold"
+                        android:textSize="17sp"
+                        android:id="@+id/fussnotentitel"
+                        android:layout_below="@id/map" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" ---"
+                        android:textSize="17sp"
+                        android:layout_toRightOf="@id/fussnotentitel"
+                        android:id="@+id/fussnotenwert"
+                        android:layout_below="@id/map"
+                        android:textIsSelectable="true"/>
+                </RelativeLayout>
+            </RelativeLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
