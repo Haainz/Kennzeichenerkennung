@@ -38,8 +38,8 @@ Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles übe
 
 
 # Sonstiges:
-Quellen:
 - Kennzeichendaten: https://github.com/openpotato/kfz-kennzeichen/
-- KI für die Texte: Deepseek V3 über https://blackbox.ai/
+- verwendete KI für Textegeneration: Deepseek V3, Nutzung mittels https://blackbox.ai/
 
+    
 Lade dir jetzt die neuste Version hier herunter: https://github.com/Haainz/Kennzeichenerkennung/releases/latest/
