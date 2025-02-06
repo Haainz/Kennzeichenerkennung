@@ -38,6 +38,8 @@ Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles übe
 
 
 # Sonstiges:
-Diese Kennzeichendaten verwendet die App: https://github.com/openpotato/kfz-kennzeichen/
+Quellen:
+- Kennzeichendaten: https://github.com/openpotato/kfz-kennzeichen/
+- KI für die Texte: Deepseek V3 über https://blackbox.ai/
 
-Lade dir jetzt die neuste Version hier herunter: https://github.com/Haainz/Kennzeichenerkennung/releases/
+Lade dir jetzt die neuste Version hier herunter: https://github.com/Haainz/Kennzeichenerkennung/releases/latest/
