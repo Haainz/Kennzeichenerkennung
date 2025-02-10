@@ -19,6 +19,7 @@ Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles übe
 - Kennzeichen des Tages
 - Widget für Kennzeichen des Tages mit Infos
 - Offline-Modus (hier werden die Karten nicht angezeigt + Updates nicht empfangen)
+- immer den Offline-Modus verwenden
 - Dark- und Lightmode
 - automatische Updates
 - Kennzeichen liken um sie zu speichern
@@ -40,7 +41,7 @@ Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles übe
 
 # Sonstiges:
 - Kennzeichendaten: https://github.com/openpotato/kfz-kennzeichen/
-- verwendete KI für Textegeneration: Deepseek V3, Nutzung über https://blackbox.ai/
+- verwendete KI für Textegeneration: Deepseek V3, Aufruf über https://blackbox.ai/
 
     
 Lade dir jetzt die neuste Version hier herunter: https://github.com/Haainz/Kennzeichenerkennung/releases/latest/
