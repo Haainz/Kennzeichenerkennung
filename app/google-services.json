@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "638356178393",
+    "firebase_url": "https://kennzeichenerkennung-a9115-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "kennzeichenerkennung-a9115",
+    "storage_bucket": "kennzeichenerkennung-a9115.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638356178393:android:a27b06b15309817f8145c8",
+        "android_client_info": {
+          "package_name": "com.example.kennzeichenerkennung"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1rQARXiuv52qTbb2WSME3y-Arj9Uup1s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

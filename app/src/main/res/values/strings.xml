@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">Kennzeichenerkennung</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="messages_header">Einstellungen1</string>
+    <string name="sync_header">Einstellungen2</string>
+    <string name="signature_title">Signaturetitles</string>
+    <string name="reply_title">Replytitle</string>
+    <string name="sync_title">Synctitle</string>
+    <string name="attachment_summary_off">attachementsummaryoff</string>
+    <string name="attachment_summary_on">attachementsummaryon</string>
+    <string name="attachment_title">attachementtitle</string>
+    <string name="developpertext"><![CDATA[
+    \ \ \ \ Entwickler:\n
+    Aaron Wachtler\n\n
+    ]]></string>
+    <string name="releasetext"><![CDATA[
+    \n
+    App-Version:\n
+    \ \ \ \ \ \ \ 4.1.4\n
+    ]]></string>
+    <string name="infotext"><![CDATA[
+    Der Code wurde mithilfe von Blackbox.ai und eigenem Wissen programmiert.\n
+    ]]></string>
+    <string name="danksagung"><![CDATA[
+    Ein großer Dank geht auch an Julius für die Idee und Michael fürs Testen.\n
+    ]]></string>
+    <string name="questiontext"><![CDATA[
+    Für Fragen, Wünsche oder Anregungen schreibe mir einfach eine Nachricht (z.B. per Mail).\n
+    ]]></string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="configure">Configure</string>
+    <string name="add_widget">Add widget</string>
+    <string name="app_widget_description">This is an app widget description</string>
+</resources>

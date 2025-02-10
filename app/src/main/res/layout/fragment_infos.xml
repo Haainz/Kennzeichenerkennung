@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".InfosFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_container1"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="13dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kürzel:  "
+            android:textStyle="italic|bold"
+            android:textSize="15dp"
+            android:id="@+id/kuerzeltitel"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AN"
+            android:textSize="15dp"
+            android:layout_toRightOf="@id/kuerzeltitel"
+            android:id="@+id/kuerzelwert"
+            android:textIsSelectable="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Herleitung:  "
+            android:textStyle="italic|bold"
+            android:textSize="15dp"
+            android:id="@+id/herleitungstitel"
+            android:layout_below="@id/kuerzelwert" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ANsbach"
+            android:textSize="15dp"
+            android:layout_toRightOf="@id/herleitungstitel"
+            android:id="@+id/herleitungswert"
+            android:layout_below="@+id/kuerzelwert"
+            android:textIsSelectable="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stadt / Kreis:  "
+            android:textStyle="italic|bold"
+            android:textSize="15dp"
+            android:id="@+id/stadtoderkreistitel"
+            android:layout_below="@id/herleitungswert" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ansbach"
+            android:textSize="15dp"
+            android:layout_toRightOf="@id/stadtoderkreistitel"
+            android:id="@+id/stadtoderkreiswert"
+            android:layout_below="@+id/herleitungswert"
+            android:textIsSelectable="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bundesland:  "
+            android:textStyle="italic|bold"
+            android:textSize="15dp"
+            android:id="@+id/bundeslandtitel"
+            android:layout_below="@+id/stadtoderkreiswert" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="15dp"
+            android:layout_toRightOf="@id/bundeslandtitel"
+            android:id="@+id/bundeslandwert"
+            android:layout_below="@+id/stadtoderkreiswert"
+            android:textIsSelectable="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bundesland (Iso3166-2):  "
+            android:textStyle="italic|bold"
+            android:textSize="15dp"
+            android:id="@+id/bundesland_iso_titel"
+            android:layout_below="@id/bundeslandwert" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="15dp"
+            android:layout_toRightOf="@id/bundesland_iso_titel"
+            android:id="@+id/bundesland_iso_wert"
+            android:layout_below="@+id/bundeslandwert"
+            android:textIsSelectable="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nationalitätskürzel:  "
+            android:textStyle="italic|bold"
+            android:textSize="15dp"
+            android:id="@+id/landtitel"
+            android:layout_below="@id/bundesland_iso_wert" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="15dp"
+            android:layout_toRightOf="@id/landtitel"
+            android:id="@+id/landwert"
+            android:layout_below="@+id/bundesland_iso_wert"
+            android:textIsSelectable="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bemerkungen:  "
+            android:textStyle="italic|bold"
+            android:textSize="15dp"
+            android:id="@+id/bemerkungentitel"
+            android:layout_below="@id/landwert" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="---"
+            android:textSize="15dp"
+            android:layout_toRightOf="@id/bemerkungentitel"
+            android:id="@+id/Bemerkungenwert"
+            android:layout_below="@+id/landwert"
+            android:textIsSelectable="true"/>
+
+        <org.osmdroid.views.MapView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="275dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_below="@id/Bemerkungenwert"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/map"
+            android:id="@+id/fussnoten">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fußnoten: "
+                    android:textStyle="italic|bold"
+                    android:textSize="15dp"
+                    android:id="@+id/fussnotentitel" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" ---"
+                    android:textSize="15dp"
+                    android:layout_toRightOf="@id/fussnotentitel"
+                    android:id="@+id/fussnotenwert" />
+            </RelativeLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="11dp"
+            android:layout_below="@+id/bemerkungentitel"/>
+    </RelativeLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp">
+
+        <ImageView
+            android:id="@+id/like_btn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/icon_heartempty"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#FF0000" />
+
+        <ImageView
+            android:id="@+id/liked_btn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/icon_heartfull"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#FF0000" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

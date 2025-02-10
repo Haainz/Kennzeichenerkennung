@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="fab_margin">200dp</dimen>
+    <dimen name="widget_width">746dp</dimen>
+    <dimen name="widget_height">188dp</dimen>
+</resources>

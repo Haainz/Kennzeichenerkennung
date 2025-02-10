@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UeberFragment">
+
+    <RelativeLayout
+        android:id="@+id/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimary">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:text="Einstellungen:"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="normal" />
+
+        <ImageButton
+            android:id="@+id/x"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@drawable/icon_x"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/fragment_container1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/main_toolbar"
+        android:layout_marginHorizontal="11dp"
+        android:layout_marginTop="15dp"
+        android:gravity="top"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/dark_mode_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Darkmode" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/offline_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Immer Offlinemodus verwenden" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/log_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="log (Text aus Bild/Eingabe) oben links anzeigen" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_below="@+id/fragment_container1"
+            android:layout_marginHorizontal="11dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:background="@color/purple_500" />
+
+        <Button
+            android:id="@+id/button_ueber"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/backgroundslidercolor"
+            android:backgroundTintMode="src_over"
+            android:outlineAmbientShadowColor="#FF0000"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:textSize="14dp"
+            android:text="Über die App" />
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>
