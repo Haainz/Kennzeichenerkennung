@@ -294,6 +294,8 @@ public class GalleryFragment extends Fragment {
             String location = params[0];
             if (Objects.equals(location, "WeißenbUrG")) {
                 location = "Weißenburg-Gunzenhausen";
+            } else if (Objects.equals(location, "HOhensTein")) {
+                location = "Hohenstein, Zwickau";
             }
             Log.e("Achtung", location);
             label = location;

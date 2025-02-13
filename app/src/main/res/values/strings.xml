@@ -10,7 +10,6 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="messages_header">Einstellungen1</string>
     <string name="sync_header">Einstellungen2</string>
@@ -24,11 +23,6 @@
     \ \ \ \ Entwickler:\n
     Aaron Wachtler\n\n
     ]]></string>
-    <string name="releasetext"><![CDATA[
-    \n
-    App-Version:\n
-    \ \ \ \ \ \ \ 4.1.4\n
-    ]]></string>
     <string name="infotext"><![CDATA[
     Der Code wurde mithilfe von Blackbox.ai und eigenem Wissen programmiert.\n
     ]]></string>
@@ -36,7 +30,7 @@
     Ein großer Dank geht auch an Julius für die Idee und Michael fürs Testen.\n
     ]]></string>
     <string name="questiontext"><![CDATA[
-    Für Fragen, Wünsche oder Anregungen schreibe mir einfach eine Nachricht (z.B. per Mail).\n
+    Für Fragen, Wünsche oder Anregungen kontaktiere mich gerne.\n
     ]]></string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="configure">Configure</string>

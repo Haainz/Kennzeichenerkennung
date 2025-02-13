@@ -53,8 +53,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/developpertext"
+            android:text="Entwickler:\nAaron Wachtler\n"
             android:textSize="18dp"
+            android:textAlignment="center"
             android:textColor="?attr/colorTextNormal"/>
         <RelativeLayout
             android:layout_width="match_parent"
@@ -64,9 +65,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/releasetext"
+            android:text="123"
+            android:textAlignment="center"
             android:textSize="18dp"
-            android:textColor="?attr/colorTextNormal"/>
+            android:textColor="?attr/colorTextNormal"
+            android:id="@+id/versiontext"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -15,9 +15,21 @@ import androidx.fragment.app.DialogFragment;
 public class UpdateFragment extends DialogFragment {
 
     private String downloadUrl;
+    private String version;
+    private String body;
 
     public void setDownloadUrl(String downloadUrl) {
         this.downloadUrl = downloadUrl;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            version = getArguments().getString("version");
+            body = getArguments().getString("body");
+            downloadUrl = getArguments().getString("downloadUrl");
+        }
     }
 
     @Override
@@ -25,10 +37,13 @@ public class UpdateFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_update, container, false);
 
+        TextView textView3 = view.findViewById(R.id.text_view3);
+        textView3.setText(String.format("Version %s\n\n%s", version, body));
+
         Button downloadBtn = view.findViewById(R.id.download_btn);
         downloadBtn.setOnClickListener(v -> {
-            if (downloadUrl != null) {
-                ((MainActivity) requireActivity()).startDownload(downloadUrl);
+            if (downloadUrl != null && version != null) {
+                ((MainActivity) requireActivity()).startDownload(downloadUrl, version);
                 dismiss();
             }
         });

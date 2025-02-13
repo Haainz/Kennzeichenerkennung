@@ -49,11 +49,31 @@
         android:gravity="top"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/teal_700"
+            android:text="Aussehen:"/>
+
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/dark_mode_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Darkmode" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/log_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="log (Text aus Bild/Eingabe) oben links anzeigen" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/teal_700"
+            android:text="\nSonstiges:"/>
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/offline_switch"
@@ -62,10 +82,10 @@
             android:text="Immer Offlinemodus verwenden" />
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/log_switch"
+            android:id="@+id/update_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="log (Text aus Bild/Eingabe) oben links anzeigen" />
+            android:text="Beim App-Start auf Updates prüfen" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -88,6 +108,19 @@
             android:layout_gravity="center"
             android:textSize="14dp"
             android:text="Über die App" />
+
+        <Button
+            android:id="@+id/button_update"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/backgroundslidercolor"
+            android:backgroundTintMode="src_over"
+            android:outlineAmbientShadowColor="#FF0000"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:textSize="14dp"
+            android:text="Auf Updates prüfen" />
     </LinearLayout>
 
 

@@ -31,13 +31,17 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.kennzeichenerkennung.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable networkCheckRunnable;
     private ImageButton iconInfo;
-    private DatabaseReference updateRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        FirebaseApp.initializeApp(this);
-        updateRef = FirebaseDatabase.getInstance().getReference("app_updates");
 
         setSupportActionBar(binding.appBarMain.toolbar);
         drawerLayout = binding.drawerLayout;
@@ -85,32 +85,11 @@ public class MainActivity extends AppCompatActivity {
         iconInfo = findViewById(R.id.icon_offline);
         startNetworkCheck();
 
-        // Listener für Update-Daten
-        updateRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Hole Update-Informationen aus der Firebase-Datenbank
-                if (dataSnapshot.exists()) {
-                    int latestVersion = dataSnapshot.child("version").getValue(Integer.class);
-                    String downloadUrl = dataSnapshot.child("downloadUrl").getValue(String.class);
-
-                    // Vergleiche die Versionsnummern und zeige das UpdateFragment an
-                    if (latestVersion > getCurrentAppVersion()) {
-                        showUpdateDialog(downloadUrl);
-                    } else {
-                        Log.d(TAG, "Keine Updates verfügbar.");
-                    }
-                } else {
-                    Log.d(TAG, "Keine Update-Daten in Firebase gefunden.");
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "Error fetching update data", databaseError.toException());
-            }
-        });
+        // Direkter Aufruf des GitHub Update-Checks
+        checkForUpdates();
     }
+
+    // Alle Firebase-bezogenen Methoden wurden entfernt
 
     private void setNightMode() {
         if (sharedPreferences.getBoolean("darkMode", false)) {
@@ -126,21 +105,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showDialogFragment(DialogFragment fragment, String tag) {
-        if (!isFinishing() && !isDestroyed()) { // Überprüfen, ob die Aktivität noch aktiv ist
+        if (!isFinishing() && !isDestroyed()) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragment.show(fragmentManager, tag);
         } else {
             Log.w(TAG, "Activity is not in a valid state to show the dialog fragment.");
-        }
-    }
-
-    private void showUpdateDialog(String downloadUrl) {
-        if (!isFinishing() && !isDestroyed()) { // Überprüfen, ob die Aktivität noch aktiv ist
-            UpdateFragment updateFragment = new UpdateFragment();
-            updateFragment.setDownloadUrl(downloadUrl);
-            updateFragment.show(getSupportFragmentManager(), "UpdateFragment");
-        } else {
-            Log.w(TAG, "Activity is not in a valid state to show the dialog.");
         }
     }
 
@@ -157,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void navigateToFragment(String fragmentToOpen) {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        int destinationId = R.id.nav_home; // Default destination
+        int destinationId = R.id.nav_home;
         if ("GalleryFragment".equals(fragmentToOpen)) {
             destinationId = R.id.nav_gallery;
         } else if ("HomeFragment".equals(fragmentToOpen)) {
@@ -199,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     iconInfo.setVisibility(View.VISIBLE);
                     iconInfo.setOnClickListener(v -> showDialogFragment(new OfflineFragment(), "OfflineFragment"));
                 }
-                handler.postDelayed(this, 5000); // Check alle 5 Sekunden
+                handler.postDelayed(this, 5000);
             }
         };
         handler.post(networkCheckRunnable);
@@ -232,18 +201,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void startDownload(String downloadUrl) {
+    void startDownload(String downloadUrl, String version) {
+        String cleanVersion = version.replaceAll("[^a-zA-Z0-9.-]", "_");
+        String fileName = "App-Update-" + cleanVersion + ".apk";
+
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(downloadUrl));
-        request.setTitle("App-Update");
+        request.setTitle("App-Update " + version);
         request.setDescription("Downloading update...");
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "app_update.apk");
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
         request.setMimeType("application/vnd.android.package-archive");
 
         DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         long downloadId = downloadManager.enqueue(request);
 
-        // Listener für den Download-Fortschritt
         BroadcastReceiver onComplete = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -260,6 +231,57 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_NOT_EXPORTED);
+    }
+
+    private void checkForUpdates() {
+        Log.e("sharedPreferences", String.valueOf(sharedPreferences.getBoolean("updateSwitch", true)) + sharedPreferences.getBoolean("offlineSwitch", false));
+        if(sharedPreferences.getBoolean("updateSwitch", true) && !sharedPreferences.getBoolean("offlineSwitch", false)) {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url("https://api.github.com/repos/Haainz/Kennzeichenerkennung/releases/latest")
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        try {
+                            String jsonData = response.body().string();
+                            JSONObject json = new JSONObject(jsonData);
+                            String versionTag = json.getString("tag_name");
+                            int latestVersion = Integer.parseInt(versionTag.replaceAll("[^0-9]", ""));
+                            String body = json.getString("body");
+                            String downloadUrl = json.getJSONArray("assets")
+                                    .getJSONObject(0)
+                                    .getString("browser_download_url");
+
+                            if (latestVersion > getCurrentAppVersion()) {
+                                runOnUiThread(() -> showUpdateDialog(versionTag, body, downloadUrl));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private void showUpdateDialog(String version, String body, String downloadUrl) {
+        if (!isFinishing() && !isDestroyed()) {
+            UpdateFragment updateFragment = new UpdateFragment();
+            Bundle args = new Bundle();
+            args.putString("version", version);
+            args.putString("body", body);
+            args.putString("downloadUrl", downloadUrl);
+            updateFragment.setArguments(args);
+            updateFragment.show(getSupportFragmentManager(), "UpdateFragment");
+        }
     }
 
     private boolean isOfflineMode() {

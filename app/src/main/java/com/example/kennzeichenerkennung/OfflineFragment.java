@@ -1,7 +1,10 @@
 package com.example.kennzeichenerkennung;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -10,11 +13,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 public class OfflineFragment extends DialogFragment {
+
+    private SharedPreferences sharedPreferences;
 
     public static OfflineFragment newInstance(String param1, String param2) {
         OfflineFragment fragment = new OfflineFragment();
@@ -32,10 +39,13 @@ public class OfflineFragment extends DialogFragment {
 
         View view = inflater.inflate(R.layout.fragment_offline, container, false);
 
+        sharedPreferences = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
+
         ImageButton xBtn = view.findViewById(R.id.x);
         xBtn.setOnClickListener(v -> dismiss());
 
         Button wlanBtn = view.findViewById(R.id.wlan_btn);
+        wlanBtn.setText("Internet-Settings");
         wlanBtn.setOnClickListener(v -> {
             WifiManager wifiManager = (WifiManager) requireContext().getSystemService(Context.WIFI_SERVICE);
             if (!wifiManager.isWifiEnabled()) {
@@ -48,6 +58,22 @@ public class OfflineFragment extends DialogFragment {
             }
         });
 
+        TextView offlinetext = view.findViewById(R.id.offlinetext);
+        if (sharedPreferences.getBoolean("offlineSwitch", false)) {
+            wlanBtn.setText("App-Einstellungen");
+            wlanBtn.setOnClickListener(v -> {
+                showDialogFragment(new SettingsFragment(), "SettingsFragment");
+            });
+            offlinetext.setText("Oh, es sieht so aus\nals hast du den Offlinemodus aktiviert. Deaktiviere ihn um Karten angezeigt zu bekommen, Updates zu empfangen und KI-generierte Inhalte angezeigt zu bekommen.");
+        } else {
+            offlinetext.setText("Oh, es sieht so aus\nals wärst du offline. Bitte aktiviere WLAN um Karten angezeigt zu bekommen, Updates zu empfangen und KI-generierte Inhalte angezeigt zu bekommen.");
+        }
+
         return view;
+    }
+
+    private void showDialogFragment(DialogFragment fragment, String tag) {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        fragment.show(fragmentManager, tag);
     }
 }

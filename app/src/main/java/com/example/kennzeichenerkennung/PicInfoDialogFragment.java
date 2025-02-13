@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
@@ -20,6 +21,9 @@ public class PicInfoDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_pic_info_dialog, container, false);
         TextView textView = view.findViewById(R.id.textView);
         textView.setText(info);
+
+        ImageButton xBtn = view.findViewById(R.id.x);
+        xBtn.setOnClickListener(v -> dismiss());
         return view;
     }
 }

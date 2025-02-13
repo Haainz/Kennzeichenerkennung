@@ -1,50 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".OfflineFragment">
 
 
     <LinearLayout
+        android:id="@+id/fragment_container1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="top"
-        android:id="@+id/fragment_container1"
         android:layout_marginHorizontal="11dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp">
+        android:layout_marginBottom="20dp"
+        android:gravity="top"
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_offline2"
             android:layout_gravity="center_vertical"
-            app:tint="?attr/colorTextNormal"/>
+            android:src="@drawable/icon_offline2"
+            app:tint="?attr/colorTextNormal" />
 
         <TextView
+            android:id="@+id/offlinetext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16dp"
-            android:textColor="?attr/colorTextNormal"
+            android:layout_marginStart="10dp"
             android:text="Oh, es sieht so aus\nals wärst du offline. Bitte aktiviere WLAN um Karten angezeigt zu bekommen, Updates zu empfangen und KI-generierte Inhalte angezeigt zu bekommen."
-            android:layout_marginStart="10dp"/>
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="16dp" />
     </LinearLayout>
 
     <Button
+        android:id="@+id/wlan_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Einstellungen"
-        android:textSize="17dp"
-        android:id="@+id/wlan_btn"
-        android:textColor="@color/white"
         android:layout_below="@+id/fragment_container1"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="20dp"
         android:layout_marginTop="5dp"
-        android:background="@drawable/edit_text_rounded_corner_more"/>
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/edit_text_rounded_corner_more"
+        android:text="Einstellungen"
+        android:textColor="@color/white"
+        android:textSize="17dp" />
 
     <ImageButton
         android:id="@+id/x"

@@ -52,11 +52,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Es ist ein neues Update verfügbar. Möchtest du das Update jetzt herunterladen?\n\nUm es anschließend zu installieren klicke dann auf die Benachrichtigung.\n\nACHTUNG: Die App benötigt Speicherzugriff!"
+            android:text="Neuerungen"
             android:textStyle="normal"
-            android:textSize="16dp"
             android:textColor="?attr/colorTextNormal"
-            android:id="@+id/text_view"/>
+            android:textSize="16dp"
+            android:id="@+id/text_view3"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -64,16 +64,27 @@
             android:text="Auf Github ansehen"
             android:textColor="@color/light_blue_600"
             android:textStyle="bold|italic"
-            android:textSize="16dp"
-            android:layout_marginTop="20dp"
-            android:layout_below="@+id/text_view"
+            android:textSize="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/text_view3"
             android:id="@+id/text_view2"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Möchtest du dieses Update jetzt herunterladen?\nKlicke anschließend auf die Benachrichtigung."
+            android:textStyle="normal"
+            android:textSize="15.5dp"
+            android:textColor="?attr/colorTextNormal"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/text_view2"
+            android:id="@+id/text_view"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text_view2"
-            android:layout_marginTop="30dp"
+            android:layout_below="@+id/text_view"
+            android:layout_marginTop="15dp"
             android:background="@drawable/edit_text_rounded_corner"
             android:backgroundTint="@color/textlight"
             android:gravity="center"
@@ -85,8 +96,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text_view2"
-            android:layout_marginTop="30dp"
+            android:layout_below="@+id/text_view"
+            android:layout_marginTop="15dp"
             android:background="@drawable/edit_text_rounded_corner"
             android:gravity="center"
             android:text="Herunterladen"
