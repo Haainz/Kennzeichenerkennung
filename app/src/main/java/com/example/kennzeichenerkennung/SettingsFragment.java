@@ -174,12 +174,15 @@ public class SettingsFragment extends DialogFragment {
                         String downloadUrl = json.getJSONArray("assets")
                                 .getJSONObject(0)
                                 .getString("browser_download_url");
+                        String updateSize = json.getJSONArray("assets")
+                                .getJSONObject(0)
+                                .getString("size");
 
                         int currentVersion = getCurrentAppVersion();
 
                         requireActivity().runOnUiThread(() -> {
                             if (latestVersion > currentVersion) {
-                                showUpdateDialog(versionTag, body, downloadUrl);
+                                showUpdateDialog(versionTag, body, downloadUrl, updateSize);
                             } else {
                                 Toast.makeText(requireContext(), "Keine Updates verfügbar", Toast.LENGTH_SHORT).show();
                             }
@@ -194,13 +197,14 @@ public class SettingsFragment extends DialogFragment {
         });
     }
 
-    private void showUpdateDialog(String version, String body, String downloadUrl) {
+    private void showUpdateDialog(String version, String body, String downloadUrl, String updateSize) {
         if (isAdded()) {
             UpdateFragment updateFragment = new UpdateFragment();
             Bundle args = new Bundle();
             args.putString("version", version);
             args.putString("body", body);
             args.putString("downloadUrl", downloadUrl);
+            args.putString("updateSize", updateSize);
             updateFragment.setArguments(args);
             updateFragment.show(getParentFragmentManager(), "UpdateFragment");
         }

@@ -3,6 +3,7 @@ package com.example.kennzeichenerkennung;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.fragment.app.DialogFragment;
 
 public class UpdateFragment extends DialogFragment {
 
+    private String updateSize;
     private String downloadUrl;
     private String version;
     private String body;
@@ -29,6 +31,7 @@ public class UpdateFragment extends DialogFragment {
             version = getArguments().getString("version");
             body = getArguments().getString("body");
             downloadUrl = getArguments().getString("downloadUrl");
+            updateSize = getArguments().getString("updateSize");
         }
     }
 
@@ -39,6 +42,20 @@ public class UpdateFragment extends DialogFragment {
 
         TextView textView3 = view.findViewById(R.id.text_view3);
         textView3.setText(String.format("Version %s\n\n%s", version, body));
+
+        TextView sizeText = view.findViewById(R.id.sizetext);
+        if (updateSize != null) {
+            try {
+                long sizeInBytes = Long.parseLong(updateSize);
+                double sizeInMegabytes = sizeInBytes / (1024.0 * 1024.0); // Umrechnung in Megabyte
+                sizeText.setText(String.format("Updategröße: %.2f MB", sizeInMegabytes));
+            } catch (NumberFormatException e) {
+                Log.e("UpdateFragment", "Invalid update size format", e);
+                sizeText.setText("Updategröße: ungültig");
+            }
+        } else {
+            sizeText.setText("Updategröße: nicht angegeben");
+        }
 
         Button downloadBtn = view.findViewById(R.id.download_btn);
         downloadBtn.setOnClickListener(v -> {

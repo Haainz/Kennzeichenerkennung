@@ -10,7 +10,7 @@ android {
         applicationId "com.example.kennzeichenerkennung"
         minSdk 26
         targetSdk 34
-        versionCode 422
+        versionCode 421
         versionName "4.2.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

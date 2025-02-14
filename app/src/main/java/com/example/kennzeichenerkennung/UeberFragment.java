@@ -79,8 +79,11 @@ public class UeberFragment extends DialogFragment {
                             JSONObject json = new JSONObject(jsonData);
                             String versionTag = json.getString("tag_name");
                             String body = json.getString("body");
+                            String downloadCount = json.getJSONArray("assets")
+                                    .getJSONObject(0)
+                                    .getString("download_count");
 
-                            String info = "Version "+versionTag+"\n\n"+body;
+                            String info = "Version "+versionTag+"\n\n"+body+"\n\n"+"Downloads: "+downloadCount;
                             DialogFragment dialogFragment = new PicInfoDialogFragment(info);
                             dialogFragment.show(getParentFragmentManager(), "PicInfoDialog");
                         } catch (JSONException e) {

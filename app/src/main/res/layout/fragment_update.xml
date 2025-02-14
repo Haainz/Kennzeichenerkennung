@@ -84,11 +84,22 @@
                 android:textSize="15.5dp"
                 android:textStyle="normal" />
 
+            <TextView
+                android:id="@+id/sizetext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_view"
+                android:layout_marginTop="20dp"
+                android:text="Updategröße:"
+                android:textColor="?attr/colorTextNormal"
+                android:textSize="15.5dp"
+                android:textStyle="normal" />
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/stop_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/text_view"
+                android:layout_below="@+id/sizetext"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/edit_text_rounded_corner"
                 android:backgroundTint="@color/textlight"
@@ -101,7 +112,7 @@
                 android:id="@+id/download_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/text_view"
+                android:layout_below="@+id/sizetext"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="17dp"

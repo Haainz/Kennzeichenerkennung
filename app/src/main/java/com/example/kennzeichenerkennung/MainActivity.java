@@ -259,9 +259,12 @@ public class MainActivity extends AppCompatActivity {
                             String downloadUrl = json.getJSONArray("assets")
                                     .getJSONObject(0)
                                     .getString("browser_download_url");
+                            String updateSize = json.getJSONArray("assets")
+                                    .getJSONObject(0)
+                                    .getString("size");
 
                             if (latestVersion > getCurrentAppVersion()) {
-                                runOnUiThread(() -> showUpdateDialog(versionTag, body, downloadUrl));
+                                runOnUiThread(() -> showUpdateDialog(versionTag, body, downloadUrl, updateSize));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -272,13 +275,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showUpdateDialog(String version, String body, String downloadUrl) {
+    private void showUpdateDialog(String version, String body, String downloadUrl, String updateSize) {
         if (!isFinishing() && !isDestroyed()) {
             UpdateFragment updateFragment = new UpdateFragment();
             Bundle args = new Bundle();
             args.putString("version", version);
             args.putString("body", body);
             args.putString("downloadUrl", downloadUrl);
+            args.putString("updateSize", updateSize);
             updateFragment.setArguments(args);
             updateFragment.show(getSupportFragmentManager(), "UpdateFragment");
         }
