@@ -5,7 +5,7 @@ Eine einfache App über Kennzeichen.
     <img src="https://github.com/user-attachments/assets/3d71fc9f-b215-4b22-8689-1dad96f5cd53" style="width: 55%; height: auto;">
 </div>
 
-Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles über dieses heraus. Nutze auch die Liste mit Filtern mit allen deutschen Kennzeichen, merke (like) deine Lieblingskennzeichen und erstelle sogar eigene Kennzeichen. Sei gespannt auf das neue Kennzeichen des Tages jeden Tag und teile es auch mit deinen Freunden oder speichere es in deiner Galerie. Solltest du immer noch nicht genug haben, kannst du dir auch einen KI-generieerten Text über die Region des Kennzeichen mit interessanten Fakten über den Bezirk durchlesen.
+Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles über dieses heraus. Nutze auch die Liste mit Filtern mit allen deutschen Kennzeichen, merke (like) deine Lieblingskennzeichen und erstelle sogar eigene Kennzeichen. Sei gespannt auf das neue Kennzeichen des Tages jeden Tag und teile es auch mit deinen Freunden oder speichere es in deiner Galerie. Solltest du immer noch nicht genug haben, kannst du dir auch einen KI-generierten Text über die Region des Kennzeichen mit interessanten Fakten durchlesen.
 
 
 # Funktionen:
