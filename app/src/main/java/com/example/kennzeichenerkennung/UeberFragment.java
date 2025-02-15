@@ -44,7 +44,7 @@ public class UeberFragment extends DialogFragment {
         xBtn.setOnClickListener(v -> dismiss());
 
         TextView versionText = view.findViewById(R.id.versiontext);
-        versionText.setText("\n App-Version:\nV"+getCurrentAppVersion()+"\n");
+        versionText.setText("\n App-Version:\nV"+getCurrentAppVersion()+"\n\nKlicke hier für mehr Infos\n");
         versionText.setOnClickListener(v -> UpdateInfo());
 
         return view;

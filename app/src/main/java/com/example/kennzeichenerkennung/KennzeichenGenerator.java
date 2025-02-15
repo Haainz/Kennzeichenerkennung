@@ -48,7 +48,7 @@ public class KennzeichenGenerator {
 
         // Text zeichnen
         paint.setColor(Color.BLACK);
-        paint.setTextSize(dpToPx(130)); // Textgröße in dp
+        paint.setTextSize(kennzeichen.OertskuerzelGeben().length()>2 ? dpToPx(120) : dpToPx(130)); // Textgröße in dp
         paint.setStyle(Paint.Style.FILL_AND_STROKE);
         canvas.drawText(kennzeichen.OertskuerzelGeben(), dpToPx(170), dpToPx(145), paint);
 
@@ -78,7 +78,7 @@ public class KennzeichenGenerator {
 
     private float getTextSizeBasedOnLength(String text) {
         if (text.length() > 10) {
-            return text.length()>15 ? text.length()>20 ? text.length()>25 ? dpToPx(14):dpToPx(18) : dpToPx(25) : dpToPx(30);
+            return text.length()>15 ? text.length()>20 ? text.length()>25 ? dpToPx(14):dpToPx(18) : dpToPx(22) : dpToPx(30);
         } else {
             return dpToPx(33);
         }
