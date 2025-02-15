@@ -18,7 +18,7 @@ Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles übe
 - Karte für Ort des Kennzeichens
 - Kennzeichen des Tages
 - Widget für Kennzeichen des Tages mit Infos
-- Offline-Modus (hier werden die Karten nicht angezeigt + Updates nicht empfangen)
+- Offline-Modus (hier werden die Karten nicht angezeigt + Updates nicht empfangen + keine Texte KI-generiert)
 - immer den Offline-Modus verwenden
 - Dark- und Lightmode
 - automatische Updates
