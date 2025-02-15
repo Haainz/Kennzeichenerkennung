@@ -1,5 +1,5 @@
 # Kennzeichenerkennung
-Eine einfache App über Kennzeichenkürzel.
+Eine einfache App über Kennzeichen.
 
 <div style="flex: 0 0 auto; width: 200px;">
     <img src="https://github.com/user-attachments/assets/3d71fc9f-b215-4b22-8689-1dad96f5cd53" style="width: 55%; height: auto;">
