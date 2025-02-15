@@ -11,20 +11,21 @@ Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles übe
 # Funktionen:
 - Kennzeichen aus Bild erkennen
 - Infos zum Kürzel / Bild anzeigen lassen
-- Infos / Bild Teilen und Speichern
+- Karte für Ort des Kennzeichens
+- KI-generierter Infotext zum gesuchten Kennzeichen wenn man online ist
+- Infos / Bild / Kennzeichen Teilen und Speichern
 - Liste mit Filtern für alle deutschen, eigenen und geliketen Kennzeichen
+- Suche um z.B. nach Landkreis zu suchen
+- Kennzeichen liken um sie zu speichern
 - Infos zu allen Kennzeichen ansehen und teilen
 - Eigene Kennnzeichen erstellen und löschen
-- Karte für Ort des Kennzeichens
 - Kennzeichen des Tages
+- KI-generierter Infotext zum Kennzeichen des Tages wenn man online ist
 - Widget für Kennzeichen des Tages mit Infos
 - Offline-Modus (hier werden die Karten nicht angezeigt + Updates nicht empfangen + keine Texte KI-generiert)
 - immer den Offline-Modus verwenden
 - Dark- und Lightmode
-- automatische Updates
-- Kennzeichen liken um sie zu speichern
-- KI-generierter Infotext zum Kennzeichen des Tages wenn man online ist
-- KI-generierter Infotext zum gesuchten Kennzeichen wenn man online ist
+- automatische Updateprüfung
 
 
 # Galerie:
