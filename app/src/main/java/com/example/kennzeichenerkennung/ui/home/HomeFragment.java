@@ -76,7 +76,6 @@ import java.net.URLEncoder;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -600,15 +599,10 @@ public class HomeFragment extends Fragment {
         final WeakReference<HomeFragment> fragmentRef = new WeakReference<>(this);
         executor.execute(() -> {
             try {
-                if (isAdded() && getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        HomeFragment fragment = fragmentRef.get();
-                        if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                            fragment.startLoadingAnimation();
-                        }
-                    });
+                if (isAdded()) {
+                    getActivity().runOnUiThread(this::startLoadingAnimation);
                 }
-                String prompt = "Erstelle einen kurzen informativen Text (maximal 100 Wörter) über " + kennzeichen.OrtGeben() +
+                String prompt = "Erstelle einen sehr kurzen informativen Text (maximal 75 Wörter) über " + kennzeichen.OrtGeben() +
                         " in " + kennzeichen.StadtKreisGeben() + ", " + kennzeichen.BundeslandGeben() +
                         ". Gib wichtige Fakten wie Einwohnerzahl, geografische Besonderheiten und " +
                         "historische Hintergründe. Sei präzise, antworte auf deutsch und halte dich an nachweisbare Fakten.";
@@ -620,26 +614,22 @@ public class HomeFragment extends Fragment {
                 message.put("role", "user");
                 messages.put(message);
 
+                jsonBody.put("model", getResources().getString(R.string.ai_model));
                 jsonBody.put("messages", messages);
-                jsonBody.put("model", "deepseek-ai/DeepSeek-V3");
-                jsonBody.put("max_tokens", 1024);
 
                 RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json"));
 
                 Request request = new Request.Builder()
-                        .url("https://api.blackbox.ai/api/chat")
+                        .url("https://openrouter.ai/api/v1/chat/completions")
                         .post(body)
+                        .addHeader("Authorization", getResources().getString(R.string.api_key))
+                        .addHeader("Content-Type", "application/json")
                         .build();
 
-                // OkHttpClient mit Timeouts konfigurieren
-                OkHttpClient client = new OkHttpClient.Builder()
-                        .connectTimeout(30, TimeUnit.SECONDS)
-                        .readTimeout(30, TimeUnit.SECONDS)
-                        .build();
+                OkHttpClient client = new OkHttpClient();
                 Response response = client.newCall(request).execute();
                 String responseData = response.body().string();
-
-                Log.e("API", responseData);
+                Log.d("API_RESPONSE", responseData);
 
                 if (response.isSuccessful()) {
                     if (isAdded() && getActivity() != null) {
@@ -648,15 +638,19 @@ public class HomeFragment extends Fragment {
                             if (fragment != null && fragment.isAdded() && fragment.binding != null) {
                                 fragment.stopLoadingAnimation();
                                 try {
-                                    String aiText = responseData.trim();
-                                    if (!aiText.isEmpty()) {
-                                        fragment.binding.infotextwert.setText(
-                                                fragment.formatAIText(aiText, kennzeichen)
-                                        );
-                                    } else {
-                                        fragment.showErrorState();
-                                    }
+                                    // JSON-Antwort parsen
+                                    JSONObject jsonResponse = new JSONObject(responseData);
+                                    String aiText = jsonResponse.getJSONArray("choices")
+                                            .getJSONObject(0)
+                                            .getJSONObject("message")
+                                            .getString("content");
+
+                                    fragment.binding.infotextwert.setText(
+                                            fragment.formatAIText(aiText, kennzeichen)
+                                    );
                                 } catch (Exception e) {
+                                    e.printStackTrace();
+                                    stopLoadingAnimation();
                                     fragment.showErrorState();
                                 }
                             }

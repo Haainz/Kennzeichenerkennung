@@ -417,7 +417,7 @@ public class GalleryFragment extends Fragment {
                 if (isAdded()) {
                     getActivity().runOnUiThread(this::startLoadingAnimation);
                 }
-                String prompt = "Erstelle einen sehr kurzen informativen Text (maximal 100 Wörter) über " + kennzeichen.OrtGeben() +
+                String prompt = "Erstelle einen sehr kurzen informativen Text (maximal 75 Wörter) über " + kennzeichen.OrtGeben() +
                         " in " + kennzeichen.StadtKreisGeben() + ", " + kennzeichen.BundeslandGeben() +
                         ". Gib wichtige Fakten wie Einwohnerzahl, geografische Besonderheiten und " +
                         "historische Hintergründe. Sei präzise, antworte auf deutsch und halte dich an nachweisbare Fakten.";
@@ -429,15 +429,16 @@ public class GalleryFragment extends Fragment {
                 message.put("role", "user");
                 messages.put(message);
 
+                jsonBody.put("model", getResources().getString(R.string.ai_model));
                 jsonBody.put("messages", messages);
-                jsonBody.put("model", "deepseek-ai/DeepSeek-V3");
-                jsonBody.put("max_tokens", 1024);
 
                 RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json"));
 
                 Request request = new Request.Builder()
-                        .url("https://api.blackbox.ai/api/chat")
+                        .url("https://openrouter.ai/api/v1/chat/completions")
                         .post(body)
+                        .addHeader("Authorization", getResources().getString(R.string.api_key))
+                        .addHeader("Content-Type", "application/json")
                         .build();
 
                 OkHttpClient client = new OkHttpClient();
@@ -450,11 +451,23 @@ public class GalleryFragment extends Fragment {
                         getActivity().runOnUiThread(() -> {
                             GalleryFragment fragment = fragmentRef.get();
                             if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                final String aiText = responseData;
-                                stopLoadingAnimation();
-                                fragment.binding.textOftheday.setText(
-                                        fragment.formatAIText(aiText, kennzeichen, dayOfYear)
-                                );
+                                try {
+                                    // JSON-Antwort parsen
+                                    JSONObject jsonResponse = new JSONObject(responseData);
+                                    String aiText = jsonResponse.getJSONArray("choices")
+                                            .getJSONObject(0)
+                                            .getJSONObject("message")
+                                            .getString("content");
+
+                                    stopLoadingAnimation();
+                                    fragment.binding.textOftheday.setText(
+                                            fragment.formatAIText(aiText, kennzeichen, dayOfYear)
+                                    );
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    stopLoadingAnimation();
+                                    fragment.showStandardText(kennzeichen, dayOfYear);
+                                }
                             }
                         });
                     }

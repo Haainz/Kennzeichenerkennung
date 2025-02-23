@@ -19,10 +19,6 @@
     <string name="attachment_summary_off">attachementsummaryoff</string>
     <string name="attachment_summary_on">attachementsummaryon</string>
     <string name="attachment_title">attachementtitle</string>
-    <string name="developpertext"><![CDATA[
-    \ \ \ \ Entwickler:\n
-    Aaron Wachtler\n\n
-    ]]></string>
     <string name="infotext"><![CDATA[
     Der Code wurde mithilfe von Blackbox.ai und eigenem Wissen programmiert.\n
     ]]></string>
@@ -36,4 +32,6 @@
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
     <string name="app_widget_description">This is an app widget description</string>
+    <string name="api_key">APIKEY</string>
+    <string name="ai_model">google/gemini-2.0-pro-exp-02-05:free</string>
 </resources>
