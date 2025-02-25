@@ -32,6 +32,10 @@
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
     <string name="app_widget_description">This is an app widget description</string>
-    <string name="api_key">APIKEY</string>
-    <string name="ai_model">google/gemini-2.0-pro-exp-02-05:free</string>
+    <string name="api_key">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</string>
+    <string name="gemini_pro">google/gemini-2.0-pro-exp-02-05:free</string>
+    <string name="gemini_flash">google/gemini-2.0-pro-exp-02-05:free</string>
+    <string name="deepseek_v3">google/gemini-2.0-pro-exp-02-05:free</string>
+    <string name="deepseek_r1">google/gemini-2.0-pro-exp-02-05:free</string>
+    <string name="mistral_8B">google/gemini-2.0-pro-exp-02-05:free</string>
 </resources>

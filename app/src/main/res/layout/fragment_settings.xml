@@ -75,6 +75,29 @@
             android:textColor="@color/teal_700"
             android:text="\nSonstiges:"/>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KI-Modell"
+                android:layout_centerVertical="true"
+                android:textColor="?attr/colorTextNormal" />
+
+            <Spinner
+                android:id="@+id/ai_spinner"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="0dp"
+                android:gravity="end"
+                android:layout_centerVertical="true"
+                tools:listitem="@layout/item_dropdown" />
+
+        </RelativeLayout>
+
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/offline_switch"
             android:layout_width="match_parent"

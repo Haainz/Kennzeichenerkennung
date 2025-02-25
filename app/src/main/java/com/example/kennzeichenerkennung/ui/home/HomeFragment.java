@@ -595,6 +595,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void generateAIText(Kennzeichen kennzeichen) {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
+        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro 2.0");
         ExecutorService executor = Executors.newSingleThreadExecutor();
         final WeakReference<HomeFragment> fragmentRef = new WeakReference<>(this);
         executor.execute(() -> {
@@ -614,7 +616,7 @@ public class HomeFragment extends Fragment {
                 message.put("role", "user");
                 messages.put(message);
 
-                jsonBody.put("model", getResources().getString(R.string.ai_model));
+                jsonBody.put("model", getaiModel(aiModel));
                 jsonBody.put("messages", messages);
 
                 RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json"));
@@ -622,7 +624,7 @@ public class HomeFragment extends Fragment {
                 Request request = new Request.Builder()
                         .url("https://openrouter.ai/api/v1/chat/completions")
                         .post(body)
-                        .addHeader("Authorization", getResources().getString(R.string.api_key))
+                        .addHeader("Authorization", "Bearer "+getResources().getString(R.string.api_key))
                         .addHeader("Content-Type", "application/json")
                         .build();
 
@@ -636,7 +638,6 @@ public class HomeFragment extends Fragment {
                         getActivity().runOnUiThread(() -> {
                             HomeFragment fragment = fragmentRef.get();
                             if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                fragment.stopLoadingAnimation();
                                 try {
                                     // JSON-Antwort parsen
                                     JSONObject jsonResponse = new JSONObject(responseData);
@@ -645,6 +646,7 @@ public class HomeFragment extends Fragment {
                                             .getJSONObject("message")
                                             .getString("content");
 
+                                    stopLoadingAnimation();
                                     fragment.binding.infotextwert.setText(
                                             fragment.formatAIText(aiText, kennzeichen)
                                     );
@@ -672,7 +674,9 @@ public class HomeFragment extends Fragment {
     }
 
     private String formatAIText(String aiText, Kennzeichen kennzeichen) {
-        return aiText.trim() + "\n(Quelle: KI-generiert, keine Gewähr)";
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
+        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro 2.0");
+        return aiText.trim() + "\n(Quelle: KI-generiert von " + aiModel + ", keine Gewähr)";
     }
 
     private void startLoadingAnimation() {
@@ -733,5 +737,28 @@ public class HomeFragment extends Fragment {
     private boolean isOfflineMode() {
         SharedPreferences prefs = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         return prefs.getBoolean("offlineSwitch", false);
+    }
+
+    private String getaiModel(String aiModel) {
+        Log.e("test", "AI Model before processing: " + aiModel);
+        switch (aiModel.trim()) {
+            case "Gemini Pro 2.0":
+                aiModel = "google/gemini-2.0-pro-exp-02-05:free";
+                break;
+            case "Gemini Flash Lite 2.0":
+                aiModel = "google/gemini-2.0-flash-lite-preview-02-05:free";
+                break;
+            case "DeepSeek V3":
+                aiModel = "deepseek/deepseek-chat:free";
+                break;
+            case "Mistral 8B Instruct":
+                aiModel = "meta-llama/llama-3-8b-instruct:free";
+                break;
+            default:
+                aiModel = "Fehler";
+                break;
+        }
+        Log.e("test", "AI Model after processing: " + aiModel);
+        return aiModel;
     }
 }

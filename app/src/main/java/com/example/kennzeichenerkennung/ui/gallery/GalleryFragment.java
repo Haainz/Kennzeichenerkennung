@@ -89,6 +89,12 @@ public class GalleryFragment extends Fragment {
         binding = FragmentGalleryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));
+
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", getActivity().MODE_PRIVATE);
+        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro 2.0");
+        Log.e("test", getaiModel(aiModel));
+
         kennzeichenKI = new Kennzeichen_KI(getActivity());
         kennzeichenGenerator = new KennzeichenGenerator(getContext());
 
@@ -141,6 +147,7 @@ public class GalleryFragment extends Fragment {
         binding.thinkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                stopLoadingAnimation();
                 checkNetworkAndGenerateText(currentKennzeichen, dayOfYear);
             }
         });
@@ -410,6 +417,8 @@ public class GalleryFragment extends Fragment {
     }
 
     private void generateAIText(Kennzeichen kennzeichen, int dayOfYear) {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
+        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro 2.0");
         ExecutorService executor = Executors.newSingleThreadExecutor();
         final WeakReference<GalleryFragment> fragmentRef = new WeakReference<>(this);
         executor.execute(() -> {
@@ -429,7 +438,7 @@ public class GalleryFragment extends Fragment {
                 message.put("role", "user");
                 messages.put(message);
 
-                jsonBody.put("model", getResources().getString(R.string.ai_model));
+                jsonBody.put("model", getaiModel(aiModel));
                 jsonBody.put("messages", messages);
 
                 RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json"));
@@ -437,7 +446,7 @@ public class GalleryFragment extends Fragment {
                 Request request = new Request.Builder()
                         .url("https://openrouter.ai/api/v1/chat/completions")
                         .post(body)
-                        .addHeader("Authorization", getResources().getString(R.string.api_key))
+                        .addHeader("Authorization", "Bearer "+getResources().getString(R.string.api_key))
                         .addHeader("Content-Type", "application/json")
                         .build();
 
@@ -489,10 +498,12 @@ public class GalleryFragment extends Fragment {
     private String formatAIText(String aiText, Kennzeichen kennzeichen, int dayOfYear) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         String currentDate = dateFormat.format(new Date());
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
+        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro 2.0");
 
         return "KI-Infotext für " + currentDate + " (" + dayOfYear + ". Tag):\n\n" +
                 kennzeichen.OertskuerzelGeben() + " - " + kennzeichen.OrtGeben() + "\n\n" +
-                aiText.trim() + "\n\n(Quelle: KI-generiert, keine Gewähr)";
+                aiText.trim() + "\n\n(Quelle: KI-generiert von " + aiModel + ", keine Gewähr)";
     }
 
     private void showStandardText(Kennzeichen kennzeichen, int dayOfYear) {
@@ -555,5 +566,27 @@ public class GalleryFragment extends Fragment {
     private boolean isOfflineMode() {
         SharedPreferences prefs = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         return prefs.getBoolean("offlineSwitch", false);
+    }
+
+    private String getaiModel(String aiModel) {
+        switch (aiModel.trim()) {
+            case "Gemini Pro 2.0":
+                aiModel = "google/gemini-2.0-pro-exp-02-05:free";
+                break;
+            case "Gemini Flash Lite 2.0":
+                aiModel = "google/gemini-2.0-flash-lite-preview-02-05:free";
+                break;
+            case "DeepSeek V3":
+                aiModel = "deepseek/deepseek-chat:free";
+                break;
+            case "Mistral 8B Instruct":
+                aiModel = "meta-llama/llama-3-8b-instruct:free";
+                break;
+            default:
+                aiModel = "Fehler";
+                break;
+        }
+        Log.e("test", "AI Model after processing: " + aiModel);
+        return aiModel;
     }
 }

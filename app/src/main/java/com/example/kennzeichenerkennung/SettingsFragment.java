@@ -6,9 +6,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatDelegate;
@@ -24,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -35,6 +39,9 @@ public class SettingsFragment extends DialogFragment {
 
     private SwitchCompat darkModeSwitch;
     private SharedPreferences sharedPreferences;
+    Spinner aiSp;
+    ArrayList<String> aiList = new ArrayList<>();
+    ArrayAdapter<String> aiAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,6 +51,8 @@ public class SettingsFragment extends DialogFragment {
         sharedPreferences = getActivity().getSharedPreferences("settings", getActivity().MODE_PRIVATE);
 
         darkModeSwitch = view.findViewById(R.id.dark_mode_switch);
+
+        aiSp = view.findViewById(R.id.ai_spinner);
 
         darkModeSwitch.setChecked(sharedPreferences.getBoolean("darkMode", false));
 
@@ -129,6 +138,31 @@ public class SettingsFragment extends DialogFragment {
                 } else {
                     sharedPreferences.edit().putBoolean("updateSwitch", false).apply();
                 }
+            }
+        });
+
+        aiList.add("Gemini Pro 2.0");
+        aiList.add("Gemini Flash Lite 2.0");
+        aiList.add("DeepSeek V3");
+        aiList.add("Mistral 8B Instruct");
+
+        aiAdapter = new ArrayAdapter<>(getActivity(), R.layout.item_dropdown, aiList);
+        aiSp.setAdapter(aiAdapter);
+
+        String savedModel = sharedPreferences.getString("selectedAIModel", aiList.get(0));
+        int savedPosition = aiList.indexOf(savedModel);
+        aiSp.setSelection(savedPosition);
+
+        aiSp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedModel = aiList.get(position);
+                sharedPreferences.edit().putString("selectedAIModel", selectedModel).apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Nichts zu tun
             }
         });
 
