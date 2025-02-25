@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.kennzeichenerkennung.AddCityFragment;
 import com.example.kennzeichenerkennung.ConfirmFragment;
@@ -49,8 +48,6 @@ public class ListFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        ListModel listModel =
-                new ViewModelProvider(this).get(ListModel.class);
 
         binding = FragmentListBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
