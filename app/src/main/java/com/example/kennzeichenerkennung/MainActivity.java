@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
         String fileName = "App-Update-" + cleanVersion + ".apk";
 
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(downloadUrl));
-        request.setTitle("App-Update " + version);
+        request.setTitle("App-Update Kennzeichenerkennung" + version);
         request.setDescription("Downloading update...");
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);

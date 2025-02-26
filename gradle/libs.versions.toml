@@ -16,6 +16,7 @@ playServicesTasks = "18.2.0"
 preference = "1.2.1"
 activity = "1.9.2"
 firebaseDatabase = "21.0.0"
+playServicesAds = "24.0.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -34,6 +35,7 @@ play-services-tasks = { group = "com.google.android.gms", name = "play-services-
 preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
