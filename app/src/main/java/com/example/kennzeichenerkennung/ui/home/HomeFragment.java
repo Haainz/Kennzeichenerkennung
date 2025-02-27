@@ -524,10 +524,12 @@ public class HomeFragment extends Fragment {
                 location = "Weißenburg-Gunzenhausen";
             } else if (Objects.equals(location, "HOhensTein")) {
                 location = "Hohenstein, Zwickau";
+            } else {
+                location = location + "_Deutschland";
             }
             Log.e("Achtung", location);
             try {
-                String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location, "UTF-8") + "&format=json&addressdetails=1";
+                String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location+"_", "UTF-8") + "&format=json&addressdetails=1";
                 HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
                 connection.setRequestMethod("GET");
                 connection.connect();

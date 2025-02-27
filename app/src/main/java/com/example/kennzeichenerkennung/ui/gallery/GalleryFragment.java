@@ -300,6 +300,8 @@ public class GalleryFragment extends Fragment {
                 location = "Weißenburg-Gunzenhausen";
             } else if (Objects.equals(location, "HOhensTein")) {
                 location = "Hohenstein, Zwickau";
+            } else {
+                location = location + "_Deutschland";
             }
             Log.e("Achtung", location);
             label = location;
