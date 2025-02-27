@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".UeberFragment">
 
     <RelativeLayout
+        android:id="@+id/main_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:id="@+id/main_toolbar"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimary">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Über die App:"
-            android:textSize="20sp"
-            android:textStyle="normal"
-            android:textColor="@color/white"
+            android:layout_centerVertical="true"
             android:layout_marginStart="20dp"
-            android:layout_centerVertical="true"/>
+            android:text="Über die App:"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="normal" />
 
         <ImageButton
             android:id="@+id/x"
@@ -40,71 +40,98 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/fragment_container1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="top"
-        android:id="@+id/fragment_container1"
+        android:layout_below="@+id/main_toolbar"
         android:layout_marginHorizontal="11dp"
         android:layout_marginTop="25dp"
-        android:layout_below="@+id/main_toolbar">
+        android:gravity="top"
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Entwickler:\nAaron Wachtler\n"
-            android:textSize="18dp"
             android:textAlignment="center"
-            android:textColor="?attr/colorTextNormal"/>
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="18dp" />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/purple_700"/>
+            android:layout_marginHorizontal="11dp"
+            android:background="@color/purple_700" />
+
         <TextView
+            android:id="@+id/versiontext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="123"
             android:textAlignment="center"
-            android:textSize="18dp"
             android:textColor="?attr/colorTextNormal"
-            android:id="@+id/versiontext"/>
+            android:textSize="18dp" />
+
         <TextView
+            android:id="@+id/gittext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text=" Auf Github ansehen\n"
-            android:textStyle="bold|italic"
-            android:textSize="16dp"
             android:textColor="@color/light_blue_600"
-            android:id="@+id/gittext"/>
+            android:textSize="16dp"
+            android:textStyle="bold|italic" />
+
         <RelativeLayout
+            android:id="@+id/Lineunten"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:id="@+id/Lineunten"
-            android:background="@color/purple_700"/>
+            android:layout_marginHorizontal="11dp"
+            android:background="@color/purple_700" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/Lineunten"
+            android:layout_marginTop="18dp"
             android:text="@string/infotext"
-            android:textSize="16dp"
-            android:layout_marginTop="18dp"
-            android:layout_below="@+id/Lineunten"
-            android:textColor="?attr/colorTextNormal"/>
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="16dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/Lineunten"
             android:text="@string/danksagung"
-            android:textSize="16dp"
-            android:layout_below="@+id/Lineunten"
-            android:textColor="?attr/colorTextNormal"/>
-        <TextView
-            android:layout_width="wrap_content"
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="16dp" />
+
+        <RelativeLayout
+            android:id="@+id/Lineganzunten"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginHorizontal="11dp"
+            android:background="@color/purple_700" />
+
+        <Button
+            android:id="@+id/button_spende"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/questiontext"
-            android:textSize="16dp"
             android:layout_marginTop="18dp"
-            android:textColor="?attr/colorTextNormal"/>
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/backgroundslidercolor"
+            android:text="💙 Paypal Spende"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/button_kontakt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/backgroundslidercolor"
+            android:text="Kontakt"
+            android:textColor="@color/white" />
     </LinearLayout>
 </RelativeLayout>

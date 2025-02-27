@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -40,13 +41,25 @@ public class UeberFragment extends DialogFragment {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Haainz/Kennzeichenerkennung/releases/"));
             startActivity(browserIntent);
         });
+
         ImageButton xBtn = view.findViewById(R.id.x);
         xBtn.setOnClickListener(v -> dismiss());
 
         TextView versionText = view.findViewById(R.id.versiontext);
-        versionText.setText("\n App-Version:\nV"+getCurrentAppVersion()+"\n\nKlicke hier für mehr Infos\n");
+        versionText.setText("\n App-Version:\nV"+getCurrentAppVersion()+" ⓘ\n");
         versionText.setOnClickListener(v -> UpdateInfo());
 
+        Button spendeBtn = view.findViewById(R.id.button_spende);
+        spendeBtn.setOnClickListener(v -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com/donate/?hosted_button_id=XUTQZBWGBWCLN"));
+            startActivity(browserIntent);
+        });
+
+        Button kontaktBtn = view.findViewById(R.id.button_kontakt);
+        kontaktBtn.setOnClickListener(v -> {
+            ContactFragment contactFragment = new ContactFragment();
+            contactFragment.show(getParentFragmentManager(), "ContactFragment");
+        });
         return view;
     }
 
