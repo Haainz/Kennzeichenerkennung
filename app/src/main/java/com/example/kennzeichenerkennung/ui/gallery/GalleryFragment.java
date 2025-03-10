@@ -416,10 +416,10 @@ public class GalleryFragment extends Fragment {
                 if (isAdded()) {
                     getActivity().runOnUiThread(this::startLoadingAnimation);
                 }
-                String prompt = "Erstelle einen sehr kurzen informativen Text (maximal 75 Wörter) über " + kennzeichen.OrtGeben() +
-                        " in " + kennzeichen.StadtKreisGeben() + ", " + kennzeichen.BundeslandGeben() +
-                        ". Gib wichtige Fakten wie Einwohnerzahl, geografische Besonderheiten und " +
-                        "historische Hintergründe. Sei präzise, antworte auf deutsch und halte dich an nachweisbare Fakten.";
+                String prompt = "Erstelle mir einen sehr kurzen informativen Text (maximal 75 Wörter) über " + kennzeichen.OrtGeben() +
+                        " in " + kennzeichen.StadtKreisGeben() + " im Bundesland " + kennzeichen.BundeslandGeben() +
+                        ". Gib auch wichtige Fakten wie Einwohnerzahl, geografische Besonderheiten und " +
+                        "historische Hintergründe an. Sei präzise, antworte auf deutsch und halte dich an nachweisbare Fakten.";
 
                 JSONObject jsonBody = new JSONObject();
                 JSONArray messages = new JSONArray();
@@ -569,8 +569,8 @@ public class GalleryFragment extends Fragment {
             case "DeepSeek V3":
                 aiModel = "deepseek/deepseek-chat:free";
                 break;
-            case "Mistral 8B Instruct":
-                aiModel = "meta-llama/llama-3-8b-instruct:free";
+            case "Mistral 7B Instruct":
+                aiModel = "mistralai/mistral-7b-instruct:free";
                 break;
             default:
                 aiModel = "Fehler";

@@ -144,7 +144,7 @@ public class SettingsFragment extends DialogFragment {
         aiList.add("Gemini Pro 2.0");
         aiList.add("Gemini Flash Lite 2.0");
         aiList.add("DeepSeek V3");
-        aiList.add("Mistral 8B Instruct");
+        aiList.add("Mistral 7B Instruct");
 
         aiAdapter = new ArrayAdapter<>(getActivity(), R.layout.item_dropdown, aiList);
         aiSp.setAdapter(aiAdapter);
