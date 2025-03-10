@@ -42,7 +42,8 @@ Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles übe
 
 # Sonstiges:
 - Kennzeichendaten: https://github.com/openpotato/kfz-kennzeichen/
-- verwendete KI für Textgeneration: Deepseek V3, Aufruf über https://api.blackbox.ai/
+- verwendete KI für Textgeneration bis Version V4.3.0: Deepseek V3, Aufruf über https://api.blackbox.ai/
+- verwendete KI für Textgeneration ab Version V4.3.0: verschiedene, Aufruf über https://openrouter.api/
 
     
 Lade dir jetzt die neuste Version hier herunter: https://github.com/Haainz/Kennzeichenerkennung/releases/latest/
