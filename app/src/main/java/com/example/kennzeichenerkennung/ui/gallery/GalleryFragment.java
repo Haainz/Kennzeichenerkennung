@@ -400,10 +400,9 @@ public class GalleryFragment extends Fragment {
         if (isNetworkAvailable() && !isOfflineMode()) {
             generateAIText(kennzeichen, dayOfYear);
             binding.textOftheday.setText("Analysiere Informationen...");
-            binding.thinkBtn.setVisibility(VISIBLE);
+
         } else {
             showStandardText(kennzeichen, dayOfYear);
-            binding.thinkBtn.setVisibility(GONE);
         }
     }
 
