@@ -26,7 +26,6 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Objects;
 
 public class MapFragment extends DialogFragment {
     private MapView mapView;
@@ -53,7 +52,7 @@ public class MapFragment extends DialogFragment {
         mapView.setMultiTouchControls (true);
         mapView.setVisibility(View.VISIBLE);
 
-        setMarkerOnMap(kennzeichen.OrtGeben());
+        setMarkerOnMap(kennzeichen.OrtGeben()+"_"+kennzeichen.BundeslandGeben());
 
         ImageButton xBtn = view.findViewById(R.id.x);
         xBtn.setOnClickListener(v -> dismiss());
@@ -76,12 +75,7 @@ public class MapFragment extends DialogFragment {
         @Override
         protected GeoPoint doInBackground(String... params) {
             String location = params[0];
-            if (Objects.equals(location, "WeißenbUrG")) {
-                location = "Weißenburg-Gunzenhausen";
-            } else if (Objects.equals(location, "HOhensTein")) {
-                location = "Hohenstein, Zwickau";
-            }
-            Log.e("Achtung", location);
+            Log.e("location", location);
             label = location;
             try {
                 String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location, "UTF-8") + "&format=json&addressdetails=1";

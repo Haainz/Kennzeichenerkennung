@@ -248,7 +248,6 @@ public class GalleryFragment extends Fragment {
         binding.maprel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // MapFragment öffnen
                 MapFragment mapFragment = new MapFragment(currentKennzeichen);
                 mapFragment.show(getParentFragmentManager(), "MapFragment");
             }
@@ -264,7 +263,7 @@ public class GalleryFragment extends Fragment {
             mapView.setVisibility(VISIBLE);
             binding.maprel.setVisibility(VISIBLE);
 
-            getCoordinates(currentKennzeichen.OrtGeben());
+            getCoordinates(currentKennzeichen.OrtGeben()+"_"+currentKennzeichen.BundeslandGeben());
         } else {
             binding.map.setVisibility(GONE);
             binding.maprel.setVisibility(GONE);
@@ -296,14 +295,7 @@ public class GalleryFragment extends Fragment {
         @Override
         protected GeoPoint doInBackground(String... params) {
             String location = params[0];
-            if (Objects.equals(location, "WeißenbUrG")) {
-                location = "Weißenburg-Gunzenhausen";
-            } else if (Objects.equals(location, "HOhensTein")) {
-                location = "Hohenstein, Zwickau";
-            } else {
-                location = location + "_Deutschland";
-            }
-            Log.e("Achtung", location);
+            Log.e("location", location);
             label = location;
             try {
                 String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location, "UTF-8") + "&format=json&addressdetails=1";

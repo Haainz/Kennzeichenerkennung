@@ -150,7 +150,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 kuerzelEingabe.setText("");
-                kuerzelEingabe.setHint("");
                 deleteText.setVisibility(View.GONE);
             }
         });
@@ -280,16 +279,8 @@ public class HomeFragment extends Fragment {
                 if (!kuerzelEingabe.getText().toString().isEmpty()) {
                     deleteText.setVisibility(View.VISIBLE);
                 }
-                if (kuerzelEingabe.getHint()!="") {
-                    deleteText.setVisibility(View.VISIBLE);
-                }
                 if (String.valueOf(kuerzelEingabe.getText()).isEmpty()) {
-                    if (String.valueOf(kuerzelEingabe.getHint()).isEmpty()) {
-                        recognizeTextInImage();
-                    } else {
-                        recognizeCity(String.valueOf(kuerzelEingabe.getHint()));
-                        recognizeTextInImage();
-                    }
+                    recognizeTextInImage();
                 } else {
                     recognizeCity(String.valueOf(kuerzelEingabe.getText()));
                 }
@@ -361,7 +352,7 @@ public class HomeFragment extends Fragment {
                         mapView.setVisibility(View.VISIBLE);
                         mapRel.setVisibility(View.VISIBLE);
 
-                        getCoordinates(kennzeichen.OrtGeben());
+                        getCoordinates(kennzeichen.OrtGeben()+"_"+kennzeichen.BundeslandGeben());
                     } else {
                         binding.map.setVisibility(View.GONE);
                         binding.maprel.setVisibility(View.GONE);
@@ -422,7 +413,6 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
         kuerzelEingabe.setText("");
-        kuerzelEingabe.setHint("");
     }
 
     @Override
@@ -464,12 +454,20 @@ public class HomeFragment extends Fragment {
             }
             String kennzeichen = text.toString();
             textViewAusgabe2.setText(kennzeichen);
+
             String kuerzel = kennzeichen.replaceAll("[^A-ZÄÜÖ]", " ").trim();
             String[] kuerzelArray = kuerzel.split("\\s+");
             String kuerzelAusgabe = kuerzelArray.length > 0 ? kuerzelArray[0] : "";
             kuerzelEingabe.setText(kuerzelAusgabe);
-            kuerzelEingabe.setHint(kuerzelAusgabe);
             ausgabe = kennzeichenKI.OrtZuKennzeichenAusgeben(kuerzelAusgabe) + kennzeichenKI.BundeslandZuKennzeichenAusgeben(kuerzelAusgabe);
+            if (ausgabe.equals("Dieses Kennzeichen kenne ich leider nicht 😒!")) {
+                String modifiedText = text.toString().replace("M", "W").replace("H", "W");
+                String kuerzel1 = modifiedText.replaceAll("[^A-ZÄÜÖ]", " ").trim();
+                String[] kuerzelArray1 = kuerzel1.split("\\s+");
+                String kuerzelAusgabe1 = kuerzelArray1.length > 0 ? kuerzelArray1[0] : "";
+                kuerzelEingabe.setText(kuerzelAusgabe1);
+                ausgabe = kennzeichenKI.OrtZuKennzeichenAusgeben(kuerzelAusgabe1) + kennzeichenKI.BundeslandZuKennzeichenAusgeben(kuerzelAusgabe1);
+            }
             textViewAusgabe.setText(ausgabe);
 
         } catch (FileNotFoundException e) {
@@ -485,7 +483,6 @@ public class HomeFragment extends Fragment {
         String kuerzelAusgabe = kuerzelArray.length > 0 ? kuerzelArray[0] : "";
         Log.d("Kennzeichen1", "Ausgabe:1" + kuerzelAusgabe);
         kuerzelEingabe.setText(kuerzelAusgabe);
-        kuerzelEingabe.setHint("");
         ausgabe = kennzeichenKI.OrtZuKennzeichenAusgeben(kuerzelAusgabe) + kennzeichenKI.BundeslandZuKennzeichenAusgeben(kuerzelAusgabe);
         textViewAusgabe.setText(ausgabe);
     }
@@ -520,13 +517,6 @@ public class HomeFragment extends Fragment {
         @Override
         protected GeoPoint doInBackground(String... params) {
             String location = params[0];
-            if (Objects.equals(location, "WeißenbUrG")) {
-                location = "Weißenburg-Gunzenhausen";
-            } else if (Objects.equals(location, "HOhensTein")) {
-                location = "Hohenstein, Zwickau";
-            } else {
-                location = location + "_Deutschland";
-            }
             Log.e("Achtung", location);
             try {
                 String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location+"_", "UTF-8") + "&format=json&addressdetails=1";

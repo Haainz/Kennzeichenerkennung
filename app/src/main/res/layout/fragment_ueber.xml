@@ -122,7 +122,7 @@
             android:layout_marginTop="18dp"
             android:layout_marginBottom="10dp"
             android:backgroundTint="@color/backgroundslidercolor"
-            android:text="💙 Paypal Spende"
+            android:text="♥️ Paypal Spende"
             android:textColor="@color/white" />
 
         <Button
