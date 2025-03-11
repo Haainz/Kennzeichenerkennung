@@ -49,22 +49,19 @@ public class KennzeichenWidgetProvider extends AppWidgetProvider {
         Kennzeichen_KI kennzeichenKI = new Kennzeichen_KI(context);
         KennzeichenGenerator kennzeichenGenerator = new KennzeichenGenerator(context);
 
-        // Beispiel: Abrufen des aktuellen Kennzeichens
-        Calendar calendar = Calendar.getInstance();
-        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-        Kennzeichen kennzeichen = getKennzeichen(dayOfYear, kennzeichenKI);
+        Kennzeichen kennzeichen = getKennzeichen(kennzeichenKI);
 
         // Erzeuge das Bild
         Drawable img = context.getDrawable(R.drawable.img); // Ersetze 'R.drawable.img' mit deinem Bild
         Bitmap originalBitmap = kennzeichenGenerator.generateImage(img, kennzeichen);
 
         // Skaliere das Bild auf die Größe des Widgets
-        int widgetWidth = context.getResources().getDimensionPixelSize(R.dimen.widget_width);
-        int widgetHeight = context.getResources().getDimensionPixelSize(R.dimen.widget_height);
+        int widgetWidth = context.getResources().getDimensionPixelSize(R.dimen.widget_width)*2;
+        int widgetHeight = context.getResources().getDimensionPixelSize(R.dimen.widget_height)*2;
         return Bitmap.createScaledBitmap(originalBitmap, widgetWidth, widgetHeight, true);
     }
 
-    private Kennzeichen getKennzeichen(int dayOfYear, Kennzeichen_KI kennzeichenKI) {
+    private Kennzeichen getKennzeichen(Kennzeichen_KI kennzeichenKI) {
         ArrayList<Kennzeichen> kennzeichenListe = kennzeichenKI.getKennzeichenListe();
 
         // Filtere die Liste nach normalen Kennzeichen
