@@ -87,6 +87,6 @@
             android:layout_height="0dp"
             android:layout_marginTop="17dp"
             android:layout_below="@+id/delete_btn"
-            android:background="@color/purple_700"/>
+            android:background="@color/blue_700"/>
     </RelativeLayout>
 </RelativeLayout>

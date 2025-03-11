@@ -62,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginHorizontal="11dp"
-            android:background="@color/purple_700" />
+            android:background="@color/blue_700" />
 
         <TextView
             android:id="@+id/versiontext"
@@ -89,7 +89,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginHorizontal="11dp"
-            android:background="@color/purple_700" />
+            android:background="@color/blue_700" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -113,7 +113,7 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginHorizontal="11dp"
-            android:background="@color/purple_700" />
+            android:background="@color/blue_700" />
 
         <Button
             android:id="@+id/button_spende"

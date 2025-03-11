@@ -39,7 +39,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="4dp"
             android:src="@drawable/icon_refresh"
-            app:tint="@color/purple_500" />
+            app:tint="@color/blue_500" />
 
         <ImageButton
             android:id="@+id/add_btn"
@@ -52,7 +52,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="4dp"
             android:src="@drawable/icon_add2"
-            app:tint="@color/purple_500" />
+            app:tint="@color/blue_500" />
 
         <TextView
             android:id="@+id/textViewAnzahl"
@@ -196,7 +196,7 @@
         android:layout_marginEnd="115dp"
         android:backgroundTint="#00FFFFFF"
         android:src="@drawable/icon_x"
-        app:tint="@color/purple_700" />
+        app:tint="@color/blue_700" />
 
     <ListView
         android:id="@+id/list"
