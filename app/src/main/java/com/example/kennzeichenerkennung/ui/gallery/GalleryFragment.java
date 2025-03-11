@@ -391,7 +391,6 @@ public class GalleryFragment extends Fragment {
     }
 
     private Bitmap generateImage(Kennzeichen kennzeichen) {
-        String kuerzel = kennzeichen.OertskuerzelGeben();
         Drawable img = getActivity().getDrawable(R.drawable.img);
         return kennzeichenGenerator.generateImage(img, kennzeichen);
     }
