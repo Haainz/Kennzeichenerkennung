@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -35,7 +36,9 @@ import com.google.android.material.navigation.NavigationView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -203,11 +206,11 @@ public class MainActivity extends AppCompatActivity {
 
     void startDownload(String downloadUrl, String version) {
         String cleanVersion = version.replaceAll("[^a-zA-Z0-9.-]", "_");
-        String fileName = "App-Update-" + cleanVersion + ".apk";
+        String fileName = "App-Update-Kennzeichenerkennung-" + cleanVersion + ".apk";
 
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(downloadUrl));
-        request.setTitle("App-Update Kennzeichenerkennung" + version);
-        request.setDescription("Downloading update...");
+        request.setTitle("App-Update Kennzeichenerkennung " + version);
+        request.setDescription("Update wird heruntergeladen...");
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
         request.setMimeType("application/vnd.android.package-archive");
@@ -231,6 +234,33 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_NOT_EXPORTED);
+    }
+
+    void deleteOldDownloads() {
+        File downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File[] files = downloadsDirectory.listFiles();
+        Log.e(TAG, Arrays.toString(files));
+
+        if (files != null) {
+            boolean anyDeleted = false; // Flag, um zu überprüfen, ob mindestens eine Datei gelöscht wurde
+            for (File file : files) {
+                if (file.isFile() && file.getName().startsWith("App-Update-Kennzeichenerkennung") && file.getName().endsWith(".apk")) {
+                    boolean deleted = file.delete();
+                    if (deleted) {
+                        Log.d(TAG, "Deleted file: " + file.getName());
+                        Toast.makeText(this, file.getName() + " gelöscht", Toast.LENGTH_SHORT).show();
+                        anyDeleted = true; // Setze das Flag, wenn eine Datei gelöscht wurde
+                    } else {
+                        Log.e(TAG, "Failed to delete file: " + file.getName());
+                    }
+                }
+            }
+            if (!anyDeleted) {
+                Toast.makeText(this, "Keine alten Downloads gefunden.", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Log.e(TAG, "Downloads directory is empty or does not exist.");
+        }
     }
 
     private void checkForUpdates() {

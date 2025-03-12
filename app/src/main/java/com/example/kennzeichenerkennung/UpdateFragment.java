@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -41,6 +42,7 @@ public class UpdateFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_update, container, false);
 
         TextView textView3 = view.findViewById(R.id.text_view3);
+        CheckBox checkBox = view.findViewById(R.id.clearcheck);
         textView3.setText(String.format("Version %s\n\n%s", version, body));
 
         TextView sizeText = view.findViewById(R.id.sizetext);
@@ -59,9 +61,17 @@ public class UpdateFragment extends DialogFragment {
 
         Button downloadBtn = view.findViewById(R.id.download_btn);
         downloadBtn.setOnClickListener(v -> {
-            if (downloadUrl != null && version != null) {
-                ((MainActivity) requireActivity()).startDownload(downloadUrl, version);
-                dismiss();
+            if (checkBox.isChecked()) {
+                if (downloadUrl != null && version != null) {
+                    ((MainActivity) requireActivity()).deleteOldDownloads();
+                    //((MainActivity) requireActivity()).startDownload(downloadUrl, version);
+                    dismiss();
+                }
+            } else {
+                if (downloadUrl != null && version != null) {
+                    ((MainActivity) requireActivity()).startDownload(downloadUrl, version);
+                    dismiss();
+                }
             }
         });
 
