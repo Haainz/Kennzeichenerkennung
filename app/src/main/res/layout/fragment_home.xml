@@ -82,7 +82,7 @@
             app:layout_constraintHorizontal_bias="0.531"
             android:gravity="left|center"
             android:textIsSelectable="true"
-            android:textColor="@color/cardview_dark_background"
+            android:textColor="@color/black"
             android:outlineSpotShadowColor="#00FFFFFF"
             android:searchResultHighlightColor="#00FFFFFF"
             android:outlineAmbientShadowColor="#00FFFFFF"

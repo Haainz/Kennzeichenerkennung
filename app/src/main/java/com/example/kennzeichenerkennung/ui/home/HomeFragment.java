@@ -19,6 +19,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -159,6 +160,8 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 selectedImageUri = null;
                 Glide.with(getContext()).load(R.drawable.camera_pic).apply(RequestOptions.circleCropTransform()).into(searchPic);
+                kuerzelEingabe.setText("");
+                deleteText.setVisibility(View.GONE);
                 deleteBtn.setVisibility(View.GONE);
                 saveBtn.setVisibility(View.GONE);
                 shareBtn.setVisibility(View.GONE);
@@ -269,6 +272,16 @@ public class HomeFragment extends Fragment {
                     }
                 }
             }
+        });
+
+        kuerzelEingabe.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE ||
+                    (event != null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                // Hier wird die gleiche Logik wie beim Button-Click aufgerufen
+                buttongenerate.performClick(); // Simuliere den Button-Klick
+                return true; // Signalisiere, dass das Event verarbeitet wurde
+            }
+            return false; // Andernfalls nicht verarbeitet
         });
 
         buttongenerate = binding.buttongenerate;
@@ -419,6 +432,9 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         stopLoadingAnimation();
+        Glide.with(getContext()).load(R.drawable.camera_pic).apply(RequestOptions.circleCropTransform()).into(searchPic);
+        kuerzelEingabe.setText("");
+        binding.x.setVisibility(View.GONE);
         binding = null;
     }
 
@@ -556,6 +572,7 @@ public class HomeFragment extends Fragment {
             HomeFragment fragment = fragmentReference.get();
             if (fragment != null) {
                 if (geoPoint != null) {
+                    fragment.mapView.getOverlays().clear();
                     fragment.mapView.getController().setZoom(6.25);
                     fragment.mapView.getController().setCenter(new GeoPoint(51.163409, 10.447718));
                     Marker marker = new Marker(fragment.mapView);
