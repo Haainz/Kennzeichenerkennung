@@ -196,7 +196,7 @@
         android:layout_marginEnd="115dp"
         android:backgroundTint="#00FFFFFF"
         android:src="@drawable/icon_x"
-        app:tint="@color/blue_700" />
+        app:tint="@color/blue_500" />
 
     <ListView
         android:id="@+id/list"

@@ -52,7 +52,7 @@ public class KennzeichenWidgetProvider extends AppWidgetProvider {
         Kennzeichen kennzeichen = getKennzeichen(kennzeichenKI);
 
         // Erzeuge das Bild
-        Drawable img = context.getDrawable(R.drawable.img); // Ersetze 'R.drawable.img' mit deinem Bild
+        Drawable img = context.getDrawable(R.drawable.img3);
         Bitmap originalBitmap = kennzeichenGenerator.generateImage(img, kennzeichen);
 
         // Skaliere das Bild auf die Größe des Widgets

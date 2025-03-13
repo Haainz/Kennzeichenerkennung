@@ -60,7 +60,7 @@
                     android:layout_marginTop="1dp"
                     android:layout_marginStart="26dp"
                     android:src="@drawable/icon_heartempty"
-                    app:tint="@color/teal_700"
+                    app:tint="@color/teal_200"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"/>
 
@@ -92,7 +92,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="35dp"
                     android:src="@drawable/icon_save"
-                    app:tint="@color/teal_700"
+                    app:tint="@color/teal_200"
                     app:layout_constraintLeft_toRightOf="@id/like_btn"
                     app:layout_constraintTop_toTopOf="parent"/>
 
@@ -102,7 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="35dp"
                     android:src="@drawable/icon_share"
-                    app:tint="@color/teal_700"
+                    app:tint="@color/teal_200"
                     app:layout_constraintLeft_toRightOf="@id/save_btn"
                     app:layout_constraintTop_toTopOf="parent"/>
 
@@ -113,7 +113,7 @@
                     android:layout_marginStart="35dp"
                     android:src="@drawable/icon_info"
                     android:layout_marginEnd="25dp"
-                    app:tint="@color/teal_700"
+                    app:tint="@color/teal_200"
                     app:layout_constraintLeft_toRightOf="@id/share_btn"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintRight_toRightOf="parent"/>

@@ -60,7 +60,7 @@
             android:layout_width="248dp"
             android:layout_height="144dp"
             android:layout_marginTop="298dp"
-            android:src="@drawable/img"
+            android:src="@drawable/img3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -100,7 +100,7 @@
             app:layout_constraintStart_toEndOf="@+id/kuerzeleingabe"
             app:layout_constraintTop_toTopOf="@id/kuerzeleingabe"
             app:layout_constraintBottom_toBottomOf="@+id/kuerzeleingabe"
-            app:tint="@color/teal_700" />
+            app:tint="@color/teal_200" />
 
         <TextView
             android:id="@+id/textViewAusgabe"
@@ -140,7 +140,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/icon_delete"
                 android:id="@+id/delete_btn"
-                app:tint="@color/teal_700"
+                app:tint="@color/teal_200"
                 android:layout_marginTop="55dp"
                 android:layout_marginLeft="15dp"/>
 
@@ -152,7 +152,7 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginLeft="15dp"
                 android:id="@+id/save_btn"
-                app:tint="@color/teal_700"/>
+                app:tint="@color/teal_200"/>
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -162,7 +162,7 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginLeft="15dp"
                 android:id="@+id/share_btn"
-                app:tint="@color/teal_700"/>
+                app:tint="@color/teal_200"/>
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -172,7 +172,7 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginLeft="15dp"
                 android:id="@+id/picinfo_btn"
-                app:tint="@color/teal_700"/>
+                app:tint="@color/teal_200"/>
 
         </RelativeLayout>
 
