@@ -432,7 +432,6 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         stopLoadingAnimation();
-        Glide.with(getContext()).load(R.drawable.camera_pic).apply(RequestOptions.circleCropTransform()).into(searchPic);
         kuerzelEingabe.setText("");
         binding.x.setVisibility(View.GONE);
         binding = null;

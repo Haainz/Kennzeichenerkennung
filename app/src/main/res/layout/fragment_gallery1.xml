@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/icon_save"
-            app:tint="@color/teal_700" />
+            app:tint="@color/red" />
 
         <ImageView
             android:id="@+id/share_btn"
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="35dp"
             android:src="@drawable/icon_share"
-            app:tint="@color/teal_700" />
+            app:tint="@color/red" />
 
         <ImageView
             android:id="@+id/picinfo_btn"
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="35dp"
             android:src="@drawable/icon_info"
-            app:tint="@color/teal_700" />
+            app:tint="@color/red" />
 
     </LinearLayout>
 

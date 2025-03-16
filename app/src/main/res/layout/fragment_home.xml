@@ -100,7 +100,7 @@
             app:layout_constraintStart_toEndOf="@+id/kuerzeleingabe"
             app:layout_constraintTop_toTopOf="@id/kuerzeleingabe"
             app:layout_constraintBottom_toBottomOf="@+id/kuerzeleingabe"
-            app:tint="@color/teal_200" />
+            app:tint="@color/green" />
 
         <TextView
             android:id="@+id/textViewAusgabe"
@@ -140,7 +140,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/icon_delete"
                 android:id="@+id/delete_btn"
-                app:tint="@color/teal_200"
+                app:tint="@color/green"
                 android:layout_marginTop="55dp"
                 android:layout_marginLeft="15dp"/>
 
@@ -152,7 +152,7 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginLeft="15dp"
                 android:id="@+id/save_btn"
-                app:tint="@color/teal_200"/>
+                app:tint="@color/green"/>
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -162,7 +162,7 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginLeft="15dp"
                 android:id="@+id/share_btn"
-                app:tint="@color/teal_200"/>
+                app:tint="@color/green"/>
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -172,7 +172,7 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginLeft="15dp"
                 android:id="@+id/picinfo_btn"
-                app:tint="@color/teal_200"/>
+                app:tint="@color/green"/>
 
         </RelativeLayout>
 

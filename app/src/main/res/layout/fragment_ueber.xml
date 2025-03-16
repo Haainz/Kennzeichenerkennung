@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text=" Auf Github ansehen\n"
-            android:textColor="@color/teal_200"
+            android:textColor="@color/green"
             android:textSize="16dp"
             android:textStyle="bold|italic" />
 

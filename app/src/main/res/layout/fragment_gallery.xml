@@ -51,25 +51,25 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/imageoftheday"
-                android:layout_marginTop="130dp">
+                android:layout_marginTop="140dp">
 
                 <ImageView
                     android:id="@+id/like_btn"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_marginStart="26dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginStart="2dp"
                     android:src="@drawable/icon_heartempty"
-                    app:tint="@color/teal_200"
+                    app:tint="@color/green"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"/>
 
                 <ImageView
                     android:id="@+id/liked_btn"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_marginStart="26dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginStart="0dp"
                     android:src="@drawable/icon_heartfull"
                     app:tint="#FF0000"
                     app:layout_constraintTop_toTopOf="parent"
@@ -88,32 +88,32 @@
 
                 <ImageView
                     android:id="@+id/save_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="35dp"
-                    android:src="@drawable/icon_save"
-                    app:tint="@color/teal_200"
+                    android:layout_width="29dp"
+                    android:layout_height="29dp"
+                    android:layout_marginStart="55dp"
+                    android:src="@drawable/icon_save2"
+                    app:tint="@color/green"
                     app:layout_constraintLeft_toRightOf="@id/like_btn"
                     app:layout_constraintTop_toTopOf="parent"/>
 
                 <ImageView
                     android:id="@+id/share_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="35dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="55dp"
                     android:src="@drawable/icon_share"
-                    app:tint="@color/teal_200"
+                    app:tint="@color/green"
                     app:layout_constraintLeft_toRightOf="@id/save_btn"
                     app:layout_constraintTop_toTopOf="parent"/>
 
                 <ImageView
                     android:id="@+id/picinfo_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="35dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="55dp"
                     android:src="@drawable/icon_info"
-                    android:layout_marginEnd="25dp"
-                    app:tint="@color/teal_200"
+                    android:layout_marginEnd="0dp"
+                    app:tint="@color/green"
                     app:layout_constraintLeft_toRightOf="@id/share_btn"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintRight_toRightOf="parent"/>

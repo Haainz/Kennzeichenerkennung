@@ -42,6 +42,6 @@
         android:src="@drawable/icon_x"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/teal_200" />
+        app:tint="@color/red" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

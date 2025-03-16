@@ -369,7 +369,7 @@ public class GalleryFragment extends Fragment {
     private Kennzeichen getKennzeichen(int dayOfYear) {
         ArrayList<Kennzeichen> kennzeichenListe = kennzeichenKI.getKennzeichenListe();
 
-        // Nur normale und sonder Kennzeichen berücksichtigen
+        // Nur normale Kennzeichen berücksichtigen
         ArrayList<Kennzeichen> filteredList = new ArrayList<>();
         for (Kennzeichen kennzeichen : kennzeichenListe) {
             if (kennzeichen.isNormal()) {
@@ -386,7 +386,8 @@ public class GalleryFragment extends Fragment {
         int year = calendar.get(Calendar.YEAR);
 
         // Hash-Funktion anwenden, um eine eindeutige Zahl zu erzeugen
-        int index = (day * 31 + month * 12 + year) % filteredList.size();
+        int index = (day * 31 + month * 12 + year) % filteredList.size(); // % = Modulo
+        Log.e("day", day+" "+month+" "+year+" "+filteredList.size()+" "+index);
         return filteredList.get(index);
     }
 
