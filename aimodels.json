@@ -1,0 +1,24 @@
+{
+    "ai_models": [
+        {
+            "id": "google/gemini-2.0-pro-exp-02-05:free",
+            "name": "Gemini Pro 2.0",
+            "working": false
+        },
+        {
+            "id": "google/gemini-2.0-flash-lite-preview-02-05:free",
+            "name": "Gemini Flash Lite 2.0",
+            "working": false
+        },
+        {
+            "id": "deepseek/deepseek-chat:free",
+            "name": "DeepSeek V3",
+            "working": true
+        },
+        {
+            "id": "mistralai/mistral-7b-instruct:free",
+            "name": "Mistral 7B Instruct",
+            "working": true
+        }
+    ]
+}
