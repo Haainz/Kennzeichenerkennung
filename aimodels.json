@@ -22,7 +22,7 @@
         },
         {
             "id": "nvidia/llama-3.3-nemotron-super-49b-v1:free",
-            "name": "NVIDIA Llama 3.3 Nemotron",
+            "name": "NVIDIA Llama 3.3",
             "working": true
         }
     ]
