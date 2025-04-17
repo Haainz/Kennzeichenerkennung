@@ -167,7 +167,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
-                    android:backgroundTint="@color/green"
+                    android:backgroundTint="@color/yellow"
                     android:src="@drawable/icon_heartempty2"
                     app:tint="#FF0000" />
 
@@ -180,7 +180,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
-                    android:backgroundTint="@color/green"
+                    android:backgroundTint="@color/yellow"
                     android:src="@drawable/icon_heartfull2"
                     app:tint="#FF0000" />
             </LinearLayout>

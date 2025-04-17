@@ -69,7 +69,7 @@
                 android:layout_below="@+id/text_view3"
                 android:layout_marginTop="10dp"
                 android:text="Auf Github ansehen"
-                android:textColor="@color/green"
+                android:textColor="@color/yellow"
                 android:textSize="15dp"
                 android:textStyle="bold|italic" />
 

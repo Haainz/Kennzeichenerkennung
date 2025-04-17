@@ -43,7 +43,7 @@ public class ListFragment extends Fragment {
     public ArrayAdapter<Kennzeichen> adapter;
 
     private boolean isButtonColorTeal200(int buttonColor) {
-        return buttonColor == R.color.green;
+        return buttonColor == R.color.yellow;
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -74,20 +74,20 @@ public class ListFragment extends Fragment {
         binding.scroll.setHorizontalScrollBarEnabled(false);
 
         binding.buttonSonder.setBackgroundResource(R.drawable.edit_text_rounded_corner_more);
-        binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-        buttonSonderColor = R.color.green;
+        binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+        buttonSonderColor = R.color.yellow;
         binding.buttonNormal.setBackgroundResource(R.drawable.edit_text_rounded_corner_more);
-        binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-        buttonNormalColor = R.color.green;
+        binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+        buttonNormalColor = R.color.yellow;
         binding.buttonAuslaufend.setBackgroundResource(R.drawable.edit_text_rounded_corner_more);
-        binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-        buttonAuslaufendColor = R.color.green;
+        binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+        buttonAuslaufendColor = R.color.yellow;
         binding.buttonEigene.setBackgroundResource(R.drawable.edit_text_rounded_corner_more);
-        binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-        buttonEigeneColor = R.color.green;
+        binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+        buttonEigeneColor = R.color.yellow;
         binding.buttonAlle.setBackgroundResource(R.drawable.edit_text_rounded_corner_more);
-        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-        buttonAlleColor = R.color.green;
+        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+        buttonAlleColor = R.color.yellow;
         binding.buttonLike1.setVisibility(VISIBLE);
         binding.buttonLike2.setVisibility(GONE);
         binding.buttonLike3.setVisibility(GONE);
@@ -271,20 +271,20 @@ public class ListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (buttonAlleColor == R.color.white) {
-                    binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                    buttonSonderColor = R.color.green;
-                    binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                    buttonNormalColor = R.color.green;
-                    binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                    buttonAuslaufendColor = R.color.green;
-                    binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                    buttonEigeneColor = R.color.green;
-                    binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                    buttonAlleColor = R.color.green;
+                    binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                    buttonSonderColor = R.color.yellow;
+                    binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                    buttonNormalColor = R.color.yellow;
+                    binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                    buttonAuslaufendColor = R.color.yellow;
+                    binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                    buttonEigeneColor = R.color.yellow;
+                    binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                    buttonAlleColor = R.color.yellow;
                     binding.buttonLike1.setVisibility(VISIBLE);
                     binding.buttonLike2.setVisibility(GONE);
                     binding.buttonLike3.setVisibility(GONE);
-                } else if (buttonAlleColor == R.color.green) {
+                } else if (buttonAlleColor == R.color.yellow) {
                     binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
                     buttonAlleColor = R.color.white;
                     binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
@@ -309,13 +309,13 @@ public class ListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (buttonNormalColor == R.color.white) {
-                    if (buttonSonderColor == R.color.green && buttonAuslaufendColor == R.color.green && buttonEigeneColor == R.color.green && binding.buttonLike1.getVisibility() == VISIBLE) {
-                        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                        buttonAlleColor = R.color.green;
+                    if (buttonSonderColor == R.color.yellow && buttonAuslaufendColor == R.color.yellow && buttonEigeneColor == R.color.yellow && binding.buttonLike1.getVisibility() == VISIBLE) {
+                        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                        buttonAlleColor = R.color.yellow;
                     }
-                    binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                    buttonNormalColor = R.color.green;
-                } else if (buttonNormalColor == R.color.green) {
+                    binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                    buttonNormalColor = R.color.yellow;
+                } else if (buttonNormalColor == R.color.yellow) {
                     binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
                     buttonAlleColor = R.color.white;
                     binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
@@ -329,13 +329,13 @@ public class ListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (buttonSonderColor == R.color.white) {
-                    if (buttonNormalColor == R.color.green && buttonAuslaufendColor == R.color.green && buttonEigeneColor == R.color.green && binding.buttonLike1.getVisibility() == VISIBLE) {
-                        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                        buttonAlleColor = R.color.green;
+                    if (buttonNormalColor == R.color.yellow && buttonAuslaufendColor == R.color.yellow && buttonEigeneColor == R.color.yellow && binding.buttonLike1.getVisibility() == VISIBLE) {
+                        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                        buttonAlleColor = R.color.yellow;
                     }
-                    binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                    buttonSonderColor = R.color.green;
-                } else if (buttonSonderColor == R.color.green) {
+                    binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                    buttonSonderColor = R.color.yellow;
+                } else if (buttonSonderColor == R.color.yellow) {
                     binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
                     buttonAlleColor = R.color.white;
                     binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
@@ -349,13 +349,13 @@ public class ListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (buttonAuslaufendColor == R.color.white) {
-                    if (buttonNormalColor == R.color.green && buttonSonderColor == R.color.green && buttonEigeneColor == R.color.green && binding.buttonLike1.getVisibility() == VISIBLE) {
-                        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                        buttonAlleColor = R.color.green;
+                    if (buttonNormalColor == R.color.yellow && buttonSonderColor == R.color.yellow && buttonEigeneColor == R.color.yellow && binding.buttonLike1.getVisibility() == VISIBLE) {
+                        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                        buttonAlleColor = R.color.yellow;
                     }
-                    binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                    buttonAuslaufendColor = R.color.green;
-                } else if (buttonAuslaufendColor == R.color.green) {
+                    binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                    buttonAuslaufendColor = R.color.yellow;
+                } else if (buttonAuslaufendColor == R.color.yellow) {
                     binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
                     buttonAlleColor = R.color.white;
                     binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
@@ -369,13 +369,13 @@ public class ListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (buttonEigeneColor == R.color.white) {
-                    if (buttonNormalColor == R.color.green && buttonSonderColor == R.color.green && buttonAuslaufendColor == R.color.green && binding.buttonLike1.getVisibility() == VISIBLE) {
-                        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                        buttonAlleColor = R.color.green;
+                    if (buttonNormalColor == R.color.yellow && buttonSonderColor == R.color.yellow && buttonAuslaufendColor == R.color.yellow && binding.buttonLike1.getVisibility() == VISIBLE) {
+                        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                        buttonAlleColor = R.color.yellow;
                     }
-                    binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                    buttonEigeneColor = R.color.green;
-                } else if (buttonEigeneColor == R.color.green) {
+                    binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                    buttonEigeneColor = R.color.yellow;
+                } else if (buttonEigeneColor == R.color.yellow) {
                     binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
                     buttonAlleColor = R.color.white;
                     binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
@@ -410,9 +410,9 @@ public class ListFragment extends Fragment {
             public void onClick(View v) {
                 binding.buttonLike3.setVisibility(GONE);
                 binding.buttonLike1.setVisibility(VISIBLE);
-                if (buttonNormalColor == R.color.green && buttonSonderColor == R.color.green && buttonAuslaufendColor == R.color.green && buttonEigeneColor == R.color.green) {
-                    binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-                    buttonAlleColor = R.color.green;
+                if (buttonNormalColor == R.color.yellow && buttonSonderColor == R.color.yellow && buttonAuslaufendColor == R.color.yellow && buttonEigeneColor == R.color.yellow) {
+                    binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+                    buttonAlleColor = R.color.yellow;
                 }
                 updateList();
             }

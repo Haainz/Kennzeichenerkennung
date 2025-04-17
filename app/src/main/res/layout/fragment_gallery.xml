@@ -60,7 +60,7 @@
                     android:layout_marginTop="2dp"
                     android:layout_marginStart="2dp"
                     android:src="@drawable/icon_heartempty"
-                    app:tint="@color/green"
+                    app:tint="?attr/colorTextNormal"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"/>
 
@@ -92,7 +92,7 @@
                     android:layout_height="29dp"
                     android:layout_marginStart="55dp"
                     android:src="@drawable/icon_save2"
-                    app:tint="@color/green"
+                    app:tint="?attr/colorTextNormal"
                     app:layout_constraintLeft_toRightOf="@id/like_btn"
                     app:layout_constraintTop_toTopOf="parent"/>
 
@@ -102,7 +102,7 @@
                     android:layout_height="28dp"
                     android:layout_marginStart="55dp"
                     android:src="@drawable/icon_share"
-                    app:tint="@color/green"
+                    app:tint="?attr/colorTextNormal"
                     app:layout_constraintLeft_toRightOf="@id/save_btn"
                     app:layout_constraintTop_toTopOf="parent"/>
 
@@ -113,7 +113,7 @@
                     android:layout_marginStart="55dp"
                     android:src="@drawable/icon_info"
                     android:layout_marginEnd="0dp"
-                    app:tint="@color/green"
+                    app:tint="?attr/colorTextNormal"
                     app:layout_constraintLeft_toRightOf="@id/share_btn"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintRight_toRightOf="parent"/>
@@ -131,7 +131,7 @@
                 android:textSize="17sp"
                 android:textStyle="bold|italic"
                 android:text="Über das Kennzeichen:"
-                android:textColor="?attr/colorTextNormal"
+                android:textColor="?attr/colorSecondary"
                 app:layout_constraintTop_toTopOf="@+id/imageoftheday"
                 app:layout_constraintStart_toStartOf="parent"
                 />
@@ -142,7 +142,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:text="💭"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorSecondary"
                 app:layout_constraintBottom_toBottomOf="@+id/text_ofthedaytitel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/text_ofthedaytitel" />
