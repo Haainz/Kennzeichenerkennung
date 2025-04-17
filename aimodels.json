@@ -8,7 +8,7 @@
         {
             "id": "google/gemini-2.0-flash-thinking-exp:free",
             "name": "Gemini Flash 2.0",
-            "working": false
+            "working": true
         },
         {
             "id": "deepseek/deepseek-chat:free",
