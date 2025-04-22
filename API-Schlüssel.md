@@ -13,10 +13,10 @@ OpenRouter hat ab April 2025 seine Nutzungsbedingungen geändert. Nun sind nur n
 Gehe auf https://openrouter.ai/sign-in klicke oben rechts auf Sign in. Klicke nun unten auf Sign up und erstelle dir ein eigenes Konto. Klicke nun in deinem Konto auf "Keys" und klicke auf "Create Key". Gebe nun deinem Schlüssel einen Namen (ganz egal welchen). Ein Credit-Limit brauchst du nicht, da die App nur mit kostenlosen KI-Modellen arbeitet und deshalb die Credits unwichtig sind. Kopiere dir nun den Schlüssel und speichere dir ihn sicher ab, denn du wirst ihn aus Sicherheitsgründen nie wieder ansehen können!
 
 ## Ich habe nun einen API-Schlüssel, wie kann ich ihn in der Kennzeichenerkennungsapp nutzen?
-1. Klicke oben links auf die 3 Balken > Menü öffnet sich > Einstellungen > "Eigenen API-Key nutzen"
+1. Klicke oben links auf die 3 Balken > Menü öffnet sich > Einstellungen > "Ich habe einen eigenen API-Key"
 4. Gebe den vorher kopierten Schlüssel nun hier ein
 5. Klicke bestätigen
-6. Das war's! 🎉 Du bist nun unabhängig vom Nutzungsverhalten anderer User!
+6. Das war's! 🎉 Du bist nun unabhängig vom Nutzungsverhalten anderer App-User!
 7. Nun kannst du dich in dein OpenRouter Konto jederzeit einloggen um Statistiken zu deiner Nutzung zu sehen. Klicke dafür in deinem Konto auf "Activity".
 
 > [!CAUTION]
