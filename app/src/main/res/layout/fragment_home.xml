@@ -423,7 +423,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="17sp"
-                        android:text="Analysiere Informationen...\n"
+                        android:text="Klicke um einen Informationstext von KI generieren zu lassen"
                         android:layout_toRightOf="@id/infotexttitel"
                         android:id="@+id/infotextwert"
                         android:layout_below="@id/map"
@@ -446,9 +446,13 @@
                         android:id="@+id/fussnotenwert"
                         android:layout_below="@id/infotextwert"
                         android:textIsSelectable="true"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="17sp"
+                        android:layout_below="@id/fussnotenwert"/>
                 </RelativeLayout>
             </RelativeLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

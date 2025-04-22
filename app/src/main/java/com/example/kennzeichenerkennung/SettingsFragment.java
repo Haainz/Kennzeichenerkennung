@@ -23,6 +23,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.kennzeichenerkennung.ui.home.HomeFragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -51,13 +52,17 @@ public class SettingsFragment extends DialogFragment {
         sharedPreferences = getActivity().getSharedPreferences("settings", getActivity().MODE_PRIVATE);
 
         darkModeSwitch = view.findViewById(R.id.dark_mode_switch);
-
         aiSp = view.findViewById(R.id.ai_spinner);
 
         darkModeSwitch.setChecked(sharedPreferences.getBoolean("darkMode", false));
 
         ImageButton xBtn = view.findViewById(R.id.x);
         xBtn.setOnClickListener(v -> dismiss());
+
+        /*darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+            sharedPreferences.edit().putBoolean("darkMode", isChecked).apply();
+        });*/
 
         darkModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -73,18 +78,12 @@ public class SettingsFragment extends DialogFragment {
         });
 
         Button iconInfo = view.findViewById(R.id.button_ueber);
-        iconInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDialogFragment(new UeberFragment(), "UeberFragment");
-            }
-        });
+        iconInfo.setOnClickListener(v -> showDialogFragment(new UeberFragment(), "UeberFragment"));
 
         Button updateInfo = view.findViewById(R.id.button_update);
         updateInfo.setOnClickListener(v -> checkForUpdates());
 
         SwitchCompat logSwitch = view.findViewById(R.id.log_switch);
-
         int logSwitchStatus = sharedPreferences.getInt("logSwitch", 1);
         logSwitch.setChecked(logSwitchStatus == 1);
 
@@ -141,23 +140,14 @@ public class SettingsFragment extends DialogFragment {
             }
         });
 
-        aiList.add("Gemini Pro 2.0");
-        aiList.add("Gemini Flash Lite 2.0");
-        aiList.add("DeepSeek V3");
-        aiList.add("Mistral 7B Instruct");
-
-        aiAdapter = new ArrayAdapter<>(getActivity(), R.layout.item_dropdown, aiList);
-        aiSp.setAdapter(aiAdapter);
-
-        String savedModel = sharedPreferences.getString("selectedAIModel", aiList.get(0));
-        int savedPosition = aiList.indexOf(savedModel);
-        aiSp.setSelection(savedPosition);
+        loadAIModels();
 
         aiSp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedModel = aiList.get(position);
                 sharedPreferences.edit().putString("selectedAIModel", selectedModel).apply();
+                checkModelWorking(selectedModel);
             }
 
             @Override
@@ -167,6 +157,108 @@ public class SettingsFragment extends DialogFragment {
         });
 
         return view;
+    }
+
+    private void loadAIModels() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("https://raw.githubusercontent.com/Haainz/Kennzeichenerkennung/refs/heads/master/aimodels.json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("SettingsFragment", "Error loading AI models", e);
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(), "Fehler beim Laden der AI-Modelle", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String jsonData = response.body().string();
+                        JSONObject json = new JSONObject(jsonData);
+                        JSONArray models = json.getJSONArray("ai_models");
+
+                        // Prepare the AI list on the main thread
+                        requireActivity().runOnUiThread(() -> {
+                            aiList.clear(); // Clear previous entries
+                            for (int i = 0; i < models.length(); i++) {
+                                try {
+                                    JSONObject model = models.getJSONObject(i);
+                                    String name = model.getString("name");
+                                    aiList.add(name);
+                                } catch (JSONException e) {
+                                    Log.e("SettingsFragment", "Error parsing model JSON", e);
+                                    Toast.makeText(requireContext(), "Fehler beim Verarbeiten eines Modells", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            // Initialize the adapter after populating the aiList
+                            aiAdapter = new ArrayAdapter<>(getActivity(), R.layout.item_dropdown, aiList);
+                            aiSp.setAdapter(aiAdapter); // Set adapter to spinner
+
+                            // Set the spinner to the saved AI model
+                            String savedModel = sharedPreferences.getString("selectedAIModel", aiList.get(0)); // Default to first item if not found
+                            int savedPosition = aiList.indexOf(savedModel);
+                            if (savedPosition >= 0) {
+                                aiSp.setSelection(savedPosition); // Set the spinner to the saved position
+                            }
+
+                            aiAdapter.notifyDataSetChanged(); // Notify adapter of data change
+                        });
+
+                    } catch (JSONException e) {
+                        Log.e("SettingsFragment", "Error parsing JSON", e);
+                        requireActivity().runOnUiThread(() ->
+                                Toast.makeText(requireContext(), "Fehler beim Verarbeiten der JSON-Daten", Toast.LENGTH_SHORT).show());
+                    }
+                } else {
+                    Log.e("SettingsFragment", "Response not successful: " + response.code());
+                    requireActivity ().runOnUiThread(() ->
+                            Toast.makeText(requireContext(), "Fehler beim Abrufen der AI-Modelle: " + response.code(), Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private void checkModelWorking(String modelName) {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("https://raw.githubusercontent.com/Haainz/Kennzeichenerkennung/refs/heads/master/aimodels.json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("SettingsFragment", "Error checking model status", e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String jsonData = response.body().string();
+                        JSONObject json = new JSONObject(jsonData);
+                        JSONArray models = json.getJSONArray("ai_models");
+
+                        for (int i = 0; i < models.length(); i++) {
+                            JSONObject model = models.getJSONObject(i);
+                            String name = model.getString("name");
+                            boolean working = model.getBoolean("working");
+
+                            if (name.equals(modelName) && !working) {
+                                requireActivity().runOnUiThread(() ->
+                                        Toast.makeText(requireContext(), "Achtung: Es können Fehler bei diesem KI-Modell auftreten!", Toast.LENGTH_LONG).show());
+                            }
+                        }
+                    } catch (JSONException e) {
+                        Log.e("SettingsFragment", "Error parsing JSON", e);
+                    }
+                }
+            }
+        });
     }
 
     private void showDialogFragment(DialogFragment fragment, String tag) {

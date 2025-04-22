@@ -140,9 +140,10 @@
                 android:id="@+id/think_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="22dp"
                 android:text="💭"
                 android:textColor="?attr/colorSecondary"
+                android:textSize="23sp"
                 app:layout_constraintBottom_toBottomOf="@+id/text_ofthedaytitel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/text_ofthedaytitel" />

@@ -38,6 +38,7 @@ import com.example.kennzeichenerkennung.R;
 import com.example.kennzeichenerkennung.databinding.FragmentGalleryBinding;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -48,6 +49,7 @@ import org.osmdroid.views.overlay.Marker;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
@@ -62,6 +64,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -89,16 +93,18 @@ public class GalleryFragment extends Fragment {
         Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", getActivity().MODE_PRIVATE);
-        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro 2.0");
-        Log.e("test", getaiModel(aiModel));
 
         kennzeichenKI = new Kennzeichen_KI(getActivity());
         kennzeichenGenerator = new KennzeichenGenerator(getContext());
 
-        // Kennzeichenkürzel basierend auf dem Datum berechnen
+        binding.fussnotenwert.setVisibility(VISIBLE);
+        binding.fussnotentitel.setVisibility(VISIBLE);
+        binding.Bemerkungenwert.setVisibility(VISIBLE);
+        binding.bemerkungentitel.setVisibility(VISIBLE);
+
         Calendar calendar = Calendar.getInstance();
         int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-        currentKennzeichen = getKennzeichen(dayOfYear);
+        currentKennzeichen = getKennzeichen();
 
         kennzeichenKI.KennzeichenLikedEinlesen();
         if (kennzeichenKI.LikeÜberprüfen(currentKennzeichen.OertskuerzelGeben())) {
@@ -127,130 +133,122 @@ public class GalleryFragment extends Fragment {
         if (!Objects.equals(currentKennzeichen.FussnoteGeben(), "")) {
             fussnoteNummer = Integer.parseInt(currentKennzeichen.FussnoteGeben());
         }
-        fussnoteNummer = fussnoteNummer - 1;
         String[] fussnoten = {
-                "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzliche Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle. \n",
-                "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle stellt durch geeignete verwaltungsinterne Maßnahmen sicher, dass eine Doppelvergabe desselben Kennzeichens ausgeschlossen ist.\n",
-                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.\n",
-                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Sachsen-Anhalt im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Baden-Württemberg.\n",
-                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n",
-                "amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.\n",
-                "---\n",
-                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n\nweiterer amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.\n",
+                "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungs nummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzliche Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
+                "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle stellt durch geeignete verwaltungsinterne Maßnahmen sicher, dass eine Doppelvergabe desselben Kennzeichens ausgeschlossen ist.",
+                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
+                        "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
+                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
+                        "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Sachsen-Anhalt im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Baden-Württemberg.",
+                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
+                        "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.",
+                "amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde " +
+                        "oder die nach Landesrecht zuständige Stelle.",
+                "---",
+                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
+                        "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n\nweiterer amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen " +
+                        "führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
         };
-        binding.fussnotenwert.setText(fussnoten[fussnoteNummer]);
-        binding.Bemerkungenwert.setText(currentKennzeichen.BemerkungenGeben());
+        if (!currentKennzeichen.FussnoteGeben().isEmpty()) {
+            binding.fussnotenwert.setText(fussnoten[fussnoteNummer]);
+        } else {
+            binding.fussnotenwert.setVisibility(GONE);
+            binding.fussnotentitel.setVisibility(GONE);
+        }
+        if (!currentKennzeichen.BemerkungenGeben().isEmpty()) {
+            binding.Bemerkungenwert.setText(currentKennzeichen.BemerkungenGeben());
+        } else {
+            binding.Bemerkungenwert.setVisibility(GONE);
+            binding.bemerkungentitel.setVisibility(GONE);
+        }
 
-        binding.thinkBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopLoadingAnimation();
-                checkNetworkAndGenerateText(currentKennzeichen, dayOfYear);
-            }
+        binding.thinkBtn.setOnClickListener(v -> {
+            stopLoadingAnimation();
+            checkNetworkAndGenerateText(currentKennzeichen, dayOfYear);
         });
 
-        binding.likeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!kennzeichenKI.LikeÜberprüfen(currentKennzeichen.OertskuerzelGeben())) {
-                    String csvZeile = currentKennzeichen.LandGeben() + "," + currentKennzeichen.OertskuerzelGeben() + "," + currentKennzeichen.StadtKreisGeben() + "," + currentKennzeichen.OrtGeben() + "," + currentKennzeichen.BundeslandGeben() + "," + currentKennzeichen.BundeslandIsoGeben() + "," + currentKennzeichen.FussnoteGeben() + "," + currentKennzeichen.BemerkungenGeben();
-                    try {
-                        File file = new File(getActivity().getFilesDir(), "kennzeichenliked.csv");
-                        FileOutputStream fileOutputStream = new FileOutputStream(file, true);
-                        fileOutputStream.write((csvZeile + "\n").getBytes());
-                        fileOutputStream.close();
-                        binding.likedBtn.setVisibility(VISIBLE);
-                        binding.countText.setVisibility(VISIBLE);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Toast.makeText(getActivity(), "Es ist ein Fehler aufgetreten", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(getActivity(), "Kennzeichen bereits geliked", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        binding.likedBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.likedBtn.setVisibility(GONE);
-                binding.countText.setVisibility(GONE);
-                kennzeichenKI.deletelikedKennzeichen(currentKennzeichen);
-            }
-        });
-
-        binding.saveBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        binding.likeBtn.setOnClickListener(v -> {
+            if (!kennzeichenKI.LikeÜberprüfen(currentKennzeichen.OertskuerzelGeben())) {
+                String csvZeile = currentKennzeichen.LandGeben() + "," + currentKennzeichen.OertskuerzelGeben() + "," + currentKennzeichen.StadtKreisGeben() + "," + currentKennzeichen.OrtGeben() + "," + currentKennzeichen.BundeslandGeben() + "," + currentKennzeichen.BundeslandIsoGeben() + "," + currentKennzeichen.FussnoteGeben() + "," + currentKennzeichen.BemerkungenGeben();
                 try {
-                    String filename = "bild_" + System.currentTimeMillis() + ".jpg";
-                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Kennzeichenerkennung");
-                    if (!file.exists()) {
-                        file.mkdirs();
-                    }
-                    File outputFile = new File(file, filename);
-                    FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                    File file = new File(getActivity().getFilesDir(), "kennzeichenliked.csv");
+                    FileOutputStream fileOutputStream = new FileOutputStream(file, true);
+                    fileOutputStream.write((csvZeile + "\n").getBytes());
                     fileOutputStream.close();
-                    MediaScannerConnection.scanFile(getContext(), new String[]{outputFile.getAbsolutePath()}, null, null);
-                    Toast.makeText(getContext(), "Bild gespeichert", Toast.LENGTH_SHORT).show();
+                    binding.likedBtn.setVisibility(VISIBLE);
+                    binding.countText.setVisibility(VISIBLE);
                 } catch (Exception e) {
-                    Toast.makeText(getContext(), "Fehler beim Speichern des Bildes", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(), "Es ist ein Fehler aufgetreten", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(getActivity(), "Kennzeichen bereits geliked", Toast.LENGTH_SHORT).show();
             }
         });
 
-        binding.shareBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    // Bild speichern
-                    String filename = "bild_" + System.currentTimeMillis() + ".jpg";
-                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Kennzeichenerkennung");
-                    if (!file.exists()) {
-                        file.mkdirs();
-                    }
-                    File outputFile = new File(file, filename);
-                    FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-                    fileOutputStream.close();
+        binding.likedBtn.setOnClickListener(v -> {
+            binding.likedBtn.setVisibility(GONE);
+            binding.countText.setVisibility(GONE);
+            kennzeichenKI.deletelikedKennzeichen(currentKennzeichen);
+        });
 
-                    // Bild teilen
-                    Intent intent = new Intent(Intent.ACTION_SEND);
-                    intent.setType("image/jpeg");
-                    Uri contentUri = FileProvider.getUriForFile(getContext(), "com.example.kennzeichenerkennung.fileprovider", outputFile);
-                    intent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivity(Intent.createChooser(intent, "Teilen"));
-                } catch (Exception e) {
-                    Toast.makeText(getContext(), "Fehler beim Teilen des Bildes", Toast.LENGTH_SHORT).show();
+        binding.saveBtn.setOnClickListener(v -> {
+            try {
+                String filename = "bild_" + System.currentTimeMillis() + ".jpg";
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Kennzeichenerkennung");
+                if (!file.exists()) {
+                    file.mkdirs();
                 }
+                File outputFile = new File(file, filename);
+                FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                fileOutputStream.close();
+                MediaScannerConnection.scanFile(getContext(), new String[]{outputFile.getAbsolutePath()}, null, null);
+                Toast.makeText(getContext(), "Bild gespeichert", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Fehler beim Speichern des Bildes", Toast.LENGTH_SHORT).show();
             }
         });
 
-        binding.picinfoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    String info = "Auflösung: " + imageBitmap.getWidth() + "x" + imageBitmap.getHeight() + " dpi" + "\n";
-                    info += "Farbtiefe: " + imageBitmap.getConfig() + "\n";
-                    info += "Größe: " + imageBitmap.getByteCount() + " Bytes";
-                    String finalInfo = info;
-                    DialogFragment dialogFragment = new PicInfoDialogFragment(finalInfo);
-                    dialogFragment.show(getParentFragmentManager(), "PicInfoDialog");
-                } catch (Exception e) {
-                    Toast.makeText(getContext(), "Fehler beim Laden des Bildes", Toast.LENGTH_SHORT).show();
+        binding.shareBtn.setOnClickListener(v -> {
+            try {
+                String filename = "bild_" + System.currentTimeMillis() + ".jpg";
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Kennzeichenerkennung");
+                if (!file.exists()) {
+                    file.mkdirs();
                 }
+                File outputFile = new File(file, filename);
+                FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                fileOutputStream.close();
+
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("image/jpeg");
+                Uri contentUri = FileProvider.getUriForFile(getContext(), "com.example.kennzeichenerkennung.fileprovider", outputFile);
+                intent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(Intent.createChooser(intent, "Teilen"));
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Fehler beim Teilen des Bildes", Toast.LENGTH_SHORT).show();
             }
         });
 
-        binding.maprel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MapFragment mapFragment = new MapFragment(currentKennzeichen);
-                mapFragment.show(getParentFragmentManager(), "MapFragment");
+        binding.picinfoBtn.setOnClickListener(v -> {
+            try {
+                String info = "Auflösung: " + imageBitmap.getWidth() + "x" + imageBitmap.getHeight() + " dpi" + "\n";
+                info += "Farbtiefe: " + imageBitmap.getConfig() + "\n";
+                info += "Größe: " + imageBitmap.getByteCount() + " Bytes";
+                String finalInfo = info;
+                DialogFragment dialogFragment = new PicInfoDialogFragment(finalInfo);
+                dialogFragment.show(getParentFragmentManager(), "PicInfoDialog");
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Fehler beim Laden des Bildes", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        binding.maprel.setOnClickListener(view -> {
+            MapFragment mapFragment = new MapFragment(currentKennzeichen);
+            mapFragment.show(getParentFragmentManager(), "MapFragment");
         });
 
         Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));
@@ -263,11 +261,14 @@ public class GalleryFragment extends Fragment {
             mapView.setVisibility(VISIBLE);
             binding.maprel.setVisibility(VISIBLE);
 
-            getCoordinates(currentKennzeichen.OrtGeben()+"_"+currentKennzeichen.BundeslandGeben());
+            if (mapView.getVisibility() == View.VISIBLE) {
+                getCoordinates(currentKennzeichen.OrtGeben() + "_" + currentKennzeichen.BundeslandGeben());
+            } else {
+                Log.e("GalleryFragment", "mapView is not visible, cannot get coordinates.");
+            }
         } else {
             binding.map.setVisibility(GONE);
             binding.maprel.setVisibility(GONE);
-            //Toast.makeText(getContext(), "Keine Internetverbindung. Die Karte wird nicht angezeigt.", Toast.LENGTH_SHORT).show();
         }
         return root;
     }
@@ -299,7 +300,7 @@ public class GalleryFragment extends Fragment {
             label = location;
             try {
                 String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location, "UTF-8") + "&format=json&addressdetails=1";
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection ();
                 connection.setRequestMethod("GET");
                 connection.connect();
 
@@ -333,7 +334,7 @@ public class GalleryFragment extends Fragment {
         @Override
         protected void onPostExecute(GeoPoint geoPoint) {
             GalleryFragment fragment = fragmentReference.get();
-            if (fragment != null) {
+            if (fragment != null && fragment.mapView != null) { // Überprüfe, ob mapView nicht null ist
                 if (geoPoint != null) {
                     fragment.mapView.getController().setZoom(6.5);
                     fragment.mapView.getController().setCenter(new GeoPoint(51.163409, 10.447718));
@@ -342,15 +343,14 @@ public class GalleryFragment extends Fragment {
                     String formattedLabel = formatLabel(label);
 
                     String bundesland = kennzeichen.BundeslandGeben();
-
                     String title = formattedLabel + "<br>" + bundesland;
                     marker.setTitle(String.valueOf(Html.fromHtml(title, Html.FROM_HTML_MODE_LEGACY)));
 
                     fragment.mapView.getOverlays().add(marker);
                     fragment.mapView.invalidate();
-                } else {
-                    //Toast.makeText(fragment.getContext(), "Koordinaten konnten nicht gefunden werden", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Log.e("GalleryFragment", "mapView is null, cannot add marker.");
             }
         }
     }
@@ -366,28 +366,23 @@ public class GalleryFragment extends Fragment {
         return formattedLabel;
     }
 
-    private Kennzeichen getKennzeichen(int dayOfYear) {
+    private Kennzeichen getKennzeichen() {
         ArrayList<Kennzeichen> kennzeichenListe = kennzeichenKI.getKennzeichenListe();
 
-        // Nur normale Kennzeichen berücksichtigen
         ArrayList<Kennzeichen> filteredList = new ArrayList<>();
         for (Kennzeichen kennzeichen : kennzeichenListe) {
             if (kennzeichen.isNormal()) {
                 filteredList.add(kennzeichen);
-            } /*else if (kennzeichen.isSonder()) {
-                filteredList.add(kennzeichen);
-            }*/
+            }
         }
 
-        // Kennzeichen basierend auf dem Datum berechnen
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH) + 1; // Monat ist 0-basiert, also +1
+        int month = calendar.get(Calendar.MONTH) + 1;
         int year = calendar.get(Calendar.YEAR);
 
-        // Hash-Funktion anwenden, um eine eindeutige Zahl zu erzeugen
-        int index = (day * 31 + month * 12 + year) % filteredList.size(); // % = Modulo
-        Log.e("day", day+" "+month+" "+year+" "+filteredList.size()+" "+index);
+        int index = (day * 31 + month * 12 + year) % filteredList.size();
+        Log.e("day", day + " " + month + " " + year + " " + filteredList.size() + " " + index);
         return filteredList.get(index);
     }
 
@@ -400,7 +395,6 @@ public class GalleryFragment extends Fragment {
         if (isNetworkAvailable() && !isOfflineMode()) {
             generateAIText(kennzeichen, dayOfYear);
             binding.textOftheday.setText("Analysiere Informationen...");
-
         } else {
             showStandardText(kennzeichen, dayOfYear);
         }
@@ -408,9 +402,10 @@ public class GalleryFragment extends Fragment {
 
     private void generateAIText(Kennzeichen kennzeichen, int dayOfYear) {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro 2.0");
+        String aiModel = sharedPreferences.getString("selectedAIModel", "Deepseek V3");
         ExecutorService executor = Executors.newSingleThreadExecutor();
         final WeakReference<GalleryFragment> fragmentRef = new WeakReference<>(this);
+        checkModelWorking(aiModel);
         executor.execute(() -> {
             try {
                 if (isAdded()) {
@@ -419,58 +414,94 @@ public class GalleryFragment extends Fragment {
                 String prompt = "Erstelle mir einen sehr kurzen informativen Text (maximal 75 Wörter) über " + kennzeichen.OrtGeben() +
                         " in " + kennzeichen.StadtKreisGeben() + " im Bundesland " + kennzeichen.BundeslandGeben() +
                         ". Gib auch wichtige Fakten wie Einwohnerzahl, geografische Besonderheiten und " +
-                        "historische Hintergründe an. Sei präzise, antworte auf deutsch und halte dich an nachweisbare Fakten.";
+                        "historische Hintergründe an. Sei präzise, antworte auf deutsch, halte dich an nachweisbare Fakten und gebe mir nur den Text.";
 
-                JSONObject jsonBody = new JSONObject();
-                JSONArray messages = new JSONArray();
-                JSONObject message = new JSONObject();
-                message.put("content", prompt);
-                message.put("role", "user");
-                messages.put(message);
+                getaiModel(aiModel, modelId -> {
+                    if (!modelId.equals("Fehler")) {
+                        // Proceed with AI text generation using the modelId
+                        JSONObject jsonBody = new JSONObject();
+                        JSONArray messages = new JSONArray();
+                        JSONObject message = new JSONObject();
+                        message.put("content", prompt);
+                        message.put("role", "user");
+                        messages.put(message);
 
-                jsonBody.put("model", getaiModel(aiModel));
-                jsonBody.put("messages", messages);
+                        try {
+                            jsonBody.put("model", modelId);
+                            jsonBody.put("messages", messages);
 
-                RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json"));
+                            RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json"));
 
-                Request request = new Request.Builder()
-                        .url("https://openrouter.ai/api/v1/chat/completions")
-                        .post(body)
-                        .addHeader("Authorization", "Bearer "+getResources().getString(R.string.api_key))
-                        .addHeader("Content-Type", "application/json")
-                        .build();
+                            Request request = new Request.Builder()
+                                    .url("https://openrouter.ai/api/v1/chat/completions")
+                                    .post(body)
+                                    .addHeader("Authorization", "Bearer " + getResources().getString(R.string.api_key))
+                                    .addHeader("Content-Type", "application/json")
+                                    .build();
 
-                OkHttpClient client = new OkHttpClient();
-                Response response = client.newCall(request).execute();
-                String responseData = response.body().string();
-                Log.d("API_RESPONSE", responseData);
+                            OkHttpClient client = new OkHttpClient();
+                            Response response = client.newCall(request).execute();
+                            String responseData = response.body().string();
+                            Log.d("API_RESPONSE", responseData);
 
-                if (response.isSuccessful()) {
-                    if (isAdded() && getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            GalleryFragment fragment = fragmentRef.get();
-                            if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                try {
-                                    // JSON-Antwort parsen
-                                    JSONObject jsonResponse = new JSONObject(responseData);
-                                    String aiText = jsonResponse.getJSONArray("choices")
-                                            .getJSONObject(0)
-                                            .getJSONObject("message")
-                                            .getString("content");
+                            if (response.isSuccessful()) {
+                                if (isAdded() && getActivity() != null) {
+                                    getActivity().runOnUiThread(() -> {
+                                        GalleryFragment fragment = fragmentRef.get();
+                                        if (fragment != null && fragment.isAdded() && fragment.binding != null) {
+                                            try {
+                                                JSONObject jsonResponse = new JSONObject(responseData);
+                                                String aiText = jsonResponse.getJSONArray("choices")
+                                                        .getJSONObject(0)
+                                                        .getJSONObject("message")
+                                                        .getString("content");
 
-                                    stopLoadingAnimation();
-                                    fragment.binding.textOftheday.setText(
-                                            fragment.formatAIText(aiText, kennzeichen, dayOfYear)
-                                    );
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    stopLoadingAnimation();
-                                    fragment.showStandardText(kennzeichen, dayOfYear);
+                                                stopLoadingAnimation();
+                                                fragment.binding.textOftheday.setText(
+                                                        fragment.formatAIText(aiText, kennzeichen, dayOfYear)
+                                                );
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                                stopLoadingAnimation();
+                                                fragment.showStandardText(kennzeichen, dayOfYear);
+                                            }
+                                        }
+                                    });
+                                }
+                            } else {
+                                stopLoadingAnimation();
+                                if (isAdded() && getActivity() != null) {
+                                    getActivity().runOnUiThread(() -> {
+                                        GalleryFragment fragment = fragmentRef.get();
+                                        if (fragment != null && fragment.isAdded() && fragment.binding != null) {
+                                            fragment.showStandardText(kennzeichen, dayOfYear);
+                                        }
+                                    });
                                 }
                             }
-                        });
+                        } catch (Exception e) {
+                            stopLoadingAnimation();
+                            if (isAdded() && getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    GalleryFragment fragment = fragmentRef.get();
+                                    if (fragment != null && fragment.isAdded() && fragment.binding != null) {
+                                        fragment.showStandardText(kennzeichen, dayOfYear);
+                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        stopLoadingAnimation();
+                        if (isAdded() && getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                GalleryFragment fragment = fragmentRef.get();
+                                if (fragment != null && fragment.isAdded() && fragment.binding != null) {
+                                    fragment.showStandardText(kennzeichen, dayOfYear);
+                                }
+                            });
+                        }
                     }
-                }
+                });
             } catch (Exception e) {
                 stopLoadingAnimation();
                 if (isAdded() && getActivity() != null) {
@@ -513,31 +544,35 @@ public class GalleryFragment extends Fragment {
     }
 
     private void startLoadingAnimation() {
-        binding.textOftheday.setText("Analysiere Informationen");
+        if (binding != null) {
+            binding.textOftheday.setText("Analysiere Informationen");
 
-        loadingHandler = new Handler();
-        loadingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                switch (loadingStep % 4) {
-                    case 0:
-                        binding.textOftheday.setText("Analysiere Informationen.");
-                        break;
-                    case 1:
-                        binding.textOftheday.setText("Analysiere Informationen..");
-                        break;
-                    case 2:
-                        binding.textOftheday.setText("Analysiere Informationen...");
-                        break;
-                    case 3:
-                        binding.textOftheday.setText("Analysiere Informationen");
-                        break;
+            loadingHandler = new Handler();
+            loadingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    switch (loadingStep % 4) {
+                        case 0:
+                            binding.textOftheday.setText("Analysiere Informationen.");
+                            break;
+                        case 1:
+                            binding.textOftheday.setText("Analysiere Informationen..");
+                            break;
+                        case 2:
+                            binding.textOftheday.setText("Analysiere Informationen...");
+                            break;
+                        case 3:
+                            binding.textOftheday.setText("Analysiere Informationen");
+                            break;
+                    }
+                    loadingStep++;
+                    loadingHandler.postDelayed(this, 550);
                 }
-                loadingStep++;
-                loadingHandler.postDelayed(this, 550);
-            }
-        };
-        loadingHandler.postDelayed(loadingRunnable, 550);
+            };
+            loadingHandler.postDelayed(loadingRunnable, 550);
+        } else {
+            Log.e("GalleryFragment", "Binding is null, cannot start loading animation.");
+        }
     }
 
     private void stopLoadingAnimation() {
@@ -558,25 +593,158 @@ public class GalleryFragment extends Fragment {
         return prefs.getBoolean("offlineSwitch", false);
     }
 
-    private String getaiModel(String aiModel) {
-        switch (aiModel.trim()) {
-            case "Gemini Pro 2.0":
-                aiModel = "google/gemini-2.0-pro-exp-02-05:free";
-                break;
-            case "Gemini Flash Lite 2.0":
-                aiModel = "google/gemini-2.0-flash-lite-preview-02-05:free";
-                break;
-            case "DeepSeek V3":
-                aiModel = "deepseek/deepseek-chat:free";
-                break;
-            case "Mistral 7B Instruct":
-                aiModel = "mistralai/mistral-7b-instruct:free";
-                break;
-            default:
-                aiModel = "Fehler";
-                break;
-        }
-        Log.e("test", "AI Model after processing: " + aiModel);
-        return aiModel;
+    private void getaiModel(String aiModel, OnModelIdReceivedListener listener) {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("https://raw.githubusercontent.com/Haainz/Kennzeichenerkennung/refs/heads/master/aimodels.json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("GalleryFragment", "Error loading AI models", e);
+                try {
+                    listener.onModelIdReceived("Fehler"); // Notify listener of error
+                } catch (JSONException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String jsonData = response.body().string();
+                        JSONObject json = new JSONObject(jsonData);
+                        JSONArray models = json.getJSONArray("ai_models");
+
+                        for (int i = 0; i < models.length(); i++) {
+                            JSONObject model = models.getJSONObject(i);
+                            String name = model.getString("name");
+                            String id = model.getString("id");
+
+                            if (name.equals(aiModel)) {
+                                listener.onModelIdReceived(id); // Notify listener with the found ID
+                                return;
+                            }
+                        }
+                        listener.onModelIdReceived("Fehler"); // Notify listener if model not found
+                    } catch (JSONException e) {
+                        Log.e("GalleryFragment", "Error parsing JSON", e);
+                        try {
+                            listener.onModelIdReceived("Fehler"); // Notify listener of JSON parsing error
+                        } catch (JSONException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                } else {
+                    Log.e("GalleryFragment", "Response not successful: " + response.code());
+                    try {
+                        listener.onModelIdReceived("Fehler"); // Notify listener of response error
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+    }
+
+    // Define an interface for the callback
+    public interface OnModelIdReceivedListener {
+        void onModelIdReceived(String modelId) throws JSONException;
+    }
+
+    private void checkModelWorking(String modelName) {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("https://raw.githubusercontent.com/Haainz/Kennzeichenerkennung/refs/heads/master/aimodels.json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("GalleryFragment", "Error checking model status", e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String jsonData = response.body().string();
+                        JSONObject json = new JSONObject(jsonData);
+                        JSONArray models = json.getJSONArray("ai_models");
+
+                        for (int i = 0; i < models.length(); i++) {
+                            JSONObject model = models.getJSONObject(i);
+                            String name = model.getString("name");
+                            boolean working = model.getBoolean("working");
+
+                            if (name.equals(modelName) && !working) {
+                                requireActivity().runOnUiThread(() ->
+                                        Toast.makeText(requireContext(), "Achtung: Derzeit liegen bei diesem KI-Modell Fehler vor!", Toast.LENGTH_LONG).show());
+                            }
+                        }
+                    } catch (JSONException e) {
+                        Log.e("GalleryFragment", "Error parsing JSON", e);
+                    }
+                }
+            }
+        });
+    }
+
+    private void getaiBrand(String aiModel, OnModelIdReceivedListener listener) {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url("https://raw.githubusercontent.com/Haainz/Kennzeichenerkennung/refs/heads/master/aimodels.json")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("GalleryFragment", "Error loading AI brand", e);
+                try {
+                    listener.onModelIdReceived("Fehler"); // Notify listener of error
+                } catch (JSONException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String jsonData = response.body().string();
+                        JSONObject json = new JSONObject(jsonData);
+                        JSONArray models = json.getJSONArray("ai_models");
+
+                        for (int i = 0; i < models.length(); i++) {
+                            JSONObject model = models.getJSONObject(i);
+                            String name = model.getString("name");
+                            String brand = model.getString("brand");
+
+                            if (name.equals(aiModel)) {
+                                listener.onModelIdReceived(brand); // Notify listener with the found brand
+                                return;
+                            }
+                        }
+                        listener.onModelIdReceived("Fehler"); // Notify listener if model not found
+                    } catch (JSONException e) {
+                        Log.e("GalleryFragment", "Error parsing JSON", e);
+                        try {
+                            listener.onModelIdReceived("Fehler"); // Notify listener of JSON parsing error
+                        } catch (JSONException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                } else {
+                    Log.e("GalleryFragment", "Response not successful: " + response.code());
+                    try {
+                        listener.onModelIdReceived("Fehler"); // Notify listener of response error
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
     }
 }

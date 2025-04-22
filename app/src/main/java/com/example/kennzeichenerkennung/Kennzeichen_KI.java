@@ -32,12 +32,12 @@ public class Kennzeichen_KI {
 
     public Kennzeichen_KI(Context context) {
         this.context = context;
-        kennzeichenliste = new ArrayList<Kennzeichen>();
+        kennzeichenliste = new ArrayList<>();
         KennzeichenNormalEinlesen();
         KennzeichenSonderEinlesen();
         KennzeichenAuslaufendEinlesen();
         KennzeichenEigeneEinlesen();
-        likedliste = new ArrayList<Kennzeichen>();
+        likedliste = new ArrayList<>();
         KennzeichenLikedEinlesen();
     }
 
