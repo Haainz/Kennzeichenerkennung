@@ -1,7 +1,7 @@
 # FAQ: API-Schlüssel und ihre Verwendung in der Kennzeichenerkennungsapp
 
 ## Was ist eine API?
-APIs (Application-Programming-Interface) sind Programmierschnittstellen, die es Programmen erlaubt untereinander zu kommunizieren. So kann beispielsweise die Kennzeichenerkennungsapp mit OpenRouter kommunizieren Antworten von KIs zu erhalten.
+APIs (Application-Programming-Interface) sind Programmierschnittstellen, die es Programmen erlaubt untereinander zu kommunizieren. So kann beispielsweise die Kennzeichenerkennungsapp mit OpenRouter kommunizieren um Antworten von KIs zu erhalten.
 
 ## Was genau ist ein API-Schlüssel?
 Ein API-Schlüssel (API-Key) ist ein eindeutiger Schlüssel, der beim kommunizieren zwischen zwei Programmen mittels einer API mit angegeben wird. Dadurch kann nachverfolgt werden bei welchem Programm wie oft und manchmal sogar welche ANfragen mit diesem Schlüssel an die API gemacht wurden.
