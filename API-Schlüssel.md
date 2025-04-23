@@ -24,6 +24,6 @@ OpenRouter hat ab April 2025 seine Nutzungsbedingungen geändert. Nun sind nur n
 7. Nun kannst du dich in dein OpenRouter Konto jederzeit einloggen um Statistiken zu deiner Nutzung zu sehen. Klicke dafür in deinem Konto auf "Activity".
 
 > [!CAUTION]
-> Der API-Schlüssel bleibt vollständig lokal auf deinem Gerät gespeichert. Sollte nun der Cache oder Speicherinhalt der App gelöscht oder die App deinstalliert werden, geht der API-Schlüssel auch verloren! Speichere ihn daher bitte unbedingt und hebe ihn gut auf.
+> Der API-Schlüssel bleibt vollständig lokal auf deinem Gerät gespeichert. Sollte nun der Cache oder Speicherinhalt der App gelöscht oder die App deinstalliert werden, geht der API-Schlüssel auch verloren! Speichere ihn daher bitte unbedingt sicher ab und hebe ihn gut auf.
 
 ***Weitere Fragen?*** *Schreibe mir über das Kontaktformular in der App oder hier auf Github.*
