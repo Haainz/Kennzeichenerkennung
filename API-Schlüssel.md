@@ -10,7 +10,7 @@ Ein API-Schlüssel (API-Key) ist ein eindeutiger Schlüssel, der beim kommunizie
 OpenRouter hat ab April 2025 seine Nutzungsbedingungen geändert. Nun sind nur noch maximal 50 Anfragen pro Tag pro API-Schlüssel an die KIs kostenlos möglich. Erstelle nun selbst deinen eigenen API-Key und sei unabhängig vom Nutzungsverhalten andererer Nutzer dieser App. Außerdem kannst du so genaustens selbst verfolgen wann und wie oft du welche KI verwendet hast.
 
 ## Woher bekomme ich den API-Schlüssel?
-Gehe auf https://openrouter.ai/sign-in klicke oben rechts auf Sign in. Klicke nun unten auf Sign up und erstelle dir ein eigenes Konto. Klicke nun in deinem Konto auf "Keys" und klicke auf "Create Key". Gebe nun deinem Schlüssel einen Namen (ganz egal welchen). Ein Credit-Limit brauchst du nicht, da die App nur mit kostenlosen KI-Modellen arbeitet und deshalb die Credits unwichtig sind. Kopiere dir nun den Schlüssel und speichere dir ihn sicher ab, denn du wirst ihn aus Sicherheitsgründen nie wieder ansehen können!
+Gehe auf https://openrouter.ai/ klicke oben rechts auf Sign in. Klicke nun unten auf Sign up und erstelle dir ein eigenes Konto. Klicke nun in deinem Konto auf "Keys" und klicke auf "Create Key". Gebe nun deinem Schlüssel einen Namen (ganz egal welchen). Ein Credit-Limit brauchst du nicht, da die App nur mit kostenlosen KI-Modellen arbeitet und deshalb die Credits unwichtig sind. Kopiere dir nun den Schlüssel und speichere dir ihn sicher ab, denn du wirst ihn aus Sicherheitsgründen nie wieder ansehen können!
 
 ## Ich habe nun einen API-Schlüssel, wie kann ich ihn in der Kennzeichenerkennungsapp nutzen?
 1. Klicke oben links auf die 3 Balken > Menü öffnet sich > Einstellungen > "Ich habe einen eigenen API-Key"
@@ -20,6 +20,6 @@ Gehe auf https://openrouter.ai/sign-in klicke oben rechts auf Sign in. Klicke nu
 7. Nun kannst du dich in dein OpenRouter Konto jederzeit einloggen um Statistiken zu deiner Nutzung zu sehen. Klicke dafür in deinem Konto auf "Activity".
 
 > [!CAUTION]
-> Der API-Schlüssel bleibt vollständig lokal auf deinem Gerät gespeichert. Sollte nun der Cache oder Speicherinhalt der App gelöscht oder die App deinstalliert werden, geht der API auch verloren! Speichere ihn daher bitte und hebe ihn gut auf.
+> Der API-Schlüssel bleibt vollständig lokal auf deinem Gerät gespeichert. Sollte nun der Cache oder Speicherinhalt der App gelöscht oder die App deinstalliert werden, geht der API-Schlüssel auch verloren! Speichere ihn daher bitte unbedingt und hebe ihn gut auf.
 
 ***Weitere Fragen?*** *Schreibe mir über das Kontaktformular in der App oder hier auf Github.*
