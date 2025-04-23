@@ -6,7 +6,7 @@ APIs (Application-Programming-Interface) sind Programmierschnittstellen, die es 
 ## Was genau ist ein API-Schlüssel?
 Ein API-Schlüssel (API-Key) ist ein eindeutiger Schlüssel, der beim kommunizieren zwischen zwei Programmen mittels einer API mit angegeben wird. Dadurch kann nachverfolgt werden bei welchem Programm wie oft und manchmal sogar welche ANfragen mit diesem Schlüssel an die API gemacht wurden.
 
-## Warum brauche ich in der Kennzeichenerkennungsapp einen API-Schlüssel?
+## Warum sollte ich in der Kennzeichenerkennungsapp einen eigenen API-Schlüssel nutzen?
 OpenRouter hat ab April 2025 seine Nutzungsbedingungen geändert. Nun sind nur noch maximal 50 Anfragen pro Tag pro API-Schlüssel an die KIs kostenlos möglich. Erstelle nun selbst deinen eigenen API-Key und sei unabhängig vom Nutzungsverhalten andererer Nutzer dieser App. Außerdem kannst du so genaustens selbst verfolgen wann und wie oft du welche KI verwendet hast.
 
 ## Woher bekomme ich den API-Schlüssel?
