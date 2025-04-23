@@ -10,7 +10,11 @@ Ein API-Schlüssel (API-Key) ist ein eindeutiger Schlüssel, der beim kommunizie
 OpenRouter hat ab April 2025 seine Nutzungsbedingungen geändert. Nun sind nur noch maximal 50 Anfragen pro Tag pro API-Schlüssel an die KIs kostenlos möglich. Erstelle nun selbst deinen eigenen API-Key und sei unabhängig vom Nutzungsverhalten andererer Nutzer dieser App. Außerdem kannst du so genaustens selbst verfolgen wann und wie oft du welche KI verwendet hast.
 
 ## Woher bekomme ich den API-Schlüssel?
-Gehe auf https://openrouter.ai/ klicke oben rechts auf Sign in. Klicke nun unten auf Sign up und erstelle dir ein eigenes Konto. Klicke nun in deinem Konto auf "Keys" und klicke auf "Create Key". Gebe nun deinem Schlüssel einen Namen (ganz egal welchen). Ein Credit-Limit brauchst du nicht, da die App nur mit kostenlosen KI-Modellen arbeitet und deshalb die Credits unwichtig sind. Kopiere dir nun den Schlüssel und speichere dir ihn sicher ab, denn du wirst ihn aus Sicherheitsgründen nie wieder ansehen können!
+1. Gehe auf https://openrouter.ai/
+2. Klicke oben rechts auf Sign in > unten auf "Sign up" > erstelle ein eigenes Konto.
+3. Klicke nun in deinem Konto auf "Keys" > "Create Key".
+4. Gebe nun deinem Schlüssel einen Namen (ganz egal welchen). Ein Credit-Limit brauchst du nicht, da die App nur mit kostenlosen KI-Modellen arbeitet und deshalb die Credits unwichtig sind.
+5. Kopiere dir nun den Schlüssel und speichere dir ihn sicher ab, denn du wirst ihn aus Sicherheitsgründen nie wieder ansehen können!
 
 ## Ich habe nun einen API-Schlüssel, wie kann ich ihn in der Kennzeichenerkennungsapp nutzen?
 1. Klicke oben links auf die 3 Balken > Menü öffnet sich > Einstellungen > "Ich habe einen eigenen API-Key"
