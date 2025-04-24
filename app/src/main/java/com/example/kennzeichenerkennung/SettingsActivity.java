@@ -52,7 +52,7 @@ public class SettingsActivity extends AppCompatActivity {
         darkModeSwitch = findViewById(R.id.dark_mode_switch);
         aiSp = findViewById(R.id.ai_spinner);
 
-        darkModeSwitch.setChecked(sharedPreferences.getBoolean("darkMode", false));
+        darkModeSwitch.setChecked(sharedPreferences.getBoolean("darkMode", true));
 
         ImageButton backBtn = findViewById(R.id.back);
         backBtn.setOnClickListener(v -> {
