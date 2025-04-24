@@ -1,4 +1,4 @@
-package com.example.kennzeichenerkennung;
+package de.haainz.kennzeichenerkennung;
 
 import android.content.Context;
 import android.graphics.Bitmap;

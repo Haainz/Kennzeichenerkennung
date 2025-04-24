@@ -1,4 +1,4 @@
-package com.example.kennzeichenerkennung;
+package de.haainz.kennzeichenerkennung;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -20,7 +20,7 @@ import android.widget.Toast;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceManager;
 
-import com.example.kennzeichenerkennung.ui.list.ListFragment;
+import de.haainz.kennzeichenerkennung.ui.list.ListFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

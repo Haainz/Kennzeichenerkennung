@@ -1,4 +1,4 @@
-package com.example.kennzeichenerkennung;
+package de.haainz.kennzeichenerkennung;
 
 import java.io.Serializable;
 

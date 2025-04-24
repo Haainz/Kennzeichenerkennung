@@ -1,4 +1,4 @@
-package com.example.kennzeichenerkennung.ui.home;
+package de.haainz.kennzeichenerkennung.ui.home;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -43,12 +43,12 @@ import androidx.preference.PreferenceManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.kennzeichenerkennung.Kennzeichen;
-import com.example.kennzeichenerkennung.Kennzeichen_KI;
-import com.example.kennzeichenerkennung.MapFragment;
-import com.example.kennzeichenerkennung.PicInfoDialogFragment;
-import com.example.kennzeichenerkennung.R;
-import com.example.kennzeichenerkennung.databinding.FragmentHomeBinding;
+import de.haainz.kennzeichenerkennung.Kennzeichen;
+import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
+import de.haainz.kennzeichenerkennung.MapFragment;
+import de.haainz.kennzeichenerkennung.PicInfoDialogFragment;
+import de.haainz.kennzeichenerkennung.R;
+import de.haainz.kennzeichenerkennung.databinding.FragmentHomeBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
@@ -216,7 +216,7 @@ public class HomeFragment extends Fragment {
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("image/jpeg");
 
-                    Uri contentUri = FileProvider.getUriForFile(getContext(), "com.example.kennzeichenerkennung.fileprovider", new File(selectedImageUri.getPath()));
+                    Uri contentUri = FileProvider.getUriForFile(getContext(), "de.haainz.kennzeichenerkennung.fileprovider", new File(selectedImageUri.getPath()));
                     intent.putExtra(Intent.EXTRA_STREAM, contentUri);
                     intent.putExtra(Intent.EXTRA_TEXT, "Kürzel: " + ausgabe.split(", ")[0].trim() + "\nOrt: " + ausgabe.split(", ")[1].trim());
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

@@ -1,4 +1,4 @@
-package com.example.kennzeichenerkennung;
+package de.haainz.kennzeichenerkennung;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 
-import com.example.kennzeichenerkennung.ui.list.ListFragment;
+import de.haainz.kennzeichenerkennung.ui.list.ListFragment;
 
 public class ConfirmFragment extends DialogFragment {
 

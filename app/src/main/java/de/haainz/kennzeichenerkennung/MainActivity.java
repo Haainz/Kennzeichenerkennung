@@ -1,4 +1,4 @@
-package com.example.kennzeichenerkennung;
+package de.haainz.kennzeichenerkennung;
 
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -31,7 +31,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.kennzeichenerkennung.databinding.ActivityMainBinding;
+import de.haainz.kennzeichenerkennung.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONException;

@@ -1,4 +1,4 @@
-package com.example.kennzeichenerkennung.ui.list;
+package de.haainz.kennzeichenerkennung.ui.list;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -21,13 +21,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.kennzeichenerkennung.AddCityFragment;
-import com.example.kennzeichenerkennung.ConfirmFragment;
-import com.example.kennzeichenerkennung.InfosFragment;
-import com.example.kennzeichenerkennung.Kennzeichen;
-import com.example.kennzeichenerkennung.Kennzeichen_KI;
-import com.example.kennzeichenerkennung.R;
-import com.example.kennzeichenerkennung.databinding.FragmentListBinding;
+import de.haainz.kennzeichenerkennung.AddCityFragment;
+import de.haainz.kennzeichenerkennung.ConfirmFragment;
+import de.haainz.kennzeichenerkennung.InfosFragment;
+import de.haainz.kennzeichenerkennung.Kennzeichen;
+import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
+import de.haainz.kennzeichenerkennung.R;
+import de.haainz.kennzeichenerkennung.databinding.FragmentListBinding;
 
 import java.util.ArrayList;
 

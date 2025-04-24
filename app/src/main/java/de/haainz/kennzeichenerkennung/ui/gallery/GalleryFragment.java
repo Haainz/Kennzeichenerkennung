@@ -1,4 +1,4 @@
-package com.example.kennzeichenerkennung.ui.gallery;
+package de.haainz.kennzeichenerkennung.ui.gallery;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -29,13 +29,13 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
-import com.example.kennzeichenerkennung.Kennzeichen;
-import com.example.kennzeichenerkennung.KennzeichenGenerator;
-import com.example.kennzeichenerkennung.Kennzeichen_KI;
-import com.example.kennzeichenerkennung.MapFragment;
-import com.example.kennzeichenerkennung.PicInfoDialogFragment;
-import com.example.kennzeichenerkennung.R;
-import com.example.kennzeichenerkennung.databinding.FragmentGalleryBinding;
+import de.haainz.kennzeichenerkennung.Kennzeichen;
+import de.haainz.kennzeichenerkennung.KennzeichenGenerator;
+import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
+import de.haainz.kennzeichenerkennung.MapFragment;
+import de.haainz.kennzeichenerkennung.PicInfoDialogFragment;
+import de.haainz.kennzeichenerkennung.R;
+import de.haainz.kennzeichenerkennung.databinding.FragmentGalleryBinding;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -224,7 +224,7 @@ public class GalleryFragment extends Fragment {
 
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("image/jpeg");
-                Uri contentUri = FileProvider.getUriForFile(getContext(), "com.example.kennzeichenerkennung.fileprovider", outputFile);
+                Uri contentUri = FileProvider.getUriForFile(getContext(), "de.haainz.kennzeichenerkennung.fileprovider", outputFile);
                 intent.putExtra(Intent.EXTRA_STREAM, contentUri);
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(Intent.createChooser(intent, "Teilen"));
