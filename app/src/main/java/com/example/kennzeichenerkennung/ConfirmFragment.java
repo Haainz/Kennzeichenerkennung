@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
 
-import com.example.kennzeichenerkennung.ui.slideshow.ListFragment;
+import com.example.kennzeichenerkennung.ui.list.ListFragment;
 
 public class ConfirmFragment extends DialogFragment {
 

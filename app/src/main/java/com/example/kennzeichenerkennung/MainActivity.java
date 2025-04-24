@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
@@ -104,7 +105,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupIconButtons() {
         Button settingsButton = findViewById(R.id.button_settings);
-        settingsButton.setOnClickListener(v -> showDialogFragment(new SettingsFragment(), "SettingsFragment"));
+        settingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
+    }
+
+    public void navigateToFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment_content_main, fragment)
+                .addToBackStack(null) // Optional: fügt die Transaktion zum Backstack hinzu
+                .commit();
     }
 
     private void showDialogFragment(DialogFragment fragment, String tag) {

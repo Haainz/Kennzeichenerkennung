@@ -20,7 +20,7 @@ import android.widget.Toast;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceManager;
 
-import com.example.kennzeichenerkennung.ui.slideshow.ListFragment;
+import com.example.kennzeichenerkennung.ui.list.ListFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

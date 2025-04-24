@@ -1,27 +1,25 @@
 package com.example.kennzeichenerkennung;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.kennzeichenerkennung.ui.home.HomeFragment;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,108 +34,76 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class SettingsFragment extends DialogFragment {
+public class SettingsActivity extends AppCompatActivity {
 
     private SwitchCompat darkModeSwitch;
     private SharedPreferences sharedPreferences;
-    Spinner aiSp;
-    ArrayList<String> aiList = new ArrayList<>();
-    ArrayAdapter<String> aiAdapter;
+    private Spinner aiSp;
+    private ArrayList<String> aiList = new ArrayList<>();
+    private ArrayAdapter<String> aiAdapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
 
-        sharedPreferences = getActivity().getSharedPreferences("settings", getActivity().MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("settings", MODE_PRIVATE);
 
-        darkModeSwitch = view.findViewById(R.id.dark_mode_switch);
-        aiSp = view.findViewById(R.id.ai_spinner);
+        darkModeSwitch = findViewById(R.id.dark_mode_switch);
+        aiSp = findViewById(R.id.ai_spinner);
 
         darkModeSwitch.setChecked(sharedPreferences.getBoolean("darkMode", false));
 
-        ImageButton xBtn = view.findViewById(R.id.x);
-        xBtn.setOnClickListener(v -> dismiss());
+        ImageButton backBtn = findViewById(R.id.back);
+        backBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
 
-        /*darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-            sharedPreferences.edit().putBoolean("darkMode", isChecked).apply();
-        });*/
-
-        darkModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    sharedPreferences.edit().putBoolean("darkMode", true).apply();
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    sharedPreferences.edit().putBoolean("darkMode", false).apply();
-                }
+        darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                sharedPreferences.edit().putBoolean("darkMode", true).apply();
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                sharedPreferences.edit().putBoolean("darkMode", false).apply();
             }
         });
 
-        Button iconInfo = view.findViewById(R.id.button_ueber);
+        Button iconInfo = findViewById(R.id.button_ueber);
         iconInfo.setOnClickListener(v -> showDialogFragment(new UeberFragment(), "UeberFragment"));
 
-        Button updateInfo = view.findViewById(R.id.button_update);
+        Button updateInfo = findViewById(R.id.button_update);
         updateInfo.setOnClickListener(v -> checkForUpdates());
 
-        SwitchCompat logSwitch = view.findViewById(R.id.log_switch);
+        SwitchCompat logSwitch = findViewById(R.id.log_switch);
         int logSwitchStatus = sharedPreferences.getInt("logSwitch", 1);
         logSwitch.setChecked(logSwitchStatus == 1);
 
-        logSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    sharedPreferences.edit().putInt("logSwitch", 1).apply();
-                } else {
-                    sharedPreferences.edit().putInt("logSwitch", 0).apply();
-                }
-
-                // Aktualisieren Sie die Sichtbarkeit der textViewAusgabe2
-                NavHostFragment navHostFragment = (NavHostFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
-                if (navHostFragment != null) {
-                    Fragment fragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
-                    if (fragment instanceof HomeFragment) {
-                        HomeFragment homeFragment = (HomeFragment) fragment;
-                        homeFragment.updateTextViewAusgabe2();
-                    }
-                }
+        logSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                sharedPreferences.edit().putInt("logSwitch", 1).apply();
+            } else {
+                sharedPreferences.edit().putInt("logSwitch", 0).apply();
             }
         });
 
-        SwitchCompat offlineSwitch = view.findViewById(R.id.offline_switch);
-
+        SwitchCompat offlineSwitch = findViewById(R.id.offline_switch);
         boolean offlineSwitchStatus = sharedPreferences.getBoolean("offlineSwitch", false);
         offlineSwitch.setChecked(offlineSwitchStatus);
 
-        offlineSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    sharedPreferences.edit().putBoolean("offlineSwitch", true).apply();
-                } else {
-                    sharedPreferences.edit().putBoolean("offlineSwitch", false).apply();
-                }
-            }
+        offlineSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sharedPreferences.edit().putBoolean("offlineSwitch", isChecked).apply();
         });
 
-        SwitchCompat updateSwitch = view.findViewById(R.id.update_switch);
-
+        SwitchCompat updateSwitch = findViewById(R.id.update_switch);
         boolean updateSwitchStatus = sharedPreferences.getBoolean("updateSwitch", true);
         updateSwitch.setChecked(updateSwitchStatus);
 
-        updateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    sharedPreferences.edit().putBoolean("updateSwitch", true).apply();
-                } else {
-                    sharedPreferences.edit().putBoolean("updateSwitch", false).apply();
-                }
-            }
+        updateSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sharedPreferences.edit().putBoolean("updateSwitch", isChecked).apply();
         });
 
         loadAIModels();
@@ -156,7 +122,41 @@ public class SettingsFragment extends DialogFragment {
             }
         });
 
-        return view;
+        TextView apiquestion = findViewById(R.id.questionbtn);
+        TextView apitext = findViewById(R.id.apitxt);
+        if (!sharedPreferences.getString("apikey", getResources().getString(R.string.api_key)).equals(getResources().getString(R.string.api_key))) {
+            apiquestion.setText("Entfernen");
+            String apihint = sharedPreferences.getString("apikey", "FEHLER1").substring(sharedPreferences.getString("apikey", "FEHLER2").length() - 6);
+            apitext.setText("Du verwendest einen eigenen API-Key: ..." + apihint);
+            apiquestion.setOnClickListener(v -> {
+                apiquestion.setText("❓");
+                apitext.setText("Klicke hier um einen eigenen API-Schlüssel zu hinterlegen");
+                apiquestion.setOnClickListener(view1 -> {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Haainz/Kennzeichenerkennung/blob/master/API-Schl%C3%BCssel.md"));
+                    startActivity(browserIntent);
+                });
+                apitext.setOnClickListener(view1 -> showDialogFragment(new ApikeyFragment(), "ApikeyFragment"));
+                String currentApiKey = sharedPreferences.getString("apikey", getResources().getString(R.string.api_key));
+                sharedPreferences.edit().putString("apikey", getResources().getString(R.string.api_key)).apply();
+                Snackbar snackbar = Snackbar.make(v, "API-Schlüssel erfolgreich entfernt", Snackbar.LENGTH_LONG)
+                        .setAction("Rückgängig", v1 -> {
+                            sharedPreferences.edit().putString("apikey", currentApiKey).apply();
+                            Toast.makeText(this, "API-Schlüssel wiederhergestellt", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(SettingsActivity.this, SettingsActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            startActivity(intent);
+                        });
+                snackbar.show();
+            });
+        } else {
+            apiquestion.setText("❓");
+            apitext.setText("Klicke hier um einen eigenen API-Schlüssel zu hinterlegen");
+            apiquestion.setOnClickListener(v -> {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Haainz/Kennzeichenerkennung/blob/master/API-Schl%C3%BCssel.md"));
+                startActivity(browserIntent);
+            });
+            apitext.setOnClickListener(v -> showDialogFragment(new ApikeyFragment(), "ApikeyFragment"));
+        }
     }
 
     private void loadAIModels() {
@@ -168,9 +168,8 @@ public class SettingsFragment extends DialogFragment {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("SettingsFragment", "Error loading AI models", e);
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Fehler beim Laden der AI-Modelle", Toast.LENGTH_SHORT).show());
+                Log.e("SettingsActivity", "Error loading AI models", e);
+                runOnUiThread(() -> Toast.makeText(SettingsActivity.this, "Fehler beim Laden der AI-Modelle", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -181,8 +180,7 @@ public class SettingsFragment extends DialogFragment {
                         JSONObject json = new JSONObject(jsonData);
                         JSONArray models = json.getJSONArray("ai_models");
 
-                        // Prepare the AI list on the main thread
-                        requireActivity().runOnUiThread(() -> {
+                        runOnUiThread(() -> {
                             aiList.clear(); // Clear previous entries
                             for (int i = 0; i < models.length(); i++) {
                                 try {
@@ -190,16 +188,14 @@ public class SettingsFragment extends DialogFragment {
                                     String name = model.getString("name");
                                     aiList.add(name);
                                 } catch (JSONException e) {
-                                    Log.e("SettingsFragment", "Error parsing model JSON", e);
-                                    Toast.makeText(requireContext(), "Fehler beim Verarbeiten eines Modells", Toast.LENGTH_SHORT).show();
+                                    Log.e("SettingsActivity", "Error parsing model JSON", e);
+                                    Toast.makeText(SettingsActivity.this, "Fehler beim Verarbeiten eines Modells", Toast.LENGTH_SHORT).show();
                                 }
                             }
 
-                            // Initialize the adapter after populating the aiList
-                            aiAdapter = new ArrayAdapter<>(getActivity(), R.layout.item_dropdown, aiList);
+                            aiAdapter = new ArrayAdapter<>(SettingsActivity.this, R.layout.item_dropdown, aiList);
                             aiSp.setAdapter(aiAdapter); // Set adapter to spinner
 
-                            // Set the spinner to the saved AI model
                             String savedModel = sharedPreferences.getString("selectedAIModel", aiList.get(0)); // Default to first item if not found
                             int savedPosition = aiList.indexOf(savedModel);
                             if (savedPosition >= 0) {
@@ -210,14 +206,12 @@ public class SettingsFragment extends DialogFragment {
                         });
 
                     } catch (JSONException e) {
-                        Log.e("SettingsFragment", "Error parsing JSON", e);
-                        requireActivity().runOnUiThread(() ->
-                                Toast.makeText(requireContext(), "Fehler beim Verarbeiten der JSON-Daten", Toast.LENGTH_SHORT).show());
+                        Log.e("SettingsActivity", "Error parsing JSON", e);
+                        runOnUiThread(() -> Toast.makeText(SettingsActivity.this, "Fehler beim Verarbeiten der JSON-Daten", Toast.LENGTH_SHORT).show());
                     }
                 } else {
-                    Log.e("SettingsFragment", "Response not successful: " + response.code());
-                    requireActivity ().runOnUiThread(() ->
-                            Toast.makeText(requireContext(), "Fehler beim Abrufen der AI-Modelle: " + response.code(), Toast.LENGTH_SHORT).show());
+                    Log.e("SettingsActivity", "Response not successful: " + response.code());
+                    runOnUiThread(() -> Toast.makeText(SettingsActivity.this, "Fehler beim Abrufen der AI-Modelle: " + response.code(), Toast.LENGTH_SHORT).show());
                 }
             }
         });
@@ -232,7 +226,7 @@ public class SettingsFragment extends DialogFragment {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("SettingsFragment", "Error checking model status", e);
+                Log.e("SettingsActivity", "Error checking model status", e);
             }
 
             @Override
@@ -249,12 +243,12 @@ public class SettingsFragment extends DialogFragment {
                             boolean working = model.getBoolean("working");
 
                             if (name.equals(modelName) && !working) {
-                                requireActivity().runOnUiThread(() ->
-                                        Toast.makeText(requireContext(), "Achtung: Es können Fehler bei diesem KI-Modell auftreten!", Toast.LENGTH_LONG).show());
+                                runOnUiThread(() ->
+                                        Toast.makeText(SettingsActivity.this, "Achtung: Es können Fehler bei diesem KI-Modell auftreten!", Toast.LENGTH_LONG).show());
                             }
                         }
                     } catch (JSONException e) {
-                        Log.e("SettingsFragment", "Error parsing JSON", e);
+                        Log.e("SettingsActivity", "Error parsing JSON", e);
                     }
                 }
             }
@@ -262,15 +256,14 @@ public class SettingsFragment extends DialogFragment {
     }
 
     private void showDialogFragment(DialogFragment fragment, String tag) {
-        FragmentManager fragmentManager = getParentFragmentManager();
-        fragment.show(fragmentManager, tag);
+        fragment.show(getSupportFragmentManager(), tag);
     }
 
     private int getCurrentAppVersion() {
         try {
-            return requireContext().getPackageManager().getPackageInfo(requireContext().getPackageName(), 0).versionCode;
+            return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
         } catch (Exception e) {
-            Log.e("SettingsFragment", "Error getting current app version", e);
+            Log.e("SettingsActivity", "Error getting current app version", e);
             return 1;
         }
     }
@@ -284,8 +277,8 @@ public class SettingsFragment extends DialogFragment {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Fehler bei der Update-Prüfung", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() ->
+                        Toast.makeText(SettingsActivity.this, "Fehler bei der Update-Prüfung", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -306,17 +299,17 @@ public class SettingsFragment extends DialogFragment {
 
                         int currentVersion = getCurrentAppVersion();
 
-                        requireActivity().runOnUiThread(() -> {
+                        runOnUiThread(() -> {
                             if (latestVersion > currentVersion) {
                                 showUpdateDialog(versionTag, body, downloadUrl, updateSize);
                             } else {
-                                Toast.makeText(requireContext(), "Keine Updates verfügbar", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SettingsActivity.this, "Keine Updates verfügbar", Toast.LENGTH_SHORT).show();
                             }
                         });
 
                     } catch (JSONException e) {
-                        requireActivity().runOnUiThread(() ->
-                                Toast.makeText(requireContext(), "Fehler beim Verarbeiten der Daten", Toast.LENGTH_SHORT).show());
+                        runOnUiThread(() ->
+                                Toast.makeText(SettingsActivity.this, "Fehler beim Verarbeiten der Daten", Toast.LENGTH_SHORT).show());
                     }
                 }
             }
@@ -324,15 +317,13 @@ public class SettingsFragment extends DialogFragment {
     }
 
     private void showUpdateDialog(String version, String body, String downloadUrl, String updateSize) {
-        if (isAdded()) {
-            UpdateFragment updateFragment = new UpdateFragment();
-            Bundle args = new Bundle();
-            args.putString("version", version);
-            args.putString("body", body);
-            args.putString("downloadUrl", downloadUrl);
-            args.putString("updateSize", updateSize);
-            updateFragment.setArguments(args);
-            updateFragment.show(getParentFragmentManager(), "UpdateFragment");
-        }
+        UpdateFragment updateFragment = new UpdateFragment();
+        Bundle args = new Bundle();
+        args.putString("version", version);
+        args.putString("body", body);
+        args.putString("downloadUrl", downloadUrl);
+        args.putString("updateSize", updateSize);
+        updateFragment.setArguments(args);
+        updateFragment.show(getSupportFragmentManager(), "UpdateFragment");
     }
 }

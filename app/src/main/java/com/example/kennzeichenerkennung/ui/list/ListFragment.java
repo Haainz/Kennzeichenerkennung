@@ -1,4 +1,4 @@
-package com.example.kennzeichenerkennung.ui.slideshow;
+package com.example.kennzeichenerkennung.ui.list;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;

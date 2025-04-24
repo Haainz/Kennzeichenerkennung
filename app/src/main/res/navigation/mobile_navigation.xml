@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="com.example.kennzeichenerkennung.ui.slideshow.ListFragment"
+        android:name="com.example.kennzeichenerkennung.ui.list.ListFragment"
         android:label="Kennzeichenliste"
         tools:layout="@layout/fragment_list" />
 

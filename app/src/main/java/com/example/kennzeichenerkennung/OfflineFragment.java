@@ -17,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
 public class OfflineFragment extends DialogFragment {
 
@@ -62,7 +61,8 @@ public class OfflineFragment extends DialogFragment {
         if (sharedPreferences.getBoolean("offlineSwitch", false)) {
             wlanBtn.setText("App-Einstellungen");
             wlanBtn.setOnClickListener(v -> {
-                showDialogFragment(new SettingsFragment(), "SettingsFragment");
+                Intent intent = new Intent(getContext(), SettingsActivity.class);
+                startActivity(intent);
             });
             offlinetext.setText("Oh, es sieht so aus\nals hast du den Offlinemodus aktiviert. Deaktiviere ihn um Karten angezeigt zu bekommen, Updates zu empfangen und KI-generierte Inhalte angezeigt zu bekommen.");
         } else {
@@ -70,10 +70,5 @@ public class OfflineFragment extends DialogFragment {
         }
 
         return view;
-    }
-
-    private void showDialogFragment(DialogFragment fragment, String tag) {
-        FragmentManager fragmentManager = getParentFragmentManager();
-        fragment.show(fragmentManager, tag);
     }
 }

@@ -145,6 +145,8 @@ public class HomeFragment extends Fragment {
         shareBtn.setVisibility(View.GONE);
         picinfoBtn.setVisibility(View.GONE);
 
+        updateTextViewAusgabe2();
+
         if (!kuerzelEingabe.getText().toString().isEmpty()) {
             deleteText.setVisibility(View.VISIBLE);
         }
@@ -620,7 +622,7 @@ public class HomeFragment extends Fragment {
                             Request request = new Request.Builder()
                                     .url("https://openrouter.ai/api/v1/chat/completions")
                                     .post(body)
-                                    .addHeader("Authorization", "Bearer " + getResources().getString(R.string.api_key))
+                                    .addHeader("Authorization", "Bearer " + sharedPreferences.getString("apikey", getResources().getString(R.string.api_key)))
                                     .addHeader("Content-Type", "application/json")
                                     .build();
 

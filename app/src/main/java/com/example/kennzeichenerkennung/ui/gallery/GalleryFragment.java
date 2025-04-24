@@ -435,7 +435,7 @@ public class GalleryFragment extends Fragment {
                             Request request = new Request.Builder()
                                     .url("https://openrouter.ai/api/v1/chat/completions")
                                     .post(body)
-                                    .addHeader("Authorization", "Bearer " + getResources().getString(R.string.api_key))
+                                    .addHeader("Authorization", "Bearer " + sharedPreferences.getString("apikey", getResources().getString(R.string.api_key)))
                                     .addHeader("Content-Type", "application/json")
                                     .build();
 

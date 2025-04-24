@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ApikeyFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:id="@+id/main_toolbar"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="API-Schlüssel:"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            android:textColor="@color/white"
+            android:layout_marginStart="20dp"
+            android:layout_centerVertical="true"/>
+
+        <ImageButton
+            android:id="@+id/x"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@drawable/icon_x"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="top"
+        android:id="@+id/fragment_container1"
+        android:layout_marginHorizontal="11dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/main_toolbar">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ACHTUNG!\nDu wirst den API-Key nicht mehr einsehen können!\nWenn der Speicherinhalt der App gelöscht wird oder die App deinstalliert wird, so geht der Schlüssel auch verloren! Speichere ihn dir daher unbedingt sicher ab."
+            android:textStyle="bold"
+            android:textColor="@color/red"
+            android:textSize="13dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Klicke um mehr zu erfahren"
+            android:textStyle="italic|bold"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/yellow"
+            android:textSize="14dp"
+            android:id="@+id/moretext"/>
+
+        <EditText
+            android:id="@+id/apieingabe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_rounded_corner"
+            android:elevation="5dp"
+            android:hint="Dein OpenRouter-API-Schlüssel"
+            android:inputType="textNoSuggestions"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:backgroundTint="?attr/colorOnPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textColorHint="@color/text_hint"
+            android:layout_marginTop="10dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/orteingabe"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/edit_text_rounded_corner"
+            android:gravity="center"
+            android:text="Anwenden"
+            android:id="@+id/save_btn"
+            android:textColor="@color/white"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="11dp"/>
+    </LinearLayout>
+</RelativeLayout>
