@@ -162,11 +162,9 @@ public class Kennzeichen_KI {
         try {
             File file = new File(context.getFilesDir(), "kennzeicheneigene.csv");
             if (!file.exists()) {
-                // Erstellen Sie die Datei, wenn sie nicht existiert
                 file.createNewFile();
             }
             BufferedReader reader = new BufferedReader(new FileReader(file));
-            String headerLine = reader.readLine();
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] values = line.split(",(?! )");
@@ -207,8 +205,8 @@ public class Kennzeichen_KI {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] values = line.split(","); // Korrektur hier
-                if (values.length > 2) { // Sicherstellen, dass genügend Werte vorhanden sind
+                String[] values = line.split(",");
+                if (values.length > 2) {
                     Kennzeichen kennzeichen = new Kennzeichen();
                     kennzeichen.nationalitaetskuerzel = values[0];
                     kennzeichen.oertskuerzel = values[1];
