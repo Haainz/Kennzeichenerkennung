@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.kennzeichenerkennung'
+    namespace 'de.haainz.kennzeichenerkennung'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.kennzeichenerkennung"
+        applicationId "de.haainz.kennzeichenerkennung"
         minSdk 26
         targetSdk 34
         versionCode 440
