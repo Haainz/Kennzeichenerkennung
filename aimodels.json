@@ -1,0 +1,40 @@
+{
+    "ai_models": [
+        {
+            "id": "deepseek/deepseek-chat:free",
+            "name": "DeepSeek V3",
+            "brand": "Deepseek",
+            "working": true
+        },
+        {
+            "id": "google/gemini-2.0-flash-exp:free",
+            "name": "Google Gemini Flash 2.0",
+            "brand": "Google",
+            "working": true
+        },
+        {
+            "id": "google/gemma-3-1b-it:free",
+            "name": "Google Gemma 3 1b",
+            "brand": "Google",
+            "working": true
+        },
+        {
+            "id": "google/learnlm-1.5-pro-experimental:free",
+            "name": "Google LearnLM 1.5 Pro",
+            "brand": "Google",
+            "working": true
+        },
+        {
+            "id": "mistralai/mistral-7b-instruct:free",
+            "name": "MistralAI Mistral 7B Instruct",
+            "brand": "MistralAI",
+            "working": true
+        },
+        {
+            "id": "nvidia/llama-3.3-nemotron-super-49b-v1:free",
+            "name": "NVIDIA Llama 3.3 Nemotron",
+            "brand": "NVIDIA",
+            "working": false
+        }
+    ]
+}
