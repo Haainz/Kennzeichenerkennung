@@ -21,10 +21,6 @@ public class UpdateFragment extends DialogFragment {
     private String version;
     private String body;
 
-    public void setDownloadUrl(String downloadUrl) {
-        this.downloadUrl = downloadUrl;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

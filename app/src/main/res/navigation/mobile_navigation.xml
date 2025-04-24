@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.kennzeichenerkennung.ui.home.HomeFragment"
+        android:name="de.haainz.kennzeichenerkennung.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="com.example.kennzeichenerkennung.ui.list.ListFragment"
+        android:name="de.haainz.kennzeichenerkennung.ui.list.ListFragment"
         android:label="Kennzeichenliste"
         tools:layout="@layout/fragment_list" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.example.kennzeichenerkennung.ui.gallery.GalleryFragment"
+        android:name="de.haainz.kennzeichenerkennung.ui.day.DayFragment"
         android:label="Kennzeichen des Tages"
         tools:layout="@layout/fragment_gallery" />
 </navigation>

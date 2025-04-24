@@ -66,12 +66,4 @@ public class ConfirmFragment extends DialogFragment {
 
         return view;
     }
-
-    public void updateList() {
-        // Hier sollten Sie die updateList()-Methode nicht direkt aufrufen
-        // Stattdessen sollten Sie einen Listener verwenden, um das ListFragment zu benachrichtigen
-        if (onConfirmListener != null) {
-            onConfirmListener.updateList();
-        }
-    }
 }

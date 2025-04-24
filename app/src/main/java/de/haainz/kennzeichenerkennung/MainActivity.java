@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     // Alle Firebase-bezogenen Methoden wurden entfernt
 
     private void setNightMode() {
-        if (sharedPreferences.getBoolean("darkMode", false)) {
+        if (sharedPreferences.getBoolean("darkMode", true)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -109,14 +109,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
-    }
-
-    public void navigateToFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.nav_host_fragment_content_main, fragment)
-                .addToBackStack(null) // Optional: fügt die Transaktion zum Backstack hinzu
-                .commit();
     }
 
     private void showDialogFragment(DialogFragment fragment, String tag) {
@@ -142,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     private void navigateToFragment(String fragmentToOpen) {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         int destinationId = R.id.nav_home;
-        if ("GalleryFragment".equals(fragmentToOpen)) {
+        if ("DayFragment".equals(fragmentToOpen)) {
             destinationId = R.id.nav_gallery;
         } else if ("HomeFragment".equals(fragmentToOpen)) {
             destinationId = R.id.nav_home;

@@ -34,10 +34,10 @@ public class KennzeichenWidgetProvider extends AppWidgetProvider {
             views.setImageViewBitmap(R.id.widget_image, kennzeichenImage);
         }
 
-        // Intent für das Öffnen des GalleryFragment
+        // Intent für das Öffnen des DayFragment
         Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra("openFragment", "GalleryFragment");
-        Log.d(TAG, "Sending intent to open GalleryFragment");
+        intent.putExtra("openFragment", "DayFragment");
+        Log.d(TAG, "Sending intent to open DayFragment");
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.widget_image, pendingIntent);
 

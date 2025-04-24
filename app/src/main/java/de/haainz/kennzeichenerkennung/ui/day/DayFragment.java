@@ -1,4 +1,4 @@
-package de.haainz.kennzeichenerkennung.ui.gallery;
+package de.haainz.kennzeichenerkennung.ui.day;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -72,7 +72,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class GalleryFragment extends Fragment {
+public class DayFragment extends Fragment {
 
     private FragmentGalleryBinding binding;
     private Kennzeichen_KI kennzeichenKI;
@@ -264,7 +264,7 @@ public class GalleryFragment extends Fragment {
             if (mapView.getVisibility() == View.VISIBLE) {
                 getCoordinates(currentKennzeichen.OrtGeben() + "_" + currentKennzeichen.BundeslandGeben());
             } else {
-                Log.e("GalleryFragment", "mapView is not visible, cannot get coordinates.");
+                Log.e("DayFragment", "mapView is not visible, cannot get coordinates.");
             }
         } else {
             binding.map.setVisibility(GONE);
@@ -284,11 +284,11 @@ public class GalleryFragment extends Fragment {
     }
 
     private static class GetCoordinatesTask extends AsyncTask<String, Void, GeoPoint> {
-        private final WeakReference<GalleryFragment> fragmentReference;
+        private final WeakReference<DayFragment> fragmentReference;
         private final Kennzeichen kennzeichen;
         String label;
 
-        GetCoordinatesTask(GalleryFragment fragment, Kennzeichen kennzeichen) {
+        GetCoordinatesTask(DayFragment fragment, Kennzeichen kennzeichen) {
             fragmentReference = new WeakReference<>(fragment);
             this.kennzeichen = kennzeichen;
         }
@@ -333,7 +333,7 @@ public class GalleryFragment extends Fragment {
 
         @Override
         protected void onPostExecute(GeoPoint geoPoint) {
-            GalleryFragment fragment = fragmentReference.get();
+            DayFragment fragment = fragmentReference.get();
             if (fragment != null && fragment.mapView != null) { // Überprüfe, ob mapView nicht null ist
                 if (geoPoint != null) {
                     fragment.mapView.getController().setZoom(6.5);
@@ -350,7 +350,7 @@ public class GalleryFragment extends Fragment {
                     fragment.mapView.invalidate();
                 }
             } else {
-                Log.e("GalleryFragment", "mapView is null, cannot add marker.");
+                Log.e("DayFragment", "mapView is null, cannot add marker.");
             }
         }
     }
@@ -404,7 +404,7 @@ public class GalleryFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         String aiModel = sharedPreferences.getString("selectedAIModel", "Deepseek V3");
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        final WeakReference<GalleryFragment> fragmentRef = new WeakReference<>(this);
+        final WeakReference<DayFragment> fragmentRef = new WeakReference<>(this);
         checkModelWorking(aiModel);
         executor.execute(() -> {
             try {
@@ -447,7 +447,7 @@ public class GalleryFragment extends Fragment {
                             if (response.isSuccessful()) {
                                 if (isAdded() && getActivity() != null) {
                                     getActivity().runOnUiThread(() -> {
-                                        GalleryFragment fragment = fragmentRef.get();
+                                        DayFragment fragment = fragmentRef.get();
                                         if (fragment != null && fragment.isAdded() && fragment.binding != null) {
                                             try {
                                                 JSONObject jsonResponse = new JSONObject(responseData);
@@ -472,7 +472,7 @@ public class GalleryFragment extends Fragment {
                                 stopLoadingAnimation();
                                 if (isAdded() && getActivity() != null) {
                                     getActivity().runOnUiThread(() -> {
-                                        GalleryFragment fragment = fragmentRef.get();
+                                        DayFragment fragment = fragmentRef.get();
                                         if (fragment != null && fragment.isAdded() && fragment.binding != null) {
                                             fragment.showStandardText(kennzeichen, dayOfYear);
                                         }
@@ -483,7 +483,7 @@ public class GalleryFragment extends Fragment {
                             stopLoadingAnimation();
                             if (isAdded() && getActivity() != null) {
                                 getActivity().runOnUiThread(() -> {
-                                    GalleryFragment fragment = fragmentRef.get();
+                                    DayFragment fragment = fragmentRef.get();
                                     if (fragment != null && fragment.isAdded() && fragment.binding != null) {
                                         fragment.showStandardText(kennzeichen, dayOfYear);
                                     }
@@ -494,7 +494,7 @@ public class GalleryFragment extends Fragment {
                         stopLoadingAnimation();
                         if (isAdded() && getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
-                                GalleryFragment fragment = fragmentRef.get();
+                                DayFragment fragment = fragmentRef.get();
                                 if (fragment != null && fragment.isAdded() && fragment.binding != null) {
                                     fragment.showStandardText(kennzeichen, dayOfYear);
                                 }
@@ -506,7 +506,7 @@ public class GalleryFragment extends Fragment {
                 stopLoadingAnimation();
                 if (isAdded() && getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        GalleryFragment fragment = fragmentRef.get();
+                        DayFragment fragment = fragmentRef.get();
                         if (fragment != null && fragment.isAdded() && fragment.binding != null) {
                             fragment.showStandardText(kennzeichen, dayOfYear);
                         }
@@ -571,7 +571,7 @@ public class GalleryFragment extends Fragment {
             };
             loadingHandler.postDelayed(loadingRunnable, 550);
         } else {
-            Log.e("GalleryFragment", "Binding is null, cannot start loading animation.");
+            Log.e("DayFragment", "Binding is null, cannot start loading animation.");
         }
     }
 
@@ -602,7 +602,7 @@ public class GalleryFragment extends Fragment {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("GalleryFragment", "Error loading AI models", e);
+                Log.e("DayFragment", "Error loading AI models", e);
                 try {
                     listener.onModelIdReceived("Fehler"); // Notify listener of error
                 } catch (JSONException ex) {
@@ -630,7 +630,7 @@ public class GalleryFragment extends Fragment {
                         }
                         listener.onModelIdReceived("Fehler"); // Notify listener if model not found
                     } catch (JSONException e) {
-                        Log.e("GalleryFragment", "Error parsing JSON", e);
+                        Log.e("DayFragment", "Error parsing JSON", e);
                         try {
                             listener.onModelIdReceived("Fehler"); // Notify listener of JSON parsing error
                         } catch (JSONException ex) {
@@ -638,7 +638,7 @@ public class GalleryFragment extends Fragment {
                         }
                     }
                 } else {
-                    Log.e("GalleryFragment", "Response not successful: " + response.code());
+                    Log.e("DayFragment", "Response not successful: " + response.code());
                     try {
                         listener.onModelIdReceived("Fehler"); // Notify listener of response error
                     } catch (JSONException e) {
@@ -663,7 +663,7 @@ public class GalleryFragment extends Fragment {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("GalleryFragment", "Error checking model status", e);
+                Log.e("DayFragment", "Error checking model status", e);
             }
 
             @Override
@@ -685,63 +685,7 @@ public class GalleryFragment extends Fragment {
                             }
                         }
                     } catch (JSONException e) {
-                        Log.e("GalleryFragment", "Error parsing JSON", e);
-                    }
-                }
-            }
-        });
-    }
-
-    private void getaiBrand(String aiModel, OnModelIdReceivedListener listener) {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("https://raw.githubusercontent.com/Haainz/Kennzeichenerkennung/refs/heads/master/aimodels.json")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("GalleryFragment", "Error loading AI brand", e);
-                try {
-                    listener.onModelIdReceived("Fehler"); // Notify listener of error
-                } catch (JSONException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    try {
-                        String jsonData = response.body().string();
-                        JSONObject json = new JSONObject(jsonData);
-                        JSONArray models = json.getJSONArray("ai_models");
-
-                        for (int i = 0; i < models.length(); i++) {
-                            JSONObject model = models.getJSONObject(i);
-                            String name = model.getString("name");
-                            String brand = model.getString("brand");
-
-                            if (name.equals(aiModel)) {
-                                listener.onModelIdReceived(brand); // Notify listener with the found brand
-                                return;
-                            }
-                        }
-                        listener.onModelIdReceived("Fehler"); // Notify listener if model not found
-                    } catch (JSONException e) {
-                        Log.e("GalleryFragment", "Error parsing JSON", e);
-                        try {
-                            listener.onModelIdReceived("Fehler"); // Notify listener of JSON parsing error
-                        } catch (JSONException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-                } else {
-                    Log.e("GalleryFragment", "Response not successful: " + response.code());
-                    try {
-                        listener.onModelIdReceived("Fehler"); // Notify listener of response error
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
+                        Log.e("DayFragment", "Error parsing JSON", e);
                     }
                 }
             }

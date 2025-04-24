@@ -488,12 +488,6 @@ public class ListFragment extends Fragment {
         void updateList();
     }
 
-    private OnConfirmListener onConfirmListener;
-
-    public void setOnConfirmListener(OnConfirmListener onConfirmListener) {
-        this.onConfirmListener = onConfirmListener;
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
