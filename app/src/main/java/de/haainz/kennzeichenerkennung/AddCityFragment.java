@@ -26,6 +26,7 @@ public class AddCityFragment extends DialogFragment {
     private EditText orteingabe;
     private EditText bundeslandeingabe;
     private EditText anmerkungeneingabe;
+    private EditText fussnoteneingabe;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,6 +38,7 @@ public class AddCityFragment extends DialogFragment {
         orteingabe = view.findViewById(R.id.orteingabe);
         bundeslandeingabe = view.findViewById(R.id.bundeslandeingabe);
         anmerkungeneingabe = view.findViewById(R.id.anmerkungeneingabe);
+        fussnoteneingabe = view.findViewById(R.id.fussnoteneingabe);
         nationalitaetseingabe = view.findViewById(R.id.nationalitaetseingabe);
 
         Button speichernButton = view.findViewById(R.id.save_btn);
@@ -59,8 +61,8 @@ public class AddCityFragment extends DialogFragment {
         String stadtOderKreis = orteingabe.getText().toString();
         String herleitung = herleitungeingabe.getText().toString();
         String bundeslandName = bundeslandeingabe.getText().toString();
-        String bundeslandIso31662 = ""; // Hier müsste die ISO-3166-2-Code für das Bundesland eingetragen werden
-        String fussnoten = "";
+        String bundeslandIso31662 = getIso31662(bundeslandName); // Hier müsste die ISO-3166-2-Code für das Bundesland eingetragen werden
+        String fussnoten = fussnoteneingabe.getText().toString();
         String bemerkung = anmerkungeneingabe.getText().toString();
 
         if (unterscheidungszeichen.isEmpty()) {
@@ -102,6 +104,45 @@ public class AddCityFragment extends DialogFragment {
             Toast.makeText(getActivity(), "Es ist ein Fehler aufgetreten", Toast.LENGTH_SHORT).show();
         }
         dismiss();
+    }
+
+    private String getIso31662(String bundeslandName) {
+        switch (bundeslandName) {
+            case "Bayern":
+                return "DE-BY";
+            case "Baden-Württemberg":
+                return "DE-BW";
+            case "Sachsen-Anhalt":
+                return "DE-ST";
+            case "Sachsen":
+                return "DE-SN";
+            case "Niedersachsen":
+                return "DE-NI";
+            case "Brandenburg":
+                return "DE-BB";
+            case "Thüringen":
+                return "DE-TH";
+            case "Hessen":
+                return "DE-HE";
+            case "Rheinland-Pfalz":
+                return "DE-RP";
+            case "Saarland":
+                return "DE-SL";
+            case "Nordrhein-Westfalen":
+                return "DE-NW";
+            case "Mecklenburg-Vorpommern":
+                return "DE-MV";
+            case "Schleswig-Holstein":
+                return "DE-SH";
+            case "Hamburg":
+                return "DE-HH";
+            case "Berlin":
+                return "DE-BE";
+            case "Bremen":
+                return "DE-HB";
+            default:
+                return "---";
+        }
     }
 
     private boolean istKuerzelBereitsVorhanden(String kuerzel) {

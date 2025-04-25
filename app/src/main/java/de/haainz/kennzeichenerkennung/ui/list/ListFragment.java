@@ -26,6 +26,7 @@ import de.haainz.kennzeichenerkennung.ConfirmFragment;
 import de.haainz.kennzeichenerkennung.InfosFragment;
 import de.haainz.kennzeichenerkennung.Kennzeichen;
 import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
+import de.haainz.kennzeichenerkennung.KennzeichenlistAdapter;
 import de.haainz.kennzeichenerkennung.R;
 import de.haainz.kennzeichenerkennung.databinding.FragmentListBinding;
 
@@ -249,6 +250,7 @@ public class ListFragment extends Fragment {
                         return view;
                     }
                 };
+                adapter = new KennzeichenlistAdapter(getActivity(), filteredList);
                 binding.list.setAdapter(adapter);
                 binding.textViewAnzahl.setText("" + filteredList.size() + " Kennzeichen gefunden");
             }
@@ -462,15 +464,15 @@ public class ListFragment extends Fragment {
         }
 
         // Setzen Sie die gefilterte Liste in den Adapter
-        adapter = new ArrayAdapter<Kennzeichen>(getActivity(), android.R.layout.simple_list_item_1, filteredList) {
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, filteredList) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
-                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+                TextView textView = view.findViewById(android.R.id.text1);
                 Kennzeichen kennzeichen = getItem(position);
                 String og = kennzeichen.OrtGeben().replaceAll("\"", "");
                 String skg = kennzeichen.StadtKreisGeben().replaceAll("\"", "");
-                String bg = null;
+                String bg;
                 if (kennzeichen.BundeslandGeben() == null) {
                     bg = "";
                 } else {
@@ -480,6 +482,7 @@ public class ListFragment extends Fragment {
                 return view;
             }
         };
+        KennzeichenlistAdapter adapter = new KennzeichenlistAdapter(getActivity(), filteredList);
         binding.textViewAnzahl.setText(filteredList.size() + " Kennzeichen gefunden");
         binding.list.setAdapter(adapter);
     }

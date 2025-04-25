@@ -184,6 +184,12 @@ public class Kennzeichen_KI {
                 if (values.length > 4) {
                     kennzeichen.bundesland = values[4];
                 }
+                if (values.length > 5) {
+                    kennzeichen.bundeslandiso = values[5];
+                }
+                if (values.length > 6) {
+                    kennzeichen.fussnote = values[6];
+                }
                 if (values.length > 7) {
                     kennzeichen.bemerkungen = values[7];
                 }

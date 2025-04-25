@@ -55,7 +55,7 @@
             android:text="* Pflichtfeld"
             android:textStyle="italic|bold"
             android:textColor="@color/red"
-            android:textSize="14dp"/>
+            android:textSize="14sp"/>
 
         <EditText
             android:id="@+id/kuerzeleingabe"
@@ -66,14 +66,13 @@
             android:hint="neues Kürzel* (nur Großbuchstaben)"
             android:inputType="textCapCharacters"
             android:padding="10dp"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:backgroundTint="?attr/colorOnPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:textColorHint="@color/text_hint"
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/kuerzeleingabe"/>
+            android:layout_marginTop="10dp"/>
 
         <EditText
             android:id="@+id/herleitungeingabe"
@@ -84,14 +83,13 @@
             android:elevation="5dp"
             android:hint="Herleitung*"
             android:padding="10dp"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:backgroundTint="?attr/colorOnPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:textColorHint="@color/text_hint"
-            android:layout_marginTop="15dp"
-            android:layout_below="@+id/kuerzeleingabe"/>
+            android:layout_marginTop="15dp" />
 
 
         <EditText
@@ -102,15 +100,14 @@
             android:elevation="5dp"
             android:hint="dazugehöriger Kreis oder Stadt*"
             android:padding="10dp"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:inputType="textCapWords"
             android:backgroundTint="?attr/colorOnPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:textColorHint="@color/text_hint"
-            android:layout_marginTop="15dp"
-            android:layout_below="@+id/kuerzeleingabe"/>
+            android:layout_marginTop="15dp" />
 
         <EditText
             android:id="@+id/bundeslandeingabe"
@@ -120,15 +117,21 @@
             android:elevation="5dp"
             android:hint="Bundesland*"
             android:padding="10dp"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:inputType="textCapWords"
             android:backgroundTint="?attr/colorOnPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:textColorHint="@color/text_hint"
-            android:layout_marginTop="15dp"
-            android:layout_below="@+id/kuerzeleingabe"/>
+            android:layout_marginTop="15dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="3dp"
+            android:text="*Die Iso3166-2 wird autom. ermittelt"
+            android:textStyle="italic"/>
 
         <EditText
             android:id="@+id/nationalitaetseingabe"
@@ -138,15 +141,14 @@
             android:elevation="5dp"
             android:hint="Nationalitätskürzel*"
             android:padding="10dp"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:inputType="textCapCharacters"
             android:backgroundTint="?attr/colorOnPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:textColorHint="@color/text_hint"
-            android:layout_marginTop="15dp"
-            android:layout_below="@+id/kuerzeleingabe"/>
+            android:layout_marginTop="15dp" />
 
         <EditText
             android:id="@+id/anmerkungeneingabe"
@@ -156,20 +158,35 @@
             android:elevation="5dp"
             android:hint="Bemerkung"
             android:padding="10dp"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:inputType="textCapSentences"
             android:backgroundTint="?attr/colorOnPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:textColorHint="@color/text_hint"
-            android:layout_marginTop="15dp"
-            android:layout_below="@+id/nationalitaetseingabe"/>
+            android:layout_marginTop="15dp" />
+
+        <EditText
+            android:id="@+id/fussnoteneingabe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_rounded_corner"
+            android:elevation="5dp"
+            android:hint="Fußnoten"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:inputType="textCapSentences"
+            android:backgroundTint="?attr/colorOnPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textColorHint="@color/text_hint"
+            android:layout_marginTop="15dp" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/orteingabe"
             android:layout_marginTop="20dp"
             android:background="@drawable/edit_text_rounded_corner"
             android:gravity="center"
