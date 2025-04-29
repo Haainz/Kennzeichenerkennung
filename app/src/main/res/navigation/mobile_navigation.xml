@@ -22,4 +22,10 @@
         android:name="de.haainz.kennzeichenerkennung.ui.day.DayFragment"
         android:label="Kennzeichen des Tages"
         tools:layout="@layout/fragment_day" />
+
+    <fragment
+        android:id="@+id/nav_infos"
+        android:name="de.haainz.kennzeichenerkennung.InfosFragment"
+        android:label="Kennzeichen"
+        tools:layout="@layout/fragment_infos" />
 </navigation>

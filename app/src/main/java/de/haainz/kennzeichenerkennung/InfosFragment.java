@@ -1,8 +1,5 @@
 package de.haainz.kennzeichenerkennung;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -17,10 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.fragment.app.DialogFragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
-
-import de.haainz.kennzeichenerkennung.ui.list.ListFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,34 +38,55 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Objects;
 
-public class InfosFragment extends DialogFragment {
+import de.haainz.kennzeichenerkennung.ui.list.ListFragment;
+
+public class InfosFragment extends Fragment {
 
     private Kennzeichen kennzeichen;
     private Kennzeichen_KI kennzeichenKI;
     private MapView mapView;
 
-    public InfosFragment(Kennzeichen kennzeichen) {
-        this.kennzeichen = kennzeichen;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            kennzeichen = (Kennzeichen) getArguments().getSerializable("selectedKennzeichen");
+        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_infos, container, false);
         kennzeichenKI = new Kennzeichen_KI(getActivity());
+
+        getActivity().setTitle("Kennze1chen " + kennzeichen.OertskuerzelGeben());
 
         ImageView likedBtn = view.findViewById(R.id.liked_btn);
         ImageView likeBtn = view.findViewById(R.id.like_btn);
 
         kennzeichenKI.KennzeichenLikedEinlesen();
         if (kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
-            likedBtn.setVisibility(VISIBLE);
+            likedBtn.setVisibility(View.VISIBLE);
         } else {
-            likedBtn.setVisibility(GONE);
+            likedBtn.setVisibility(View.GONE);
         }
 
-        // Anzeigen der Informationen des Kennzeichens
+        // Setze die TextViews mit den Werten des Kennzeichens
+        setTextViews(view);
+
+        likeBtn.setOnClickListener(v -> handleLikeButtonClick(likedBtn));
+        likedBtn.setOnClickListener(v -> handleUnlikeButtonClick(likedBtn));
+
+        if (isNetworkAvailable() && !kennzeichen.isSonder()) {
+            setupMapView(view);
+        } else {
+            view.findViewById(R.id.map).setVisibility(View.GONE);
+        }
+
+        return view;
+    }
+
+    private void setTextViews(View view) {
         TextView kuerzelWert = view.findViewById(R.id.kuerzelwert);
         kuerzelWert.setText(kennzeichen.OertskuerzelGeben());
 
@@ -82,89 +100,51 @@ public class InfosFragment extends DialogFragment {
         bundeslandWert.setText(kennzeichen.BundeslandGeben());
 
         TextView bundeslandIsoWert = view.findViewById(R.id.bundesland_iso_wert);
-        bundeslandIsoWert .setText(kennzeichen.BundeslandIsoGeben());
+        bundeslandIsoWert.setText(kennzeichen.BundeslandIsoGeben());
 
         TextView landWert = view.findViewById(R.id.landwert);
         landWert.setText(kennzeichen.LandGeben());
 
-        TextView fussnotenWert = view.findViewById(R.id.fussnotenwert);
-        String fussnoteString = kennzeichen.FussnoteGeben();
-        int fussnoteNummer = 6;
+        // Weitere TextViews hier setzen...
+    }
 
-        if (!Objects.equals(fussnoteString, "")) {
+    private void handleLikeButtonClick(ImageView likedBtn) {
+        if (!kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
+            String csvZeile = kennzeichen.LandGeben() + "," + kennzeichen.OertskuerzelGeben() + "," + kennzeichen.StadtKreisGeben() + "," + kennzeichen.OrtGeben() + "," + kennzeichen.BundeslandGeben() + "," + kennzeichen.BundeslandIsoGeben() + "," + kennzeichen.FussnoteGeben() + "," + kennzeichen.BemerkungenGeben();
             try {
-                fussnoteNummer = Integer.parseInt(fussnoteString);
-                String[] fussnoten = {
-                        "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzliche Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.\n",
-                        "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle stellt durch geeignete verwaltungsinterne Maßnahmen sicher, dass eine Doppelvergabe desselben Kennzeichens ausgeschlossen ist.\n",
-                        "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.\n",
-                        "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Sachsen-Anhalt im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Baden-Württemberg.\n",
-                        "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n",
-                        "amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.\n",
-                        "---\n",
-                        "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n\nweiterer amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.\n",
-                };
-                fussnotenWert.setText(fussnoten[fussnoteNummer]);
-            } catch (NumberFormatException e) {
-                fussnotenWert.setText(fussnoteString + "\n");
+                File file = new File(getActivity().getFilesDir(), "kennzeichenliked.csv ");
+                FileOutputStream fileOutputStream = new FileOutputStream(file, true);
+                fileOutputStream.write((csvZeile + "\n").getBytes());
+                fileOutputStream.close();
+                likedBtn.setVisibility(View.VISIBLE);
+                Toast.makeText(getActivity(), "Kennzeichen gespeichert.\nBitte aktualisiere die Liste", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getActivity(), "Es ist ein Fehler aufgetreten", Toast.LENGTH_SHORT).show();
             }
         } else {
-            fussnotenWert.setText("---\n");
+            Toast.makeText(getActivity(), "Kennzeichen bereits geliked", Toast.LENGTH_SHORT).show();
         }
+    }
 
-        TextView bemerkungenWert = view.findViewById(R.id.Bemerkungenwert);
-        bemerkungenWert.setText(kennzeichen.BemerkungenGeben());
-
-        likeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
-                    String csvZeile = kennzeichen.LandGeben() + "," + kennzeichen.OertskuerzelGeben() + "," + kennzeichen.StadtKreisGeben() + "," + kennzeichen.OrtGeben() + "," + kennzeichen.BundeslandGeben() + "," + kennzeichen.BundeslandIsoGeben() + "," + kennzeichen.FussnoteGeben() + "," + kennzeichen.BemerkungenGeben();
-                    try {
-                        File file = new File(getActivity().getFilesDir(), "kennzeichenliked.csv");
-                        FileOutputStream fileOutputStream = new FileOutputStream(file, true);
-                        fileOutputStream.write((csvZeile + "\n").getBytes());
-                        fileOutputStream.close();
-                        likedBtn.setVisibility(VISIBLE);
-                        Toast.makeText(getActivity(), "Kennzeichen gespeichert.\nBitte aktualisiere die Liste", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Toast.makeText(getActivity(), "Es ist ein Fehler aufgetreten", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(getActivity(), "Kennzeichen bereits geliked", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        likedBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                likedBtn.setVisibility(GONE);
-                kennzeichenKI.deletelikedKennzeichen(kennzeichen);
-                Toast.makeText(getActivity(), "Kennzeichen entfernt.\nBitte aktualisiere die Liste", Toast.LENGTH_SHORT).show();
-
-                // Hier sollten Sie die updateList() Methode aufrufen, um die Anzeige zu aktualisieren
-                if (getTargetFragment() instanceof ListFragment) {
-                    ((ListFragment) getTargetFragment()).updateList();
-                }
-            }
-        });
-
-        if (isNetworkAvailable()) {
-            mapView = view.findViewById(R.id.map);
-            Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));
-            mapView.setTileSource(TileSourceFactory.MAPNIK);
-            mapView.setBuiltInZoomControls(true);
-            mapView.setMultiTouchControls (true);
-            mapView.setVisibility(View.VISIBLE);
-
-            setMarkerOnMap(kennzeichen.OrtGeben());
-        } else {
-            view.findViewById(R.id.map).setVisibility(GONE);
-            //Toast.makeText(getContext(), "Keine Internetverbindung. Die Karte wird nicht angezeigt.", Toast.LENGTH_SHORT).show();
+    private void handleUnlikeButtonClick(ImageView likedBtn) {
+        likedBtn.setVisibility(View.GONE);
+        kennzeichenKI.deletelikedKennzeichen(kennzeichen);
+        Toast.makeText(getActivity(), "Kennzeichen entfernt.\nBitte aktualisiere die Liste", Toast.LENGTH_SHORT).show();
+        // Hier sollten Sie die updateList() Methode aufrufen, um die Anzeige zu aktualisieren
+        if (getParentFragment() instanceof ListFragment) {
+            ((ListFragment) getParentFragment()).updateList();
         }
+    }
 
-        return view;
+    private void setupMapView(View view) {
+        mapView = view.findViewById(R.id.map);
+        Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
+        mapView.setBuiltInZoomControls(true);
+        mapView.setMultiTouchControls(true);
+        mapView.setVisibility(View.VISIBLE);
+        setMarkerOnMap(kennzeichen.OrtGeben());
     }
 
     private boolean isNetworkAvailable() {
@@ -185,14 +165,8 @@ public class InfosFragment extends DialogFragment {
         }
 
         @Override
-        protected GeoPoint doInBackground(String ...params) {
+        protected GeoPoint doInBackground(String... params) {
             String location = params[0];
-            if (Objects.equals(location, "WeißenbUrG")) {
-                location = "Weißenburg-Gunzenhausen";
-            } else if (Objects.equals(location, "HOhensTein")) {
-                location = "Hohenstein, Zwickau";
-            }
-            Log.e("Achtung", location);
             try {
                 String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location, "UTF-8") + "&format=json&addressdetails=1";
                 HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -232,28 +206,24 @@ public class InfosFragment extends DialogFragment {
             if (fragment != null) {
                 if (geoPoint != null) {
                     fragment.mapView.getController().setZoom(6.25);
-                    fragment.mapView.getController().setCenter(new GeoPoint(51.163409, 10.447718));
+                    fragment.mapView.getController().setCenter(geoPoint);
                     Marker marker = new Marker(fragment.mapView);
                     marker.setPosition(geoPoint);
                     marker.setTitle(formatLabel(fragment.kennzeichen.OrtGeben()));
                     fragment.mapView.getOverlays().add(marker);
                     fragment.mapView.invalidate();
                 } else {
-                    fragment.mapView.setVisibility(GONE);
                     fragment.mapView.setVisibility(View.GONE);
-                    //Toast.makeText(fragment.getContext(), "Koordinaten konnten nicht gefunden werden", Toast.LENGTH_SHORT).show();
                 }
             }
         }
     }
+
     public static String formatLabel(String label) {
         if (label == null || label.isEmpty()) {
             return label;
         }
         String formattedLabel = label.substring(0, 1).toUpperCase() + label.substring(1).toLowerCase();
-        if (!formattedLabel.substring(1).matches("[a-z]*")) {
-            new IllegalArgumentException("Der String soll nur Kleinbuchstaben enthalten (außer dem ersten).");
-        }
         return formattedLabel;
     }
 

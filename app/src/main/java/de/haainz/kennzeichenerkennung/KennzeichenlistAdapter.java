@@ -33,9 +33,11 @@ public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> {
         // Setzen Sie die TextViews mit den Daten
         TextView textViewKennzeichen = convertView.findViewById(R.id.textViewKennzeichen);
         TextView textViewDetails = convertView.findViewById(R.id.textViewDetails);
+        TextView textViewDetails2 = convertView.findViewById(R.id.textViewDetails2);
 
         textViewKennzeichen.setText(kennzeichen.OertskuerzelGeben());
-        textViewDetails.setText(kennzeichen.OrtGeben() + " - " + kennzeichen.StadtKreisGeben() + " - " + kennzeichen.BundeslandGeben());
+        textViewDetails.setText(kennzeichen.OrtGeben() + " - " + kennzeichen.StadtKreisGeben());
+        textViewDetails2.setText(kennzeichen.BundeslandGeben() + ", " + kennzeichen.LandGeben());
 
         return convertView;
     }

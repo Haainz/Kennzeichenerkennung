@@ -24,7 +24,7 @@
             android:textAlignment="center"
             android:textSize="12sp"
             android:textStyle="italic"
-            android:text="Klicke auf die Kamera um ein Bild hochzuladen oder tippe ein Kürzel ein, klicke dann auf den Button um die Stadt angezeigt zu bekommen"
+            android:text="Klicke auf die Kamera um ein Bild hochzuladen oder tippe ein Kürzel ein, klicke dann auf den Button um die Stadt angezeigt zu bekommen."
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -100,7 +100,7 @@
             app:layout_constraintStart_toEndOf="@+id/kuerzeleingabe"
             app:layout_constraintTop_toTopOf="@id/kuerzeleingabe"
             app:layout_constraintBottom_toBottomOf="@+id/kuerzeleingabe"
-            app:tint="@color/yellow" />
+            app:tint="@color/red" />
 
         <TextView
             android:id="@+id/textViewAusgabe"
@@ -110,6 +110,7 @@
             android:text=""
             android:textSize="25dp"
             android:gravity="center"
+            android:layout_marginEnd="30dp"
             app:layout_constraintBottom_toTopOf="@+id/text_home"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -269,7 +270,8 @@
                         android:text="Kürzel:  "
                         android:textStyle="italic|bold"
                         android:textSize="17sp"
-                        android:id="@+id/kuerzeltitel"/>
+                        android:textColor="@color/yellow"
+                        android:id="@+id/kuerzeltitel" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -277,6 +279,7 @@
                         android:textSize="17sp"
                         android:layout_toRightOf="@id/kuerzeltitel"
                         android:id="@+id/kuerzelwert"
+                        android:textColor="?attr/colorTextNormal"
                         android:textIsSelectable="true"/>
 
                     <TextView
@@ -286,6 +289,7 @@
                         android:textStyle="italic|bold"
                         android:textSize="17sp"
                         android:id="@+id/herleitungstitel"
+                        android:textColor="@color/yellow"
                         android:layout_below="@id/kuerzelwert" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -295,6 +299,7 @@
                         android:layout_toRightOf="@id/herleitungstitel"
                         android:id="@+id/herleitungswert"
                         android:layout_below="@id/kuerzelwert"
+                        android:textColor="?attr/colorTextNormal"
                         android:textIsSelectable="true"/>
 
                     <TextView
@@ -304,6 +309,7 @@
                         android:textStyle="italic|bold"
                         android:textSize="17sp"
                         android:id="@+id/stadtoderkreistitel"
+                        android:textColor="@color/yellow"
                         android:layout_below="@id/herleitungswert" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -313,6 +319,7 @@
                         android:layout_toRightOf="@id/stadtoderkreistitel"
                         android:id="@+id/stadtoderkreiswert"
                         android:layout_below="@id/herleitungswert"
+                        android:textColor="?attr/colorTextNormal"
                         android:textIsSelectable="true"/>
 
                     <TextView
@@ -322,6 +329,7 @@
                         android:textStyle="italic|bold"
                         android:textSize="17sp"
                         android:id="@+id/bundeslandtitel"
+                        android:textColor="@color/yellow"
                         android:layout_below="@id/stadtoderkreiswert" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -331,6 +339,7 @@
                         android:layout_toRightOf="@id/bundeslandtitel"
                         android:id="@+id/bundeslandwert"
                         android:layout_below="@id/stadtoderkreiswert"
+                        android:textColor="?attr/colorTextNormal"
                         android:textIsSelectable="true"/>
 
                     <TextView
@@ -340,6 +349,7 @@
                         android:textStyle="italic|bold"
                         android:textSize="17sp"
                         android:id="@+id/bundesland_iso_titel"
+                        android:textColor="@color/yellow"
                         android:layout_below="@id/bundeslandwert" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -349,15 +359,17 @@
                         android:layout_toRightOf="@id/bundesland_iso_titel"
                         android:id="@+id/bundesland_iso_wert"
                         android:layout_below="@id/bundeslandwert"
+                        android:textColor="?attr/colorTextNormal"
                         android:textIsSelectable="true"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nationalitätskürzel:  "
+                        android:text="Nationalitätszeichen:  "
                         android:textStyle="italic|bold"
                         android:textSize="17sp"
                         android:id="@+id/landtitel"
+                        android:textColor="@color/yellow"
                         android:layout_below="@id/bundesland_iso_wert" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -367,6 +379,7 @@
                         android:layout_toRightOf="@id/landtitel"
                         android:id="@+id/landwert"
                         android:layout_below="@id/bundesland_iso_wert"
+                        android:textColor="?attr/colorTextNormal"
                         android:textIsSelectable="true"/>
 
                     <TextView
@@ -376,6 +389,7 @@
                         android:textStyle="italic|bold"
                         android:textSize="17sp"
                         android:id="@+id/bemerkungentitel"
+                        android:textColor="@color/yellow"
                         android:layout_below="@id/landwert" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -383,8 +397,9 @@
                         android:text="---"
                         android:textSize="17sp"
                         android:layout_toRightOf="@id/bemerkungentitel"
-                        android:id="@+id/Bemerkungenwert"
+                        android:id="@+id/bemerkungenwert"
                         android:layout_below="@id/landwert"
+                        android:textColor="?attr/colorTextNormal"
                         android:textIsSelectable="true"/>
 
                     <org.osmdroid.views.MapView
@@ -395,7 +410,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginBottom="10dp"
-                        android:layout_below="@id/Bemerkungenwert"
+                        android:layout_below="@id/bemerkungenwert"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -407,7 +422,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginBottom="10dp"
-                        android:layout_below="@id/Bemerkungenwert"
+                        android:layout_below="@id/bemerkungenwert"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -418,6 +433,7 @@
                         android:textStyle="italic|bold"
                         android:textSize="17sp"
                         android:id="@+id/infotexttitel"
+                        android:textColor="@color/yellow"
                         android:layout_below="@id/map" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -427,6 +443,7 @@
                         android:layout_toRightOf="@id/infotexttitel"
                         android:id="@+id/infotextwert"
                         android:layout_below="@id/map"
+                        android:textColor="?attr/colorTextNormal"
                         android:textIsSelectable="true"/>
 
                     <TextView
@@ -436,6 +453,7 @@
                         android:textStyle="italic|bold"
                         android:textSize="17sp"
                         android:id="@+id/fussnotentitel"
+                        android:textColor="@color/yellow"
                         android:layout_below="@id/infotextwert" />
                     <TextView
                         android:layout_width="wrap_content"
@@ -445,6 +463,7 @@
                         android:layout_toRightOf="@id/fussnotentitel"
                         android:id="@+id/fussnotenwert"
                         android:layout_below="@id/infotextwert"
+                        android:textColor="?attr/colorTextNormal"
                         android:textIsSelectable="true"/>
 
                     <RelativeLayout

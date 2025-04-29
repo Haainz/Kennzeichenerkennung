@@ -20,6 +20,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import de.haainz.kennzeichenerkennung.AddCityFragment;
 import de.haainz.kennzeichenerkennung.ConfirmFragment;
@@ -100,6 +102,22 @@ public class ListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Kennzeichen kennzeichen = (Kennzeichen) parent.getItemAtPosition(position);
+
+                // Erstellen Sie ein Bundle, um die Daten zu übergeben
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("selectedKennzeichen", kennzeichen); // Stellen Sie sicher, dass Kennzeichen Serializable ist
+
+                // Navigieren Sie zum InfosFragment
+                NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_content_main);
+                navController.navigate(R.id.nav_infos, bundle);
+            }
+        });
+
+
+        /*binding.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Kennzeichen kennzeichen = (Kennzeichen) parent.getItemAtPosition(position);
                 PopupMenu popupMenu = new PopupMenu(getActivity(), view);
                 popupMenu.inflate(R.menu.popup_menu);
 
@@ -130,9 +148,6 @@ public class ListFragment extends Fragment {
                             confirmFragment.setOnConfirmListener(new ListFragment.OnConfirmListener() {
                                 @Override
                                 public void updateList() {
-                                    // Hier können Sie die updateList()-Methode im ListFragment aufrufen
-                                    // Aber nur, wenn Sie sicher sind, dass dies nicht zu einer Endlosschleife führt
-                                    // Zum Beispiel, indem Sie eine Flag setzen, die verhindert, dass die updateList()-Methode mehrmals aufgerufen wird
                                     if (!isUpdatingList) {
                                         isUpdatingList = true;
                                         updateList();
@@ -149,7 +164,7 @@ public class ListFragment extends Fragment {
                 });
                 popupMenu.show();
             }
-        });
+        });*/
 
         /*binding.list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -232,7 +247,7 @@ public class ListFragment extends Fragment {
                         }
                     }
                 }
-                ArrayAdapter<Kennzeichen> adapter = new ArrayAdapter<Kennzeichen>(getActivity(), android.R.layout.simple_list_item_1, filteredList) {
+                /*ArrayAdapter<Kennzeichen> adapter = new ArrayAdapter<Kennzeichen>(getActivity(), android.R.layout.simple_list_item_1, filteredList) {
                     @Override
                     public View getView(int position, View convertView, ViewGroup parent) {
                         View view = super.getView(position, convertView, parent);
@@ -249,7 +264,7 @@ public class ListFragment extends Fragment {
                         textView.setText(kennzeichen.OertskuerzelGeben() + " - " + og + " - " + skg + bg);
                         return view;
                     }
-                };
+                };*/
                 adapter = new KennzeichenlistAdapter(getActivity(), filteredList);
                 binding.list.setAdapter(adapter);
                 binding.textViewAnzahl.setText("" + filteredList.size() + " Kennzeichen gefunden");
@@ -430,7 +445,6 @@ public class ListFragment extends Fragment {
         kennzeichenKI = new Kennzeichen_KI(getActivity());
         ArrayList<Kennzeichen> kennzeichenListe = kennzeichenKI.getKennzeichenListe();
 
-        // Filter the list based on button colors
         ArrayList<Kennzeichen> filteredList = new ArrayList<>();
         for (Kennzeichen kennzeichen : kennzeichenListe) {
             if (!kennzeichen.OertskuerzelGeben().equals("Stadtkreis")) {

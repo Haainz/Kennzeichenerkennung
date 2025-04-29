@@ -35,7 +35,7 @@ import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
 import de.haainz.kennzeichenerkennung.MapFragment;
 import de.haainz.kennzeichenerkennung.PicInfoDialogFragment;
 import de.haainz.kennzeichenerkennung.R;
-import de.haainz.kennzeichenerkennung.databinding.FragmentGalleryBinding;
+import de.haainz.kennzeichenerkennung.databinding.FragmentDayBinding;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,7 +74,7 @@ import okhttp3.Response;
 
 public class DayFragment extends Fragment {
 
-    private FragmentGalleryBinding binding;
+    private FragmentDayBinding binding;
     private Kennzeichen_KI kennzeichenKI;
     private KennzeichenGenerator kennzeichenGenerator;
     private Bitmap imageBitmap;
@@ -87,7 +87,7 @@ public class DayFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        binding = FragmentGalleryBinding.inflate(inflater, container, false);
+        binding = FragmentDayBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));

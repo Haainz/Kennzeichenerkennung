@@ -242,10 +242,9 @@ public class HomeFragment extends Fragment {
         });
 
         textViewAusgabe.setOnClickListener(v -> {
-            if (ausgabe == null) {
-                Toast.makeText(getContext(), " Kein Kennzeichen gefunden", Toast.LENGTH_SHORT).show();
-            } else {
-                String kuerzelAusgabe = ausgabe.split(", ")[0].trim();
+            if (ausgabe != null) {
+                String kuerzelAusgabe = kuerzelEingabe.getText().toString();
+                Log.e("?", kuerzelAusgabe);
                 Kennzeichen kennzeichen = kennzeichenKI.getKennzeichen(kuerzelAusgabe);
                 if (kennzeichen != null) {
                     Intent intent = new Intent(Intent.ACTION_SEND);
@@ -271,7 +270,7 @@ public class HomeFragment extends Fragment {
         buttongenerate.setOnClickListener(v -> {
             binding.fussnotenwert.setVisibility(VISIBLE);
             binding.fussnotentitel.setVisibility(VISIBLE);
-            binding.Bemerkungenwert.setVisibility(VISIBLE);
+            binding.bemerkungenwert.setVisibility(VISIBLE);
             binding.bemerkungentitel.setVisibility(VISIBLE);
             aistatus=0;
             hideKeyboard(v);
@@ -295,8 +294,18 @@ public class HomeFragment extends Fragment {
                 binding.kuerzelwert.setText(kennzeichen.OertskuerzelGeben());
                 binding.herleitungswert.setText(kennzeichen.OrtGeben());
                 binding.stadtoderkreiswert.setText(kennzeichen.StadtKreisGeben());
-                binding.bundeslandwert.setText(kennzeichen.BundeslandGeben());
-                binding.bundeslandIsoWert.setText(kennzeichen.BundeslandIsoGeben());
+                if(!Objects.equals(kennzeichen.BundeslandGeben(), "---")) {
+                    binding.bundeslandwert.setText(kennzeichen.BundeslandGeben());
+                } else {
+                    binding.bundeslandwert.setVisibility(GONE);
+                    binding.bundeslandtitel.setVisibility(GONE);
+                }
+                if(!Objects.equals(kennzeichen.BundeslandIsoGeben(), "---")) {
+                    binding.bundeslandIsoWert.setText(kennzeichen.BundeslandIsoGeben());
+                } else {
+                    binding.bundeslandIsoWert.setVisibility(GONE);
+                    binding.bundeslandIsoTitel.setVisibility(GONE);
+                }
                 binding.landwert.setText(kennzeichen.LandGeben());
                 if (kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
                     binding.likedBtn.setVisibility(VISIBLE);
@@ -325,16 +334,16 @@ public class HomeFragment extends Fragment {
                                 "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n\nweiterer amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen " +
                                 "führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
                 };
-                if (!kennzeichen.FussnoteGeben().isEmpty()) {
-                    binding.fussnotenwert.setText(fussnoten[fussnoteNummer]);
-                } else {
+                if (kennzeichen.FussnoteGeben().isEmpty() || Objects.equals(kennzeichen.FussnoteGeben(), "6")) {
                     binding.fussnotenwert.setVisibility(GONE);
                     binding.fussnotentitel.setVisibility(GONE);
+                } else {
+                    binding.fussnotenwert.setText(fussnoten[fussnoteNummer]);
                 }
                 if (!kennzeichen.BemerkungenGeben().isEmpty()) {
-                    binding.Bemerkungenwert.setText(kennzeichen.BemerkungenGeben());
+                    binding.bemerkungenwert.setText(kennzeichen.BemerkungenGeben());
                 } else {
-                    binding.Bemerkungenwert.setVisibility(GONE);
+                    binding.bemerkungenwert.setVisibility(GONE);
                     binding.bemerkungentitel.setVisibility(GONE);
                 }
                 checkNetworkAndGenerateText(kennzeichen);
@@ -350,6 +359,43 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
+                if (kennzeichen.isSonder()) {
+                    binding.bemerkungenwert.setVisibility(GONE);
+                    binding.bemerkungentitel.setVisibility(GONE);
+                    binding.fussnotenwert.setVisibility(GONE);
+                    binding.fussnotentitel.setVisibility(GONE);
+                    binding.bundeslandIsoWert.setVisibility(GONE);
+                    binding.bundeslandIsoTitel.setVisibility(GONE);
+                    binding.stadtoderkreistitel.setText("Typ:  ");
+                    binding.herleitungstitel.setText("Bedeutung:  ");
+                    binding.bundeslandtitel.setText("Zulassungsbehörde:  ");
+                } else if (kennzeichen.isAuslaufend()) {
+                    binding.bemerkungenwert.setVisibility(GONE);
+                    binding.bemerkungentitel.setVisibility(GONE);
+                    binding.fussnotenwert.setVisibility(GONE);
+                    binding.fussnotentitel.setVisibility(GONE);
+                    binding.bundeslandwert.setVisibility(GONE);
+                    binding.bundeslandtitel.setVisibility(GONE);
+                    binding.bundeslandIsoWert.setVisibility(GONE);
+                    binding.bundeslandIsoTitel.setVisibility(GONE);
+                    binding.stadtoderkreistitel.setText("Bisheriger Ver-\nwaltungsbezirk/   \n-kreis:  ");
+                    binding.stadtoderkreistitel.setTextSize(11);
+                    binding.herleitungstitel.setText("Abwicklung:  ");
+                } else {
+                    binding.bemerkungenwert.setVisibility(VISIBLE);
+                    binding.bemerkungentitel.setVisibility(VISIBLE);
+                    binding.fussnotenwert.setVisibility(VISIBLE);
+                    binding.fussnotentitel.setVisibility(VISIBLE);
+                    binding.bundeslandwert.setVisibility(VISIBLE);
+                    binding.bundeslandtitel.setVisibility(VISIBLE);
+                    binding.bundeslandIsoWert.setVisibility(VISIBLE);
+                    binding.bundeslandIsoTitel.setVisibility(VISIBLE);
+                    binding.stadtoderkreistitel.setText("Stadt/Kreis:  ");
+                    binding.stadtoderkreistitel.setTextSize(17);
+                    binding.herleitungstitel.setText("Herleitung:  ");
+                    binding.bundeslandtitel.setText("Bundesland:  ");
+                }
+
                 if (isNetworkAvailable()) {
                     mapView = binding.map;
                     mapRel = binding.maprel;
@@ -359,7 +405,12 @@ public class HomeFragment extends Fragment {
                     mapView.setVisibility(View.VISIBLE);
                     mapRel.setVisibility(View.VISIBLE);
 
-                    getCoordinates(kennzeichen.OrtGeben() + "_" + kennzeichen.BundeslandGeben());
+                    if(!kennzeichen.isSonder()) {
+                        getCoordinates(kennzeichen.OrtGeben() + "_" + kennzeichen.BundeslandGeben());
+                    } else {
+                        binding.map.setVisibility(View.GONE);
+                        binding.maprel.setVisibility(View.GONE);
+                    }
                 } else {
                     binding.map.setVisibility(View.GONE);
                     binding.maprel.setVisibility(View.GONE);

@@ -96,7 +96,7 @@ public class UeberFragment extends DialogFragment {
                                     .getJSONObject(0)
                                     .getString("download_count");
 
-                            String info = "Version "+versionTag+"\n\n"+body+"\n\n"+"Downloads: "+downloadCount;
+                            String info = "Version "+versionTag+"\n\n"+body+"\n\n"+"Github-Downloads: "+downloadCount;
                             DialogFragment dialogFragment = new PicInfoDialogFragment(info);
                             dialogFragment.show(getParentFragmentManager(), "PicInfoDialog");
                         } catch (JSONException e) {

@@ -10,47 +10,59 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
+            android:id="@+id/kennzeichen"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/kennzeichen">
+            android:layout_height="wrap_content">
 
             <ImageView
+                android:id="@+id/D"
                 android:layout_width="24dp"
                 android:layout_height="33dp"
-                android:id="@+id/D"
                 android:layout_marginTop="0dp"
-                android:src="@drawable/img4"/>
+                android:src="@drawable/img4" />
 
             <ImageView
                 android:layout_width="53dp"
                 android:layout_height="33dp"
-                android:src="@drawable/img5"
                 android:layout_marginStart="-5dp"
                 android:layout_marginTop="0dp"
                 android:layout_toEndOf="@+id/D"
-                android:scaleType="fitXY"/>
+                android:scaleType="fitXY"
+                android:src="@drawable/img5" />
 
             <TextView
                 android:id="@+id/textViewKennzeichen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
+                android:layout_marginStart="22dp"
+                android:fontFamily="@font/schriftkraftfahrzeugkennzeichen"
                 android:text="WOB"
                 android:textColor="@android:color/black"
-                android:layout_marginStart="22dp"
-                android:fontFamily="@font/schriftkraftfahrzeugkennzeichen"/>
+                android:textSize="30sp" />
 
         </RelativeLayout>
 
-    <TextView
-        android:id="@+id/textViewDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:text="test"
-        android:layout_toEndOf="@+id/kennzeichen"
-        android:layout_marginTop="-2dp"
-        android:layout_marginStart="15dp"
-        android:textColor="?attr/colorTextNormal" />
+        <TextView
+            android:id="@+id/textViewDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="-2dp"
+            android:layout_toEndOf="@+id/kennzeichen"
+            android:text="test"
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/textViewDetails2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="-2dp"
+            android:layout_toEndOf="@+id/kennzeichen"
+            android:layout_below="@+id/textViewDetails"
+            android:text="test"
+            android:textColor="@color/text_normal"
+            android:textSize="14sp" />
     </RelativeLayout>
 </LinearLayout>

@@ -149,7 +149,6 @@ public class Kennzeichen_KI {
                 kennzeichen.oertskuerzel = record.get("Unterscheidungszeichen");
                 kennzeichen.stadtkreis = record.get("Abwicklung");
                 kennzeichen.ort = record.get("BisherigerVerwaltungsbezirkOderKreis");
-                kennzeichen.bemerkungen = "Abwicklung durch die "+record.get("Abwicklung");
                 kennzeichen.setTyp("auslaufend");
                 kennzeichenliste.add(kennzeichen);
             }

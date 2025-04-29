@@ -253,6 +253,7 @@
                     android:layout_height="wrap_content"
                     android:text="Kürzel:  "
                     android:textSize="17dp"
+                    android:textColor="@color/yellow"
                     android:textStyle="italic|bold" />
 
                 <TextView
@@ -262,6 +263,7 @@
                     android:layout_toRightOf="@id/kuerzeltitel"
                     android:text="AN"
                     android:textIsSelectable="true"
+                    android:textColor="?attr/colorTextNormal"
                     android:textSize="17dp" />
 
                 <TextView
@@ -271,6 +273,7 @@
                     android:layout_below="@id/kuerzelwert"
                     android:text="Herleitung:  "
                     android:textSize="17dp"
+                    android:textColor="@color/yellow"
                     android:textStyle="italic|bold" />
 
                 <TextView
@@ -281,6 +284,7 @@
                     android:layout_toRightOf="@id/herleitungstitel"
                     android:text="ANsbach"
                     android:textIsSelectable="true"
+                    android:textColor="?attr/colorTextNormal"
                     android:textSize="17dp" />
 
                 <TextView
@@ -290,6 +294,7 @@
                     android:layout_below="@id/herleitungswert"
                     android:text="Stadt oder Kreis:  "
                     android:textSize="17dp"
+                    android:textColor="@color/yellow"
                     android:textStyle="italic|bold" />
 
                 <TextView
@@ -300,6 +305,7 @@
                     android:layout_toRightOf="@id/stadtoderkreistitel"
                     android:text="Ansbach"
                     android:textIsSelectable="true"
+                    android:textColor="?attr/colorTextNormal"
                     android:textSize="17dp" />
 
                 <TextView
@@ -309,6 +315,7 @@
                     android:layout_below="@+id/stadtoderkreiswert"
                     android:text="Bundesland:  "
                     android:textSize="17dp"
+                    android:textColor="@color/yellow"
                     android:textStyle="italic|bold" />
 
                 <TextView
@@ -319,6 +326,7 @@
                     android:layout_toRightOf="@id/bundeslandtitel"
                     android:text=""
                     android:textIsSelectable="true"
+                    android:textColor="?attr/colorTextNormal"
                     android:textSize="17dp" />
 
                 <TextView
@@ -328,6 +336,7 @@
                     android:layout_below="@id/bundeslandwert"
                     android:text="Bundesland (Iso3166-2):  "
                     android:textSize="17dp"
+                    android:textColor="@color/yellow"
                     android:textStyle="italic|bold" />
 
                 <TextView
@@ -338,6 +347,7 @@
                     android:layout_toRightOf="@id/bundesland_iso_titel"
                     android:text=""
                     android:textIsSelectable="true"
+                    android:textColor="?attr/colorTextNormal"
                     android:textSize="17dp" />
 
                 <TextView
@@ -345,8 +355,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/bundesland_iso_wert"
-                    android:text="Nationalitätskürzel:  "
+                    android:text="Nationalitätszeichen:  "
                     android:textSize="17dp"
+                    android:textColor="@color/yellow"
                     android:textStyle="italic|bold" />
 
                 <TextView
@@ -357,6 +368,7 @@
                     android:layout_toRightOf="@id/landtitel"
                     android:text=""
                     android:textIsSelectable="true"
+                    android:textColor="?attr/colorTextNormal"
                     android:textSize="17dp" />
 
                 <TextView
@@ -366,6 +378,7 @@
                     android:layout_below="@id/landwert"
                     android:text="Bemerkungen:  "
                     android:textSize="17dp"
+                    android:textColor="@color/yellow"
                     android:textStyle="italic|bold" />
 
                 <TextView
@@ -376,6 +389,7 @@
                     android:layout_toRightOf="@id/bemerkungentitel"
                     android:text=" ---"
                     android:textIsSelectable="true"
+                    android:textColor="?attr/colorTextNormal"
                     android:textSize="17dp" />
 
                 <androidx.core.widget.NestedScrollView
@@ -394,6 +408,7 @@
                             android:layout_height="wrap_content"
                             android:text="Fußnoten: "
                             android:textSize="17dp"
+                            android:textColor="@color/yellow"
                             android:textStyle="italic|bold" />
 
                         <TextView
@@ -402,6 +417,7 @@
                             android:layout_height="wrap_content"
                             android:layout_toRightOf="@id/fussnotentitel"
                             android:text=" ---"
+                            android:textColor="?attr/colorTextNormal"
                             android:textSize="17dp" />
                     </RelativeLayout>
                 </androidx.core.widget.NestedScrollView>
