@@ -194,6 +194,7 @@ public class DayFragment extends Fragment {
 
         binding.saveBtn.setOnClickListener(v -> {
             try {
+                Bitmap croppedBitmap = cropImage(imageBitmap); // Zuschneiden des Bildes
                 String filename = "bild_" + System.currentTimeMillis() + ".jpg";
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Kennzeichenerkennung");
                 if (!file.exists()) {
@@ -201,7 +202,7 @@ public class DayFragment extends Fragment {
                 }
                 File outputFile = new File(file, filename);
                 FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                 fileOutputStream.close();
                 MediaScannerConnection.scanFile(getContext(), new String[]{outputFile.getAbsolutePath()}, null, null);
                 Toast.makeText(getContext(), "Bild gespeichert", Toast.LENGTH_SHORT).show();
@@ -212,6 +213,7 @@ public class DayFragment extends Fragment {
 
         binding.shareBtn.setOnClickListener(v -> {
             try {
+                Bitmap croppedBitmap = cropImage(imageBitmap); // Zuschneiden des Bildes
                 String filename = "bild_" + System.currentTimeMillis() + ".jpg";
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Kennzeichenerkennung");
                 if (!file.exists()) {
@@ -219,7 +221,7 @@ public class DayFragment extends Fragment {
                 }
                 File outputFile = new File(file, filename);
                 FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                 fileOutputStream.close();
 
                 Intent intent = new Intent(Intent.ACTION_SEND);
@@ -586,6 +588,21 @@ public class DayFragment extends Fragment {
         super.onDestroyView();
         stopLoadingAnimation();
         binding = null;
+    }
+
+    private Bitmap cropImage(Bitmap originalBitmap) {
+        int height = originalBitmap.getHeight();
+        int width = originalBitmap.getWidth();
+
+        int cutTop = height / 9 + height / 200;
+        int cutBottom = height / 10 + height / 150;
+        int cutLeft = width / 8;
+        int cutRight = width / 9;
+
+        int newWidth = width - cutLeft - cutRight;
+        int newHeight = height - cutTop - cutBottom;
+
+        return Bitmap.createBitmap(originalBitmap, cutLeft, cutTop, newWidth, newHeight);
     }
 
     private boolean isOfflineMode() {

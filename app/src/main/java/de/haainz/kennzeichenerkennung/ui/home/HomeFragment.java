@@ -122,7 +122,6 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -338,13 +337,17 @@ public class HomeFragment extends Fragment {
                     binding.fussnotenwert.setVisibility(GONE);
                     binding.fussnotentitel.setVisibility(GONE);
                 } else {
+                    binding.fussnotenwert.setVisibility(VISIBLE);
+                    binding.fussnotentitel.setVisibility(VISIBLE);
                     binding.fussnotenwert.setText(fussnoten[fussnoteNummer]);
                 }
-                if (!kennzeichen.BemerkungenGeben().isEmpty()) {
-                    binding.bemerkungenwert.setText(kennzeichen.BemerkungenGeben());
-                } else {
+                if (kennzeichen.BemerkungenGeben().isEmpty() || Objects.equals(kennzeichen.BemerkungenGeben(), "---")) {
                     binding.bemerkungenwert.setVisibility(GONE);
                     binding.bemerkungentitel.setVisibility(GONE);
+                } else {
+                    binding.bemerkungenwert.setVisibility(VISIBLE);
+                    binding.bemerkungentitel.setVisibility(VISIBLE);
+                    binding.bemerkungenwert.setText(kennzeichen.BemerkungenGeben());
                 }
                 checkNetworkAndGenerateText(kennzeichen);
 
@@ -360,20 +363,12 @@ public class HomeFragment extends Fragment {
                 });
 
                 if (kennzeichen.isSonder()) {
-                    binding.bemerkungenwert.setVisibility(GONE);
-                    binding.bemerkungentitel.setVisibility(GONE);
-                    binding.fussnotenwert.setVisibility(GONE);
-                    binding.fussnotentitel.setVisibility(GONE);
                     binding.bundeslandIsoWert.setVisibility(GONE);
                     binding.bundeslandIsoTitel.setVisibility(GONE);
                     binding.stadtoderkreistitel.setText("Typ:  ");
                     binding.herleitungstitel.setText("Bedeutung:  ");
                     binding.bundeslandtitel.setText("Zulassungsbehörde:  ");
                 } else if (kennzeichen.isAuslaufend()) {
-                    binding.bemerkungenwert.setVisibility(GONE);
-                    binding.bemerkungentitel.setVisibility(GONE);
-                    binding.fussnotenwert.setVisibility(GONE);
-                    binding.fussnotentitel.setVisibility(GONE);
                     binding.bundeslandwert.setVisibility(GONE);
                     binding.bundeslandtitel.setVisibility(GONE);
                     binding.bundeslandIsoWert.setVisibility(GONE);
@@ -382,12 +377,6 @@ public class HomeFragment extends Fragment {
                     binding.stadtoderkreistitel.setTextSize(11);
                     binding.herleitungstitel.setText("Abwicklung:  ");
                 } else {
-                    binding.bemerkungenwert.setVisibility(VISIBLE);
-                    binding.bemerkungentitel.setVisibility(VISIBLE);
-                    binding.fussnotenwert.setVisibility(VISIBLE);
-                    binding.fussnotentitel.setVisibility(VISIBLE);
-                    binding.bundeslandwert.setVisibility(VISIBLE);
-                    binding.bundeslandtitel.setVisibility(VISIBLE);
                     binding.bundeslandIsoWert.setVisibility(VISIBLE);
                     binding.bundeslandIsoTitel.setVisibility(VISIBLE);
                     binding.stadtoderkreistitel.setText("Stadt/Kreis:  ");

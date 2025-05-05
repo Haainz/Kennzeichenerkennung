@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UeberFragment">
+    tools:context=".UeberActivity">
 
     <RelativeLayout
         android:id="@+id/main_toolbar"
@@ -17,22 +17,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginStart="20dp"
-            android:text="Über die App:"
+            android:layout_marginStart="10dp"
+            android:layout_toRightOf="@+id/backbtn"
+            android:text="Über die App"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textStyle="normal" />
 
         <ImageButton
-            android:id="@+id/x"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/backbtn"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
             android:layout_marginTop="0dp"
-            android:layout_marginEnd="0dp"
+            android:layout_marginStart="5dp"
             android:backgroundTint="#00FFFFFF"
-            android:src="@drawable/icon_x"
+            android:src="@drawable/icon_back"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/white" />

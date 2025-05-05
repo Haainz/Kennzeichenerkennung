@@ -21,9 +21,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Navigated to: " + destination.getLabel());
         });
 
-        setupIconButtons();
+        setupSettingsButtons();
         handleIntent(getIntent());
         iconInfo = findViewById(R.id.icon_offline);
         startNetworkCheck();
@@ -102,11 +104,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupIconButtons() {
+    private void setupSettingsButtons() {
         Button settingsButton = findViewById(R.id.button_settings);
         settingsButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_not);
         });
     }
 
@@ -205,6 +208,17 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "Error getting current app version", e);
             return 1;
         }
+    }
+
+    public void toggleDarkMode(boolean isChecked) {
+        if (isChecked) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            sharedPreferences.edit().putBoolean("darkMode", true).apply();
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            sharedPreferences.edit().putBoolean("darkMode", false).apply();
+        }
+        navigateToFragment("SettingsActivity");
     }
 
     void startDownload(String downloadUrl, String version) {

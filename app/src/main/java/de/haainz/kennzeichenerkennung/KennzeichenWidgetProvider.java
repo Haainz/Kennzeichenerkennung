@@ -56,9 +56,24 @@ public class KennzeichenWidgetProvider extends AppWidgetProvider {
         Bitmap originalBitmap = kennzeichenGenerator.generateImage(img, kennzeichen);
 
         // Skaliere das Bild auf die Größe des Widgets
-        int widgetWidth = context.getResources().getDimensionPixelSize(R.dimen.widget_width)*2;
-        int widgetHeight = context.getResources().getDimensionPixelSize(R.dimen.widget_height)*2;
-        return Bitmap.createScaledBitmap(originalBitmap, widgetWidth, widgetHeight, true);
+        int widgetWidth = context.getResources().getDimensionPixelSize(R.dimen.widget_width) * 2;
+        int widgetHeight = context.getResources().getDimensionPixelSize(R.dimen.widget_height) * 2;
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, widgetWidth, widgetHeight, true);
+
+        // Berechne die Zuschneideparameter
+        int cutTop = scaledBitmap.getHeight() / 9 + scaledBitmap.getHeight() / 200;
+        int cutBottom = scaledBitmap.getHeight() / 10 + scaledBitmap.getHeight() / 150;
+        int cutLeft = scaledBitmap.getWidth() / 9;
+        int cutRight = scaledBitmap.getWidth() / 10;
+
+        // Berechne die neuen Dimensionen nach dem Zuschneiden
+        int newWidth = scaledBitmap.getWidth() - cutLeft - cutRight;
+        int newHeight = scaledBitmap.getHeight() - cutTop - cutBottom;
+
+        // Zuschneiden des Bildes
+        Bitmap croppedBitmap = Bitmap.createBitmap(scaledBitmap, cutLeft, cutTop, newWidth, newHeight);
+
+        return croppedBitmap;
     }
 
     private Kennzeichen getKennzeichen(Kennzeichen_KI kennzeichenKI) {

@@ -20,8 +20,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import de.haainz.kennzeichenerkennung.AddCityFragment;
 import de.haainz.kennzeichenerkennung.ConfirmFragment;
@@ -102,22 +100,6 @@ public class ListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Kennzeichen kennzeichen = (Kennzeichen) parent.getItemAtPosition(position);
-
-                // Erstellen Sie ein Bundle, um die Daten zu übergeben
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("selectedKennzeichen", kennzeichen); // Stellen Sie sicher, dass Kennzeichen Serializable ist
-
-                // Navigieren Sie zum InfosFragment
-                NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_content_main);
-                navController.navigate(R.id.nav_infos, bundle);
-            }
-        });
-
-
-        /*binding.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Kennzeichen kennzeichen = (Kennzeichen) parent.getItemAtPosition(position);
                 PopupMenu popupMenu = new PopupMenu(getActivity(), view);
                 popupMenu.inflate(R.menu.popup_menu);
 
@@ -164,7 +146,7 @@ public class ListFragment extends Fragment {
                 });
                 popupMenu.show();
             }
-        });*/
+        });
 
         /*binding.list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
