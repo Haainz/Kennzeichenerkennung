@@ -32,7 +32,7 @@
 <string name="configure">Configure</string>
 <string name="add_widget">Add widget</string>
 <string name="app_widget_description">This is an app widget description</string>
-<string name="api_key">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</string>
-<string name="mail_address">haainz006@gmail.com</string>
-<string name="mail_password">imai wtlv ecfe ldzf</string>
+<string name="api_key">apikey</string>
+<string name="mail_address">mail</string>
+<string name="mail_password">mailpw</string>
 </resources>
