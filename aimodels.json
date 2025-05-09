@@ -10,7 +10,7 @@
             "id": "google/gemini-2.0-flash-exp:free",
             "name": "Google Gemini Flash 2.0",
             "brand": "Google",
-            "working": false
+            "working": true
         },
         {
             "id": "google/gemma-3-1b-it:free",
