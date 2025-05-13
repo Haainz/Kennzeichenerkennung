@@ -48,6 +48,7 @@ import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
 import de.haainz.kennzeichenerkennung.MapFragment;
 import de.haainz.kennzeichenerkennung.PicInfoDialogFragment;
 import de.haainz.kennzeichenerkennung.R;
+import de.haainz.kennzeichenerkennung.TourPopupDialog;
 import de.haainz.kennzeichenerkennung.databinding.FragmentHomeBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.vision.Frame;
@@ -149,6 +150,12 @@ public class HomeFragment extends Fragment {
         if (!kuerzelEingabe.getText().toString().isEmpty()) {
             deleteText.setVisibility(View.VISIBLE);
         }
+
+        TextView infobtn = binding.textHome;
+        infobtn.setOnClickListener(v -> {
+            TourPopupDialog dialog = new TourPopupDialog(getContext());
+            dialog.show();
+        });
 
         deleteText.setOnClickListener(v -> {
             kuerzelEingabe.setText("");

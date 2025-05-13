@@ -138,6 +138,14 @@
             android:layout_marginTop="15dp"
             android:layout_below="@+id/nameeingabe"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="HINWEIS! Ich bemühe mich schnell zu antworten, trotzdem kann es auch manchmal mehrere Tage dauern."
+            android:textStyle="bold"
+            android:textSize="14dp"/>
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
