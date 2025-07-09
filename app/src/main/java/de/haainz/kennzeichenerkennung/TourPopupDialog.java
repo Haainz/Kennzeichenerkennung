@@ -51,8 +51,10 @@ public class TourPopupDialog extends Dialog {
         // Setup pages data
         pages = new TourPage[]{
                 new TourPage(-1, "Willkommen in der Kennzeichenapp!",
-                        "\nDanke, dass du dir die Kennzeichenapp heruntergeladen hast!\n\nLerne die App doch gleich etwas genauer kennen und wische zur Seite um eine kleine Tour zu starten.\nDu kannst sie über die Einstellungen jederzeit noch einmal aufrufen.\n\n",
-                        "Viel Spaß!🎉\n\nAaron W."),
+                                "\nDurch die Nutzung erklärst du dich mit der Datenschutzrichtlinie und den Nutzungsbedingungen einverstanden. Diese kannst du jederzeit über 'Einstellungen'>'Über die App' einsehen." +
+                                "\n\nLerne die App doch gleich etwas genauer kennen und wische zur Seite um eine kleine Tour zu starten.\n" +
+                                "Du kannst sie jederzeit über das Fragezeichen oben rechts nochmals aufrufen.\n",
+                        "Viel Spaß!🎉"),
                 new TourPage(R.raw.vid_home, "Hauptfunktionen",
                         "Gebe das Kürzel ein oder mache ein Bild eines Kennzeichens und erhalte viele Informationen dazu.",
                         "PS: Für noch mehr Infos lass dir doch einfach einen Text von KI erstellen 😉."),
@@ -66,7 +68,7 @@ public class TourPopupDialog extends Dialog {
                         "Die App funktioniert auch komplett offline (KI-Funktionen, Karten, Kontakt nicht verfügbar) und 100% kostenlos!",
                         "Unterstütze mich gerne durch eine kleine Spende!"),
                 new TourPage(R.raw.vid_kontakt_spende, "Noch Fragen?",
-                        "Kontaktiere mich einfach über die App.\nUnterstütze mich doch gerne durch eine gute Bewertung im Playstore oder eine Spende.",
+                        "Kontaktiere mich einfach über die App.\nUnterstütze mich doch gerne durch eine gute Bewertung im Playstore oder mit einer Spende.",
                         "Danke!♥️")
         };
 

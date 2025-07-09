@@ -73,8 +73,8 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        Button iconInfo = findViewById(R.id.button_ueber);
-        iconInfo.setOnClickListener(v -> {
+        Button btnueber = findViewById(R.id.button_ueber);
+        btnueber.setOnClickListener(v -> {
             Intent intent = new Intent(this, UeberActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right,R.anim.slide_not);

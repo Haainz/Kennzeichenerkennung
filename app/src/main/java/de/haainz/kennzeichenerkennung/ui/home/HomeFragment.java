@@ -139,6 +139,7 @@ public class HomeFragment extends Fragment {
         ImageView saveBtn = binding.saveBtn;
         ImageView shareBtn = binding.shareBtn;
         ImageView picinfoBtn = binding.picinfoBtn;
+        TextView tourbtn = binding.tourbtn;
         deleteText.setVisibility(View.GONE);
         deleteBtn.setVisibility(View.GONE);
         saveBtn.setVisibility(View.GONE);
@@ -153,6 +154,10 @@ public class HomeFragment extends Fragment {
 
         TextView infobtn = binding.textHome;
         infobtn.setOnClickListener(v -> {
+            TourPopupDialog dialog = new TourPopupDialog(getContext());
+            dialog.show();
+        });
+        tourbtn.setOnClickListener(v -> {
             TourPopupDialog dialog = new TourPopupDialog(getContext());
             dialog.show();
         });

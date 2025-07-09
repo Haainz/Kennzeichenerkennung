@@ -127,12 +127,21 @@
             android:textColor="@color/white" />
 
         <Button
+            android:id="@+id/button_rechtliches"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/backgroundslidercolor"
+            android:text="⚖️ Rechtliches"
+            android:textColor="@color/white" />
+
+        <Button
             android:id="@+id/button_kontakt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:backgroundTint="@color/backgroundslidercolor"
-            android:text="Kontakt"
+            android:text="🗣️ Kontakt"
             android:textColor="@color/white" />
     </LinearLayout>
 </RelativeLayout>

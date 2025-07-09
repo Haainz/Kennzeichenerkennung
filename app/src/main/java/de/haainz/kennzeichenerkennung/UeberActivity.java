@@ -49,6 +49,14 @@ public class UeberActivity extends AppCompatActivity {
             startActivity(browserIntent);
         });
 
+        Button rechtlichesBtn = findViewById(R.id.button_rechtliches);
+        rechtlichesBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RechtActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_not);
+        });
+        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_not);
+
         Button kontaktBtn = findViewById(R.id.button_kontakt);
         kontaktBtn.setOnClickListener(v -> showDialogFragment(new ContactFragment(), "ContactFragment"));
     }
