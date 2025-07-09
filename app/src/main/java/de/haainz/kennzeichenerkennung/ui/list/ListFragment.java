@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import de.haainz.kennzeichenerkennung.AddCityFragment;
 import de.haainz.kennzeichenerkennung.ConfirmFragment;
@@ -168,10 +169,11 @@ public class ListFragment extends Fragment {
             }
         });*/
 
-        binding.refreshBtn.setOnClickListener(new View.OnClickListener() {
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onClick(View v) {
+            public void onRefresh() {
                 updateList();
+                binding.swipeRefreshLayout.setRefreshing(false); // Beendet den Ladespinner
                 Toast.makeText(getContext(), "Liste erfolgreich aktualisiert", Toast.LENGTH_SHORT).show();
             }
         });

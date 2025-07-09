@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_container2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbarSize="0dp"
-    android:id="@+id/fragment_container2">
+    android:scrollbarSize="0dp">
 
     <RelativeLayout
         android:id="@+id/search_user_layout"
@@ -38,7 +38,9 @@
             android:layout_toLeftOf="@+id/add_btn"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="4dp"
-            android:src="@drawable/icon_refresh"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:src="@drawable/icon_heartempty2"
             app:tint="@color/red" />
 
         <ImageButton
@@ -67,11 +69,10 @@
             android:textStyle="bold" />
 
 
-
         <HorizontalScrollView
+            android:id="@+id/scroll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/scroll"
             android:layout_below="@+id/search_input"
             android:layout_marginStart="0dp">
 
@@ -152,8 +153,8 @@
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
                     android:layout_marginStart="7dp"
-                    android:layout_marginEnd="10dp"
                     android:layout_marginTop="5dp"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
                     android:src="@drawable/icon_heartempty2"
                     app:tint="@color/black" />
@@ -164,8 +165,8 @@
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
                     android:layout_marginStart="7dp"
-                    android:layout_marginEnd="10dp"
                     android:layout_marginTop="5dp"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
                     android:backgroundTint="@color/yellow"
                     android:src="@drawable/icon_heartempty2"
@@ -177,8 +178,8 @@
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
                     android:layout_marginStart="7dp"
-                    android:layout_marginEnd="10dp"
                     android:layout_marginTop="5dp"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
                     android:backgroundTint="@color/yellow"
                     android:src="@drawable/icon_heartfull2"
@@ -198,12 +199,19 @@
         android:src="@drawable/icon_x"
         app:tint="@color/red" />
 
-    <ListView
-        android:id="@+id/list"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/search_user_layout"
-        android:padding="10dp" />
+        android:padding="10dp">
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
 </RelativeLayout>
