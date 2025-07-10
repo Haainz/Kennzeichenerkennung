@@ -113,7 +113,7 @@ public class AddCityFragment extends DialogFragment {
     }
 
     private String getIso31662(String bundeslandName) {
-        switch (bundeslandName) {
+        switch (bundeslandName.trim()) {
             case "Bayern":
                 return "DE-BY";
             case "Baden-Württemberg":
