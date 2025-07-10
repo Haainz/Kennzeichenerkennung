@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceManager;
 
@@ -46,9 +47,16 @@ public class InfosFragment extends DialogFragment {
     private Kennzeichen kennzeichen;
     private Kennzeichen_KI kennzeichenKI;
     private MapView mapView;
+    private CardView mapCardView;
 
     public InfosFragment(Kennzeichen kennzeichen) {
         this.kennzeichen = kennzeichen;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.CustomDialogTheme);
     }
 
     @Override
@@ -60,8 +68,7 @@ public class InfosFragment extends DialogFragment {
         ImageView likedBtn = view.findViewById(R.id.liked_btn);
         ImageView likeBtn = view.findViewById(R.id.like_btn);
 
-        kennzeichenKI.KennzeichenLikedEinlesen();
-        if (kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
+        if (kennzeichen.isSaved()) {
             likedBtn.setVisibility(VISIBLE);
         } else {
             likedBtn.setVisibility(GONE);
@@ -152,19 +159,9 @@ public class InfosFragment extends DialogFragment {
         likeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
-                    String csvZeile = kennzeichen.LandGeben() + "," + kennzeichen.OertskuerzelGeben() + "," + kennzeichen.StadtKreisGeben() + "," + kennzeichen.OrtGeben() + "," + kennzeichen.BundeslandGeben() + "," + kennzeichen.BundeslandIsoGeben() + "," + kennzeichen.FussnoteGeben() + "," + kennzeichen.BemerkungenGeben();
-                    try {
-                        File file = new File(getActivity().getFilesDir(), "kennzeichenliked.csv");
-                        FileOutputStream fileOutputStream = new FileOutputStream(file, true);
-                        fileOutputStream.write((csvZeile + "\n").getBytes());
-                        fileOutputStream.close();
-                        likedBtn.setVisibility(VISIBLE);
-                        Toast.makeText(getActivity(), "Kennzeichen gespeichert.\nBitte aktualisiere die Liste", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Toast.makeText(getActivity(), "Es ist ein Fehler aufgetreten", Toast.LENGTH_SHORT).show();
-                    }
+                if (!kennzeichen.isSaved()) {
+                    likedBtn.setVisibility(VISIBLE);
+                    kennzeichenKI.changesavestatus(kennzeichen, "ja");
                 } else {
                     Toast.makeText(getActivity(), "Kennzeichen bereits geliked", Toast.LENGTH_SHORT).show();
                 }
@@ -174,7 +171,7 @@ public class InfosFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 likedBtn.setVisibility(GONE);
-                kennzeichenKI.deletelikedKennzeichen(kennzeichen);
+                kennzeichenKI.changesavestatus(kennzeichen, "nein");
                 Toast.makeText(getActivity(), "Kennzeichen entfernt.\nBitte aktualisiere die Liste", Toast.LENGTH_SHORT).show();
 
                 // Hier sollten Sie die updateList() Methode aufrufen, um die Anzeige zu aktualisieren
@@ -186,15 +183,16 @@ public class InfosFragment extends DialogFragment {
 
         if (isNetworkAvailable() && !kennzeichen.isSonder()) {
             mapView = view.findViewById(R.id.map);
+            mapCardView = view.findViewById(R.id.cardviewmap);
             Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));
             mapView.setTileSource(TileSourceFactory.MAPNIK);
             mapView.setBuiltInZoomControls(true);
             mapView.setMultiTouchControls (true);
-            mapView.setVisibility(View.VISIBLE);
+            mapCardView.setVisibility(View.VISIBLE);
 
             setMarkerOnMap(kennzeichen.OrtGeben());
         } else {
-            view.findViewById(R.id.map).setVisibility(GONE);
+            view.findViewById(R.id.cardviewmap).setVisibility(GONE);
             //Toast.makeText(getContext(), "Keine Internetverbindung. Die Karte wird nicht angezeigt.", Toast.LENGTH_SHORT).show();
         }
 
@@ -263,6 +261,7 @@ public class InfosFragment extends DialogFragment {
         @Override
         protected void onPostExecute(GeoPoint geoPoint) {
             InfosFragment fragment = fragmentReference.get();
+            try {
             if (fragment != null) {
                 if (geoPoint != null) {
                     fragment.mapView.getController().setZoom(6.25);
@@ -277,6 +276,10 @@ public class InfosFragment extends DialogFragment {
                     fragment.mapView.setVisibility(View.GONE);
                     //Toast.makeText(fragment.getContext(), "Koordinaten konnten nicht gefunden werden", Toast.LENGTH_SHORT).show();
                 }
+            }
+            } catch (Exception e) {
+                fragment.mapCardView.setVisibility(GONE);
+                e.printStackTrace();
             }
         }
     }

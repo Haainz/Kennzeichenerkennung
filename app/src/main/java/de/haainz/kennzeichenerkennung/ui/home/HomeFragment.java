@@ -36,6 +36,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -101,6 +102,7 @@ public class HomeFragment extends Fragment {
     private String ausgabe;
     private MapView mapView;
     private RelativeLayout mapRel;
+    private CardView mapCardView;
     private Handler loadingHandler;
     private Runnable loadingRunnable;
     private int loadingStep = 0;
@@ -400,21 +402,19 @@ public class HomeFragment extends Fragment {
                 if (isNetworkAvailable()) {
                     mapView = binding.map;
                     mapRel = binding.maprel;
+                    mapCardView = binding.mapcardview;
                     mapView.setTileSource(TileSourceFactory.MAPNIK);
                     mapView.setBuiltInZoomControls(true);
                     mapView.setMultiTouchControls(true);
-                    mapView.setVisibility(View.VISIBLE);
-                    mapRel.setVisibility(View.VISIBLE);
+                    mapCardView.setVisibility(View.VISIBLE);
 
                     if(!kennzeichen.isSonder()) {
                         getCoordinates(kennzeichen.OrtGeben() + "_" + kennzeichen.BundeslandGeben());
                     } else {
-                        binding.map.setVisibility(View.GONE);
-                        binding.maprel.setVisibility(View.GONE);
+                        binding.mapcardview.setVisibility(GONE);
                     }
                 } else {
-                    binding.map.setVisibility(View.GONE);
-                    binding.maprel.setVisibility(View.GONE);
+                    binding.mapcardview.setVisibility(View.GONE);
                 }
             } else {
                 binding.sliderview.setVisibility(View.GONE);
@@ -606,8 +606,7 @@ public class HomeFragment extends Fragment {
                     fragment.mapView.getOverlays().add(marker);
                     fragment.mapView.invalidate();
                 } else {
-                    fragment.mapView.setVisibility(View.GONE);
-                    fragment.mapRel.setVisibility(View.GONE);
+                    fragment.mapCardView.setVisibility(View.GONE);
                 }
             }
         }
@@ -632,7 +631,7 @@ public class HomeFragment extends Fragment {
 
     private void generateAIText(Kennzeichen kennzeichen) {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro  2.0");
+        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro 2.0");
         ExecutorService executor = Executors.newSingleThreadExecutor();
         final WeakReference<HomeFragment> fragmentRef = new WeakReference<>(this);
         executor.execute(() -> {

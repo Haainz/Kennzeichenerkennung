@@ -413,29 +413,28 @@
                         android:textColor="?attr/colorTextNormal"
                         android:textIsSelectable="true"/>
 
-                    <org.osmdroid.views.MapView
-                        android:id="@+id/map"
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/mapcardview"
                         android:layout_width="match_parent"
                         android:layout_height="300dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="10dp"
                         android:layout_below="@id/bemerkungenwert"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp"
+                        app:cardPreventCornerOverlap="true"
+                        app:cardUseCompatPadding="true">
 
-                    <RelativeLayout
-                        android:id="@+id/maprel"
-                        android:layout_width="match_parent"
-                        android:layout_height="300dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_below="@id/bemerkungenwert"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        <org.osmdroid.views.MapView
+                            android:id="@+id/map"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+
+                        <RelativeLayout
+                            android:id="@+id/maprel"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </androidx.cardview.widget.CardView>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -445,7 +444,7 @@
                         android:textSize="17sp"
                         android:id="@+id/infotexttitel"
                         android:textColor="@color/yellow"
-                        android:layout_below="@id/map" />
+                        android:layout_below="@id/mapcardview" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -453,7 +452,7 @@
                         android:text="Klicke um einen Informationstext von KI generieren zu lassen"
                         android:layout_toRightOf="@id/infotexttitel"
                         android:id="@+id/infotextwert"
-                        android:layout_below="@id/map"
+                        android:layout_below="@id/mapcardview"
                         android:textColor="?attr/colorTextNormal"
                         android:textIsSelectable="true"/>
 

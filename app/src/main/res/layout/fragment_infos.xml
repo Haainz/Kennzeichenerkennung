@@ -157,20 +157,29 @@
             android:textColor="?attr/colorTextNormal"
             android:textIsSelectable="true"/>
 
-        <org.osmdroid.views.MapView
-            android:id="@+id/map"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="275dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:layout_below="@id/Bemerkungenwert"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            android:id="@+id/cardviewmap"
+            android:layout_marginHorizontal="0dp"
+            app:cardPreventCornerOverlap="true"
+            app:cardUseCompatPadding="false">
+
+            <org.osmdroid.views.MapView
+                android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </androidx.cardview.widget.CardView>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/map"
+            android:layout_below="@id/cardviewmap"
             android:id="@+id/fussnoten">
             <RelativeLayout
                 android:layout_width="match_parent"

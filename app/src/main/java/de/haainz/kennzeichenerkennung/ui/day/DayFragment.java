@@ -325,6 +325,7 @@ public class DayFragment extends Fragment {
         @Override
         protected void onPostExecute(GeoPoint geoPoint) {
             DayFragment fragment = fragmentReference.get();
+            try {
             if (fragment != null && fragment.mapView != null) { // Überprüfe, ob mapView nicht null ist
                 if (geoPoint != null) {
                     fragment.mapView.getController().setZoom(6.5);
@@ -342,6 +343,10 @@ public class DayFragment extends Fragment {
                 }
             } else {
                 Log.e("DayFragment", "mapView is null, cannot add marker.");
+            }
+            } catch (Exception e) {
+                fragment.mapView.setVisibility(GONE);
+                e.printStackTrace();
             }
         }
     }
