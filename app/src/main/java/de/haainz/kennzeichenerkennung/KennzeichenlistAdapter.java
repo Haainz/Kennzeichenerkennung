@@ -45,9 +45,6 @@ public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> {
         textViewKennzeichen.setText(kennzeichen.OertskuerzelGeben());
         textViewDetails.setText(kennzeichen.OrtGeben() + " - " + kennzeichen.StadtKreisGeben());
         textViewDetails2.setText(kennzeichen.BundeslandGeben() + ", " + kennzeichen.LandGeben());
-        if(!kennzeichen.isSaved()) {
-            savedView.setVisibility(GONE);
-        }
 
         if(Objects.equals(kennzeichen.OertskuerzelGeben(), "Y")) {
             imgnation.setImageResource(R.drawable.img4_1);
@@ -58,6 +55,12 @@ public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> {
         } else {
             imgnation.setImageResource(R.drawable.img4);
             formatKuerzel(textViewKennzeichen, 22);
+        }
+
+        if(Objects.equals(kennzeichen.saved, "nein")) {
+            savedView.setVisibility(GONE);
+        } else {
+            savedView.setVisibility(VISIBLE);
         }
 
         return convertView;

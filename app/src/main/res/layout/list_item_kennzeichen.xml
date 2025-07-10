@@ -74,7 +74,7 @@
             android:layout_marginTop="2dp"
             android:layout_toEndOf="@id/textViewDetails2"
             android:layout_below="@id/textViewDetails"
-            android:visibility="visible"
+            android:visibility="gone"
             app:tint="#FF0000"/>
     </RelativeLayout>
 </LinearLayout>
