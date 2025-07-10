@@ -97,7 +97,7 @@ public class AddCityFragment extends DialogFragment {
             return;
         }
 
-        String csvZeile = nationalitaetszeichen + "," + unterscheidungszeichen + "," + stadtOderKreis + "," + herleitung + "," + bundeslandName + "," + bundeslandIso31662 + "," + fussnoten + "," + bemerkung;
+        String csvZeile = nationalitaetszeichen + "," + unterscheidungszeichen + "," + stadtOderKreis + "," + herleitung + "," + bundeslandName + "," + bundeslandIso31662 + "," + fussnoten + "," + bemerkung + ", " + "nein";
 
         try {
             File file = new File(getActivity().getFilesDir(), "kennzeicheneigene.csv");

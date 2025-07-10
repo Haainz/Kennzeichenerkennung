@@ -1,5 +1,8 @@
 package de.haainz.kennzeichenerkennung;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,10 +40,14 @@ public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> {
         TextView textViewDetails = convertView.findViewById(R.id.textViewDetails);
         TextView textViewDetails2 = convertView.findViewById(R.id.textViewDetails2);
         ImageView imgnation = convertView.findViewById(R.id.D);
+        ImageView savedView = convertView.findViewById(R.id.savedview);
 
         textViewKennzeichen.setText(kennzeichen.OertskuerzelGeben());
         textViewDetails.setText(kennzeichen.OrtGeben() + " - " + kennzeichen.StadtKreisGeben());
         textViewDetails2.setText(kennzeichen.BundeslandGeben() + ", " + kennzeichen.LandGeben());
+        if(!kennzeichen.isSaved()) {
+            savedView.setVisibility(GONE);
+        }
 
         if(Objects.equals(kennzeichen.OertskuerzelGeben(), "Y")) {
             imgnation.setImageResource(R.drawable.img4_1);

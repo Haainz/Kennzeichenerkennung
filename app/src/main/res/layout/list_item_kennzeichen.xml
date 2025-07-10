@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="8dp">
 
@@ -39,7 +40,6 @@
                 android:text="WOB"
                 android:textColor="@android:color/black"
                 android:textSize="30sp" />
-
         </RelativeLayout>
 
         <TextView
@@ -59,10 +59,22 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:layout_marginTop="-2dp"
-            android:layout_toEndOf="@+id/kennzeichen"
-            android:layout_below="@+id/textViewDetails"
+            android:layout_toEndOf="@id/kennzeichen"
+            android:layout_below="@id/textViewDetails"
             android:text="test"
             android:textColor="@color/text_normal"
             android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/savedview"
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:src="@drawable/icon_heartfull"
+            android:layout_marginStart="7dp"
+            android:layout_marginTop="2dp"
+            android:layout_toEndOf="@id/textViewDetails2"
+            android:layout_below="@id/textViewDetails"
+            android:visibility="visible"
+            app:tint="#FF0000"/>
     </RelativeLayout>
 </LinearLayout>

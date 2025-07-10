@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="7dp"
-            android:layout_toLeftOf="@id/liked_btn"
+            android:layout_toLeftOf="@id/refresh_btn"
             android:background="@drawable/edit_text_rounded_corner"
             android:backgroundTint="?attr/colorOnPrimary"
             android:elevation="4dp"
@@ -30,7 +30,7 @@
             android:textSize="16dp" />
 
         <ImageButton
-            android:id="@+id/liked_btn"
+            android:id="@+id/refresh_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginLeft="5dp"
@@ -38,9 +38,7 @@
             android:layout_toLeftOf="@+id/add_btn"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="4dp"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            android:src="@drawable/icon_heartempty2"
+            android:src="@drawable/icon_refresh"
             app:tint="@color/red" />
 
         <ImageButton
