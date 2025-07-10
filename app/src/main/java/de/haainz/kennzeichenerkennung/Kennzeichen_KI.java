@@ -102,6 +102,7 @@ public class Kennzeichen_KI {
                 kennzeichen.setTyp("normal");
                 kennzeichenliste.add(kennzeichen);
             }
+            reader.close();
         } catch (IOException e) {
             Log.e("KennzeichenEinlesen", "Fehler bei der Einlesung der Datei: " + e.getMessage());
         }
@@ -125,6 +126,7 @@ public class Kennzeichen_KI {
                 kennzeichen.setTyp("sonder");
                 kennzeichenliste.add(kennzeichen);
             }
+            reader.close();
         } catch (IOException e) {
             Log.e("KennzeichenEinlesen", "Fehler bei der Einlesung der Datei: " + e.getMessage());
         }
@@ -146,6 +148,7 @@ public class Kennzeichen_KI {
                 kennzeichen.setTyp("auslaufend");
                 kennzeichenliste.add(kennzeichen);
             }
+            reader.close();
         } catch (IOException e) {
             Log.e("KennzeichenEinlesen", "Fehler bei der Einlesung der Datei: " + e.getMessage());
         }
@@ -156,39 +159,23 @@ public class Kennzeichen_KI {
             File file = new File(context.getFilesDir(), "kennzeicheneigene.csv");
             if (!file.exists()) {
                 file.createNewFile();
+                FileWriter headerWriter = new FileWriter(file);
+                headerWriter.write("Nationalitätszeichen,Unterscheidungszeichen,StadtOderKreis,Herleitung,Bundesland.Name,Bundesland.Iso3166-2,Fußnoten,Bemerkung,gespeichert\n");
+                headerWriter.close();
             }
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] values = line.split(",(?! )");
+            Reader reader = new FileReader(file);
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(reader);
+            for (CSVRecord record : records) {
                 Kennzeichen kennzeichen = new Kennzeichen();
-                if (values.length > 0) {
-                    kennzeichen.nationalitaetskuerzel = values[0];
-                }
-                if (values.length > 1) {
-                    kennzeichen.oertskuerzel = values[1];
-                }
-                if (values.length > 2) {
-                    kennzeichen.stadtkreis = values[2];
-                }
-                if (values.length > 3) {
-                    kennzeichen.ort = values[3];
-                }
-                if (values.length > 4) {
-                    kennzeichen.bundesland = values[4];
-                }
-                if (values.length > 5) {
-                    kennzeichen.bundeslandiso = values[5];
-                }
-                if (values.length > 6) {
-                    kennzeichen.fussnote = values[6];
-                }
-                if (values.length > 7) {
-                    kennzeichen.bemerkungen = values[7];
-                }
-                if (values.length > 8) {
-                    kennzeichen.saved = values[8];
-                }
+                kennzeichen.nationalitaetskuerzel = record.get("Nationalitätszeichen");
+                kennzeichen.oertskuerzel = record.get("Unterscheidungszeichen");
+                kennzeichen.stadtkreis = record.get("StadtOderKreis");
+                kennzeichen.ort = record.get("Herleitung");
+                kennzeichen.bundesland = record.get("Bundesland.Name");
+                kennzeichen.bundeslandiso = record.get("Bundesland.Iso3166-2");
+                kennzeichen.fussnote = record.get("Fußnoten");
+                kennzeichen.bemerkungen = record.get("Bemerkung");
+                kennzeichen.saved = record.get("gespeichert");
                 kennzeichen.setTyp("eigene");
                 kennzeichenliste.add(kennzeichen);
             }
@@ -346,7 +333,6 @@ public class Kennzeichen_KI {
             if (!found) {
                 Log.w("KennzeichenEinlesen", "Kennzeichen nicht gefunden in: " + filename);
             }
-
         } catch (IOException e) {
             Log.e("KennzeichenEinlesen", "Fehler beim Bearbeiten der Datei: " + e.getMessage());
         }
