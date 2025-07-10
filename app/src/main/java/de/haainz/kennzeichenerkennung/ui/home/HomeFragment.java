@@ -318,7 +318,7 @@ public class HomeFragment extends Fragment {
                     binding.bundeslandIsoTitel.setVisibility(GONE);
                 }
                 binding.landwert.setText(kennzeichen.LandGeben());
-                if (kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
+                if (kennzeichen.isSaved()) {
                     binding.likedBtn.setVisibility(VISIBLE);
                     Log.d("Kennzeichen", "1");
                 } else {
@@ -423,20 +423,10 @@ public class HomeFragment extends Fragment {
         });
 
         binding.likeBtn.setOnClickListener(v -> {
-            kennzeichenKI.KennzeichenLikedEinlesen();
             Kennzeichen kennzeichen = kennzeichenKI.getKennzeichen(String.valueOf(kuerzelEingabe.getText()));
-            if (!kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
-                String csvZeile = kennzeichen.LandGeben() + "," + kennzeichen.OertskuerzelGeben() + "," + kennzeichen.StadtKreisGeben() + "," + kennzeichen.OrtGeben() + "," + kennzeichen.BundeslandGeben() + "," + kennzeichen.BundeslandIsoGeben() + "," + kennzeichen.FussnoteGeben() + "," + kennzeichen.BemerkungenGeben();
-                try {
-                    File file = new File(getActivity().getFilesDir(), "kennzeichenliked.csv");
-                    FileOutputStream fileOutputStream = new FileOutputStream(file, true);
-                    fileOutputStream.write((csvZeile + "\n").getBytes());
-                    fileOutputStream.close();
-                    binding.likedBtn.setVisibility(VISIBLE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(getActivity(), "Es ist ein Fehler aufgetreten", Toast.LENGTH_SHORT).show();
-                }
+            if (!kennzeichen.isSaved()) {
+                binding.likedBtn.setVisibility(VISIBLE);
+                kennzeichenKI.changesavestatus(kennzeichen, "ja");
             } else {
                 Toast.makeText(getActivity(), "Kennzeichen bereits geliked", Toast.LENGTH_SHORT).show();
             }
@@ -445,8 +435,7 @@ public class HomeFragment extends Fragment {
         binding.likedBtn.setOnClickListener(v -> {
             Kennzeichen kennzeichen = kennzeichenKI.getKennzeichen(String.valueOf(kuerzelEingabe.getText()));
             binding.likedBtn.setVisibility(GONE);
-            kennzeichenKI.deletelikedKennzeichen(kennzeichen);
-            kennzeichenKI.KennzeichenLikedEinlesen();
+            kennzeichenKI.changesavestatus(kennzeichen, "nein");
         });
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", getActivity().MODE_PRIVATE);

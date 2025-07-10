@@ -219,12 +219,12 @@ public class ListFragment extends Fragment {
                             }
                             if (binding.buttonLike3.getVisibility() == VISIBLE) {
                                 // Zeige nur die geliketen Kennzeichen
-                                if (!kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
+                                if (!kennzeichen.isSaved()) {
                                     filteredList.remove(kennzeichen);
                                 }
                             } else if (binding.buttonLike2.getVisibility() == VISIBLE) {
                                 // Zeige nur die nicht geliketen Kennzeichen
-                                if (kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
+                                if (kennzeichen.isSaved()) {
                                     filteredList.remove(kennzeichen);
                                 }
                             }
@@ -423,7 +423,6 @@ public class ListFragment extends Fragment {
     }
 
     public void updateList() {
-        kennzeichenKI.KennzeichenLikedEinlesen();
         String searchQuery = binding.searchInput.getText().toString().toLowerCase();
 
         kennzeichenKI = new Kennzeichen_KI(getActivity());
@@ -450,12 +449,12 @@ public class ListFragment extends Fragment {
             }
             if (binding.buttonLike3.getVisibility() == VISIBLE) {
                 // Zeige nur die geliketen Kennzeichen
-                if (!kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
+                if (!kennzeichen.isSaved()) {
                     filteredList.remove(kennzeichen);
                 }
             } else if (binding.buttonLike2.getVisibility() == VISIBLE) {
                 // Zeige nur die nicht geliketen Kennzeichen
-                if (kennzeichenKI.LikeÜberprüfen(kennzeichen.OertskuerzelGeben())) {
+                if (kennzeichen.isSaved()) {
                     filteredList.remove(kennzeichen);
                 }
             }

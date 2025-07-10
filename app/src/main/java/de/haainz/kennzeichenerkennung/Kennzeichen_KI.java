@@ -1,6 +1,7 @@
 package de.haainz.kennzeichenerkennung;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.apache.commons.csv.CSVFormat;
@@ -27,26 +28,25 @@ import java.util.ArrayList;
  */
 public class Kennzeichen_KI {
     private ArrayList<Kennzeichen> kennzeichenliste;
-    private ArrayList<Kennzeichen> likedliste;
     private Context context;
 
     public Kennzeichen_KI(Context context) {
         this.context = context;
         kennzeichenliste = new ArrayList<>();
+
+        // 📁 Sicherstellen, dass die CSV-Dateien im internen Speicher existieren
+        copyAssetToFileDirIfNeeded("kennzeichen.csv");
+        copyAssetToFileDirIfNeeded("kennzeichenauslaufend.csv");
+        copyAssetToFileDirIfNeeded("sonderkennzeichen.csv");
+
         KennzeichenNormalEinlesen();
         KennzeichenSonderEinlesen();
         KennzeichenAuslaufendEinlesen();
         KennzeichenEigeneEinlesen();
-        likedliste = new ArrayList<>();
-        KennzeichenLikedEinlesen();
     }
 
     public ArrayList<Kennzeichen> getKennzeichenListe() {
         return kennzeichenliste;
-    }
-
-    public ArrayList<Kennzeichen> getLikedliste() {
-        return likedliste;
     }
 
     public String OrtZuKennzeichenAusgeben(String kennzeichen)
@@ -82,20 +82,10 @@ public class Kennzeichen_KI {
         return null;
     }
 
-    public boolean LikeÜberprüfen(String kuerzel) {
-        KennzeichenLikedEinlesen(); // Sicherstellen, dass die likedliste aktuell ist
-        for (Kennzeichen kennzeichen : likedliste) {
-            if (kennzeichen.OertskuerzelGeben().equals(kuerzel)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void KennzeichenNormalEinlesen() {
         try {
-            InputStream inputStream = context.getAssets().open("kennzeichen.csv");
-            Reader reader = new InputStreamReader(inputStream);
+            File file = new File(context.getFilesDir(), "kennzeichen.csv");
+            Reader reader = new FileReader(file);
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(reader);
 
             for (CSVRecord record : records) {
@@ -108,6 +98,7 @@ public class Kennzeichen_KI {
                 kennzeichen.bundeslandiso = record.get("Bundesland.Iso3166-2");
                 kennzeichen.fussnote = record.get("Fußnoten");
                 kennzeichen.bemerkungen = record.get("Bemerkung");
+                kennzeichen.saved = record.get("gespeichert");
                 kennzeichen.setTyp("normal");
                 kennzeichenliste.add(kennzeichen);
             }
@@ -116,10 +107,11 @@ public class Kennzeichen_KI {
         }
     }
 
+
     private void KennzeichenSonderEinlesen() {
         try {
-            InputStream inputStream = context.getAssets().open("sonderkennzeichen.csv");
-            Reader reader = new InputStreamReader(inputStream);
+            File file = new File(context.getFilesDir(), "sonderkennzeichen.csv");
+            Reader reader = new FileReader(file);
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(reader);
 
             for (CSVRecord record : records) {
@@ -129,6 +121,7 @@ public class Kennzeichen_KI {
                 kennzeichen.stadtkreis = record.get("Zulassungsbehörde");
                 kennzeichen.ort = record.get("Bedeutung");
                 kennzeichen.bundesland = record.get("Typ");
+                kennzeichen.saved = record.get("gespeichert");
                 kennzeichen.setTyp("sonder");
                 kennzeichenliste.add(kennzeichen);
             }
@@ -139,8 +132,8 @@ public class Kennzeichen_KI {
 
     private void KennzeichenAuslaufendEinlesen() {
         try {
-            InputStream inputStream = context.getAssets().open("kennzeichenauslaufend.csv");
-            Reader reader = new InputStreamReader(inputStream);
+            File file = new File(context.getFilesDir(), "kennzeichenauslaufend.csv");
+            Reader reader = new FileReader(file);
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(reader);
 
             for (CSVRecord record : records) {
@@ -149,6 +142,7 @@ public class Kennzeichen_KI {
                 kennzeichen.oertskuerzel = record.get("Unterscheidungszeichen");
                 kennzeichen.stadtkreis = record.get("Abwicklung");
                 kennzeichen.ort = record.get("BisherigerVerwaltungsbezirkOderKreis");
+                kennzeichen.saved = record.get("gespeichert");
                 kennzeichen.setTyp("auslaufend");
                 kennzeichenliste.add(kennzeichen);
             }
@@ -192,6 +186,9 @@ public class Kennzeichen_KI {
                 if (values.length > 7) {
                     kennzeichen.bemerkungen = values[7];
                 }
+                if (values.length > 8) {
+                    kennzeichen.saved = values[8];
+                }
                 kennzeichen.setTyp("eigene");
                 kennzeichenliste.add(kennzeichen);
             }
@@ -201,7 +198,7 @@ public class Kennzeichen_KI {
         }
     }
 
-    public void KennzeichenLikedEinlesen() {
+    /*public void KennzeichenLikedEinlesen() {
         try {
             File file = new File(context.getFilesDir(), "kennzeichenliked.csv");
             if (!file.exists()) {
@@ -224,6 +221,25 @@ public class Kennzeichen_KI {
         } catch (IOException e) {
             Log.e("KennzeichenEinlesen", "Fehler bei der Einlesung der Datei: " + e.getMessage());
         }
+    }*/
+
+    private void copyAssetToFileDirIfNeeded(String filename) {
+        File outFile = new File(context.getFilesDir(), filename);
+        if (!outFile.exists()) {
+            try (InputStream in = context.getAssets().open(filename);
+                 FileWriter writer = new FileWriter(outFile)) {
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    writer.write(line + "\n");
+                }
+                writer.flush();
+                Log.i("KennzeichenEinlesen", "Datei kopiert: " + filename);
+            } catch (IOException e) {
+                Log.e("KennzeichenEinlesen", "Fehler beim Kopieren von " + filename + ": " + e.getMessage());
+            }
+        }
     }
 
     public void deleteKennzeichen(Kennzeichen kennzeichen) {
@@ -242,10 +258,6 @@ public class Kennzeichen_KI {
                         }
                     }
                     reader.close();
-                    FileWriter writer = new FileWriter(file);
-                    writer.write("Oertskuerzel,Stadtkreis,Ort,Bundesland\n");
-                    writer.write(content.toString());
-                    writer.close();
                 } else {
                     Log.e("KennzeichenEinlesen", "Die Datei kennzeicheneigene.csv existiert nicht.");
                 }
@@ -257,47 +269,86 @@ public class Kennzeichen_KI {
         }
     }
 
-    public void deletelikedKennzeichen(Kennzeichen kennzeichen) {
+    public void changesavestatus(Kennzeichen kennzeichen, String savestatus) {
         try {
-            File file = new File(context.getFilesDir(), "kennzeichenliked.csv");
-            if (file.exists()) {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                StringBuilder content = new StringBuilder();
-                String line;
-                boolean found = false; // Flag, um zu überprüfen, ob das Kennzeichen gefunden wurde
-                while ((line = reader.readLine()) != null) {
-                    String[] values = line.split(","); // Korrektur hier
-                    if (values.length > 1) { // Nur Zeilen mit mindestens zwei Elementen bearbeiten
-                        if (!values[1].equals(kennzeichen.OertskuerzelGeben())) {
-                            content.append(line).append("\n");
-                        } else {
-                            Log.e("KennzeichenEinlesen", kennzeichen.OertskuerzelGeben());
-                            found = true; // Kennzeichen gefunden
-                        }
-                    }
-                }
-                reader.close();
-                FileWriter writer = new FileWriter(file);
-                writer.write(content.toString());
-                writer.close();
-                Log.e("KennzeichenEinlesen", String.valueOf(found));
-                // Wenn das Kennzeichen gefunden wurde, entferne es auch aus der likedliste
-                if (found) {
-                    likedliste.remove(kennzeichen);
+            String filename = kennzeichen.isNormal() ? "kennzeichen.csv" :
+                    kennzeichen.isAuslaufend() ? "kennzeichenauslaufend.csv" :
+                    kennzeichen.isSonder() ? "sonderkennzeichen.csv" :
+                    kennzeichen.isEigene() ? "kennzeicheneigene.csv" : null;
 
-                    // Remove from kennzeichenliste
-                    for (int i = 0; i < kennzeichenliste.size(); i++) {
-                        if (kennzeichenliste.get(i).OertskuerzelGeben().equals(kennzeichen.OertskuerzelGeben())) {
-                            kennzeichenliste.remove(i);
-                            break;
-                        }
-                    }
-                }
-            } else {
-                Log.e("KennzeichenEinlesen", "Die Datei kennzeichenliked.csv existiert nicht.");
+            if (filename == null) {
+                Log.e("KennzeichenEinlesen", "Unbekannter Typ für Kennzeichen: " + kennzeichen.getTyp());
+                return;
             }
+
+            File file = new File(context.getFilesDir(), filename);
+            if (!file.exists()) {
+                Log.e("KennzeichenEinlesen", "Datei existiert nicht: " + filename);
+                return;
+            }
+
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            StringBuilder content = new StringBuilder();
+            String headerLine = reader.readLine();
+            if (headerLine == null) {
+                reader.close();
+                Log.e("KennzeichenEinlesen", "Datei ist leer: " + filename);
+                return;
+            }
+
+            // Kopfzeile verarbeiten
+            String[] headers = headerLine.split(",");
+            int gespeichertIndex = -1;
+            int oertskuerzelIndex = -1;
+
+            for (int i = 0; i < headers.length; i++) {
+                if (headers[i].trim().equalsIgnoreCase("gespeichert")) {
+                    gespeichertIndex = i;
+                }
+                if (headers[i].trim().equalsIgnoreCase("Unterscheidungszeichen")) {
+                    oertskuerzelIndex = i;
+                }
+            }
+
+            if (gespeichertIndex == -1 || oertskuerzelIndex == -1) {
+                reader.close();
+                Log.e("KennzeichenEinlesen", "Wichtige Spalte fehlt in: " + filename);
+                return;
+            }
+
+            content.append(headerLine).append("\n"); // Kopfzeile behalten
+            String line;
+            boolean found = false;
+
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",", -1); // auch leere Felder beibehalten
+
+                if (values.length > Math.max(gespeichertIndex, oertskuerzelIndex) &&
+                        values[oertskuerzelIndex].equals(kennzeichen.OertskuerzelGeben())) {
+
+                    values[gespeichertIndex] = savestatus;
+                    found = true;
+                    Log.e("KennzeichenEinlesen", "Gespeichert-Wert geändert für: " + values[oertskuerzelIndex]);
+                }
+
+                String updatedLine = TextUtils.join(",", values);
+                content.append(updatedLine).append("\n");
+            }
+
+            reader.close();
+
+            FileWriter writer = new FileWriter(file);
+            writer.write(content.toString());
+            writer.close();
+
+            kennzeichen.saved=savestatus;
+
+            if (!found) {
+                Log.w("KennzeichenEinlesen", "Kennzeichen nicht gefunden in: " + filename);
+            }
+
         } catch (IOException e) {
-            Log.e("KennzeichenEinlesen", "Fehler bei der Einlesung der Datei: " + e.getMessage());
+            Log.e("KennzeichenEinlesen", "Fehler beim Bearbeiten der Datei: " + e.getMessage());
         }
     }
 }

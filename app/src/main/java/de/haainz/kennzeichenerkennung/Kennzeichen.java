@@ -19,6 +19,7 @@ public class Kennzeichen implements Serializable
     public String bundeslandiso;
     public String bemerkungen;
     public String fussnote = "6";
+    public String saved = "nein";
     private String typ;
 
     /**
@@ -71,6 +72,10 @@ public class Kennzeichen implements Serializable
         return fussnote;
     }
 
+    public String SavedGeben() {
+        return saved;
+    }
+
     public void setTyp(String typ) {
         this.typ = typ;
     }
@@ -89,5 +94,9 @@ public class Kennzeichen implements Serializable
 
     public boolean isEigene() {
         return typ.equals("eigene");
+    }
+
+    public boolean isSaved() {
+        return saved.equals("ja");
     }
 }

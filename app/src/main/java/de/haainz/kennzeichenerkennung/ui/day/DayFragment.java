@@ -106,8 +106,7 @@ public class DayFragment extends Fragment {
         int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
         currentKennzeichen = getKennzeichen();
 
-        kennzeichenKI.KennzeichenLikedEinlesen();
-        if (kennzeichenKI.LikeÜberprüfen(currentKennzeichen.OertskuerzelGeben())) {
+        if (currentKennzeichen.isSaved()) {
             binding.likedBtn.setVisibility(VISIBLE);
             binding.countText.setVisibility(VISIBLE);
         } else {
@@ -168,19 +167,9 @@ public class DayFragment extends Fragment {
         });
 
         binding.likeBtn.setOnClickListener(v -> {
-            if (!kennzeichenKI.LikeÜberprüfen(currentKennzeichen.OertskuerzelGeben())) {
-                String csvZeile = currentKennzeichen.LandGeben() + "," + currentKennzeichen.OertskuerzelGeben() + "," + currentKennzeichen.StadtKreisGeben() + "," + currentKennzeichen.OrtGeben() + "," + currentKennzeichen.BundeslandGeben() + "," + currentKennzeichen.BundeslandIsoGeben() + "," + currentKennzeichen.FussnoteGeben() + "," + currentKennzeichen.BemerkungenGeben();
-                try {
-                    File file = new File(getActivity().getFilesDir(), "kennzeichenliked.csv");
-                    FileOutputStream fileOutputStream = new FileOutputStream(file, true);
-                    fileOutputStream.write((csvZeile + "\n").getBytes());
-                    fileOutputStream.close();
-                    binding.likedBtn.setVisibility(VISIBLE);
-                    binding.countText.setVisibility(VISIBLE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(getActivity(), "Es ist ein Fehler aufgetreten", Toast.LENGTH_SHORT).show();
-                }
+            if (!currentKennzeichen.isSaved()) {
+                binding.likedBtn.setVisibility(VISIBLE);
+                kennzeichenKI.changesavestatus(currentKennzeichen, "ja");
             } else {
                 Toast.makeText(getActivity(), "Kennzeichen bereits geliked", Toast.LENGTH_SHORT).show();
             }
@@ -189,7 +178,7 @@ public class DayFragment extends Fragment {
         binding.likedBtn.setOnClickListener(v -> {
             binding.likedBtn.setVisibility(GONE);
             binding.countText.setVisibility(GONE);
-            kennzeichenKI.deletelikedKennzeichen(currentKennzeichen);
+            kennzeichenKI.changesavestatus(currentKennzeichen, "nein");
         });
 
         binding.saveBtn.setOnClickListener(v -> {
