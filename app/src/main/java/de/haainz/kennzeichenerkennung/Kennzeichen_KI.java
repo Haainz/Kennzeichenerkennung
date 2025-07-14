@@ -185,31 +185,6 @@ public class Kennzeichen_KI {
         }
     }
 
-    /*public void KennzeichenLikedEinlesen() {
-        try {
-            File file = new File(context.getFilesDir(), "kennzeichenliked.csv");
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] values = line.split(",");
-                if (values.length > 2) {
-                    Kennzeichen kennzeichen = new Kennzeichen();
-                    kennzeichen.nationalitaetskuerzel = values[0];
-                    kennzeichen.oertskuerzel = values[1];
-                    kennzeichen.ort = values[2];
-                    kennzeichen.setTyp("liked");
-                    likedliste.add(kennzeichen);
-                }
-            }
-            reader.close();
-        } catch (IOException e) {
-            Log.e("KennzeichenEinlesen", "Fehler bei der Einlesung der Datei: " + e.getMessage());
-        }
-    }*/
-
     private void copyAssetToFileDirIfNeeded(String filename) {
         File outFile = new File(context.getFilesDir(), filename);
         if (!outFile.exists()) {

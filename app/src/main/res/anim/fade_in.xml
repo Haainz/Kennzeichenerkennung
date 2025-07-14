@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_interpolator"
+    android:fillAfter="true">
+
+    <!-- Alpha: Von sichtbar zu transparent -->
+    <alpha
+        android:duration="400"
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0" />
+
+    <!-- Translate: Von Position 0 nach -30% der Breite (nach links) -->
+    <translate
+        android:duration="200"
+        android:fromXDelta="-30%"
+        android:toXDelta="0%"
+        android:fromYDelta="0%"
+        android:toYDelta="0%" />
+</set>

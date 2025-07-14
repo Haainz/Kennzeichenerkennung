@@ -17,13 +17,6 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\app\src\main\assets\kennzeicheneigene.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="\app\src\main\assets\sonderkennzeichen.csv">
           <value>
             <Attribute>
