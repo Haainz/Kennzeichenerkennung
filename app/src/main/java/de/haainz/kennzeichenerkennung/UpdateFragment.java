@@ -61,7 +61,7 @@ public class UpdateFragment extends DialogFragment {
             if (checkBox.isChecked()) {
                 if (downloadUrl != null && version != null) {
                     ((MainActivity) requireActivity()).deleteOldDownloads();
-                    //((MainActivity) requireActivity()).startDownload(downloadUrl, version);
+                    ((MainActivity) requireActivity()).startDownload(downloadUrl, version);
                     dismiss();
                 }
             } else {

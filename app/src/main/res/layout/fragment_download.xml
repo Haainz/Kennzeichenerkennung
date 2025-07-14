@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".DownloadFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:id="@+id/main_toolbar"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Exportieren:"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            android:textColor="@color/white"
+            android:layout_marginStart="20dp"
+            android:layout_centerVertical="true"/>
+
+        <ImageButton
+            android:id="@+id/x"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@drawable/icon_x"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="top"
+        android:id="@+id/fragment_container1"
+        android:layout_marginHorizontal="11dp"
+        android:layout_marginTop="10dp"
+        android:nestedScrollingEnabled="true"
+        android:layout_below="@+id/main_toolbar">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:text="Wähle aus, welche Dateien als CSV-Datei in den Downloadspeicher exportiert werden sollen. Jede Datei wird dabei einzeln gespeichert."
+            android:textStyle="bold"
+            android:textSize="14dp"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="15dp"
+            android:text="Deutsche Kennzeichen"
+            android:textColor="?attr/colorTextNormal"
+            android:id="@+id/de_chk"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:text="Standardkennzeichen"
+            android:textColor="?attr/colorTextNormal"
+            android:id="@+id/standard_chk" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:text="Sonderkennzeichen"
+            android:textColor="?attr/colorTextNormal"
+            android:id="@+id/sonder_chk"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginStart="20dp"
+            android:text="Auslaufende Kennzeichen"
+            android:textColor="?attr/colorTextNormal"
+            android:id="@+id/auslaufend_chk"/>
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="eigene Kennzeichen"
+            android:textColor="?attr/colorTextNormal"
+            android:id="@+id/eigene_chk"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Gespeichert werden alle Informationen zu alle Kennzeichen und der Status ob das Kennzeichen vom Nutzer gespeichert (geliked) ist."
+            android:textStyle="bold"
+            android:textSize="14dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/orteingabe"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/edit_text_rounded_corner"
+            android:gravity="center"
+            android:text="Dateien exportieren"
+            android:id="@+id/export_btn"
+            android:textColor="@color/white"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="12dp"/>
+
+        <LinearLayout
+            android:id="@+id/export_notification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/export_btn"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:gravity="center_vertical"
+            android:background="#323232"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/export_message"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:text="Exportiert"
+                android:textSize="13sp"
+                android:maxLines="3" />
+
+            <Button
+                android:id="@+id/open_file_btn"
+                android:layout_width="85dp"
+                android:layout_height="wrap_content"
+                android:text="Öffnen"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:background="?attr/selectableItemBackground" />
+
+            <Button
+                android:id="@+id/open_folder_btn"
+                android:layout_width="56dp"
+                android:layout_height="wrap_content"
+                android:text="Ort"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:background="?attr/selectableItemBackground" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"/>
+    </LinearLayout>
+</RelativeLayout>

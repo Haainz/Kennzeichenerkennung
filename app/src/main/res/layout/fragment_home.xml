@@ -148,8 +148,8 @@
             app:layout_constraintTop_toTopOf="@+id/imageView2">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/icon_delete"
                 android:id="@+id/delete_btn"
                 app:tint="?attr/colorTextNormal"
@@ -157,8 +157,8 @@
                 android:layout_marginLeft="15dp"/>
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/icon_save"
                 android:layout_below="@id/delete_btn"
                 android:layout_marginTop="25dp"
@@ -167,8 +167,8 @@
                 app:tint="?attr/colorTextNormal"/>
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/icon_share"
                 android:layout_below="@id/save_btn"
                 android:layout_marginTop="25dp"
@@ -177,8 +177,8 @@
                 app:tint="?attr/colorTextNormal"/>
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/icon_info"
                 android:layout_below="@id/share_btn"
                 android:layout_marginTop="25dp"

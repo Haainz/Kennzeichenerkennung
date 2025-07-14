@@ -36,7 +36,7 @@ import okhttp3.Response;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private SwitchCompat darkModeSwitch;
+    private TextView darkMode;
     private SharedPreferences sharedPreferences;
     private Spinner aiSp;
     private ArrayList<String> aiList = new ArrayList<>();
@@ -49,28 +49,16 @@ public class SettingsActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("settings", MODE_PRIVATE);
 
-        darkModeSwitch = findViewById(R.id.dark_mode_switch);
+        darkMode = findViewById(R.id.dark_mode);
         aiSp = findViewById(R.id.ai_spinner);
-
-        darkModeSwitch.setChecked(sharedPreferences.getBoolean("darkMode", true));
 
         ImageButton backBtn = findViewById(R.id.backbtn);
         backBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-            overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right);
+            onBackPressed();
         });
 
-        darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                sharedPreferences.edit().putBoolean("darkMode", true).apply();
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                sharedPreferences.edit().putBoolean("darkMode", false).apply();
-            }
+        darkMode.setOnClickListener(v -> {
+            showDialogFragment(new DarkmodeDialogFragment(), "DarkmodeDialog");
         });
 
         Button btnueber = findViewById(R.id.button_ueber);

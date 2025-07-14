@@ -57,11 +57,13 @@
             android:textColor="@color/red"
             android:text="Aussehen:"/>
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/dark_mode_switch"
+        <TextView
+            android:id="@+id/dark_mode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Darkmode" />
+            android:text="Erscheinungsbild"
+            android:layout_marginVertical="10dp"
+            android:textColor="?attr/colorTextNormal"/>
 
         <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/log_switch"

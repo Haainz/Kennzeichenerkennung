@@ -1,20 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:padding="16dp"
+    android:baselineAligned="false">
 
-    <Button
-        android:id="@+id/button_settings"
-        android:layout_width="match_parent"
+    <ImageButton
+        android:id="@+id/button_donate"
+        android:layout_width="48dp"
         android:layout_height="48dp"
-        android:backgroundTint="@color/dialog_background"
-        android:backgroundTintMode="src_over"
-        android:outlineAmbientShadowColor="#FF0000"
-        android:textColor="@color/white"
-        android:layout_gravity="center"
-        android:textSize="14dp"
-        android:text="⚙ Einstellungen" />
+        android:layout_margin="7dp"
+        android:background="@drawable/circle_button_background"
+        android:padding="12dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/icon_heart"
+        app:tint="@color/red" />
+
+    <ImageButton
+        android:id="@+id/button_upload"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="7dp"
+        android:background="@drawable/circle_button_background"
+        android:padding="12dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/icon_upload"
+        app:tint="?attr/colorTextNormal"/>
+
+    <ImageButton
+        android:id="@+id/button_download"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="7dp"
+        android:background="@drawable/circle_button_background"
+        android:padding="12dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/icon_download"
+        app:tint="?attr/colorTextNormal"/>
+
+    <ImageButton
+        android:id="@+id/button_settings"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="7dp"
+        android:background="@drawable/circle_button_background"
+        android:padding="12dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/icon_settings2"
+        app:tint="?attr/colorTextNormal"/>
 
 </LinearLayout>

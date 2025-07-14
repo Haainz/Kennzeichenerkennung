@@ -94,18 +94,29 @@ public class MainActivity extends AppCompatActivity {
         checkForUpdates();
     }
 
-    // Alle Firebase-bezogenen Methoden wurden entfernt
-
     private void setNightMode() {
-        if (sharedPreferences.getBoolean("darkMode", true)) {
+        int themeId = sharedPreferences.getInt("theme_mode", R.id.radio_system);
+        if (themeId == R.id.radio_light) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else if (themeId == R.id.radio_dark) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
     }
 
     private void setupSettingsButtons() {
-        Button settingsButton = findViewById(R.id.button_settings);
+        ImageButton donateButton = findViewById(R.id.button_donate);
+        donateButton.setOnClickListener(v -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com/donate/?hosted_button_id=XUTQZBWGBWCLN"));
+            startActivity(browserIntent);
+        });
+        ImageButton downloadButton = findViewById(R.id.button_download);
+        downloadButton.setOnClickListener(v -> {
+            DownloadFragment downloadFragment = new DownloadFragment();
+            downloadFragment.show(getSupportFragmentManager(), "DownloadFragment");
+        });
+        ImageButton settingsButton = findViewById(R.id.button_settings);
         settingsButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
@@ -208,17 +219,6 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "Error getting current app version", e);
             return 1;
         }
-    }
-
-    public void toggleDarkMode(boolean isChecked) {
-        if (isChecked) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            sharedPreferences.edit().putBoolean("darkMode", true).apply();
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            sharedPreferences.edit().putBoolean("darkMode", false).apply();
-        }
-        navigateToFragment("SettingsActivity");
     }
 
     void startDownload(String downloadUrl, String version) {

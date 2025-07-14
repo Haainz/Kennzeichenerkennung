@@ -70,6 +70,8 @@
         <item name="dialog_background">@color/white</item>
         <item name="greyslider">#DEDEDE</item>
         <item name="backcolor">#FDFDFD</item>
+        <item name="android:textColor">?attr/colorTextNormal</item>
+        <item name="android:textColorPrimary">?attr/colorTextNormal</item>
     </style>
 
 </resources>
