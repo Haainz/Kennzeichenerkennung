@@ -81,13 +81,13 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/button_de"
-                    android:layout_width="30dp"
+                    android:layout_width="50dp"
                     android:layout_height="30dp"
                     android:layout_below="@+id/search_input"
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
-                    android:text="D"
+                    android:text="DE"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="20dp"
@@ -135,21 +135,8 @@
                         android:id="@+id/button_auslaufend"
                         android:layout_width="76dp"
                         android:layout_height="24dp"
-                        android:background="@drawable/button_filter_middle"
-                        android:text="Auslaufend"
-                        android:textColor="@color/black"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:padding="0dp"
-                        android:minHeight="0dp"
-                        android:minWidth="0dp" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/button_eigene"
-                        android:layout_width="50dp"
-                        android:layout_height="24dp"
                         android:background="@drawable/button_filter_right"
-                        android:text="Eigene"
+                        android:text="Auslaufend"
                         android:textColor="@color/black"
                         android:textSize="10sp"
                         android:textStyle="bold"
@@ -158,12 +145,25 @@
                         android:minWidth="0dp" />
                 </LinearLayout>
 
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/button_eigene"
+                    android:layout_width="70dp"
+                    android:layout_height="30dp"
+                    android:layout_below="@+id/search_input"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/edit_text_rounded_corner_more"
+                    android:text="Eigene"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
                 <ImageView
                     android:id="@+id/button_like1"
                     android:layout_width="45dp"
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginStart="7dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
@@ -175,7 +175,7 @@
                     android:layout_width="45dp"
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginStart="7dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
@@ -188,7 +188,7 @@
                     android:layout_width="45dp"
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginStart="7dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/edit_text_rounded_corner_more"

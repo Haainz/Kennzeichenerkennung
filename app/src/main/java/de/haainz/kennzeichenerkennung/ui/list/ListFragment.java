@@ -111,7 +111,7 @@ public class ListFragment extends Fragment {
             updateList();
         });
 
-        binding.filterGroup.setVisibility(View.VISIBLE);
+        binding.filterGroup.setVisibility(View.GONE);
 
         setupFilterButtons();
 
@@ -122,9 +122,9 @@ public class ListFragment extends Fragment {
         binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
         binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
         binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
-        binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
 
         binding.buttonDe.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+        binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
 
         binding.buttonLike1.setVisibility(VISIBLE);
         binding.buttonLike2.setVisibility(GONE);
@@ -183,58 +183,41 @@ public class ListFragment extends Fragment {
 
     private void setupFilterButtons() {
         binding.buttonDe.setOnClickListener(v -> {
+            // Nur Sichtbarkeit toggeln, ohne Filterzustände zu verändern
             boolean filtersVisible = binding.filterGroup.getVisibility() == VISIBLE;
 
             if (filtersVisible) {
-                // Alle Filter ausschalten
-                showNormal = false;
-                showSonder = false;
-                showAuslaufend = false;
-                showEigene = false;
-
-                Animation fadeOut = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out);
-                binding.filterGroup.startAnimation(fadeOut);
-                fadeOut.setAnimationListener(new Animation.AnimationListener() {
-                    @Override public void onAnimationStart(Animation animation) {}
-                    @Override public void onAnimationEnd(Animation animation) {
-                        binding.filterGroup.setVisibility(GONE);
-
-                        // Farben auf weiß
-                        binding.buttonDe.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
-                        binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
-                        binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
-                        binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
-                        binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
-                    }
-                    @Override public void onAnimationRepeat(Animation animation) {}
-                });
-
+                binding.filterGroup.setVisibility(GONE);
             } else {
-                // Alle Filter aktivieren
-                showNormal = true;
-                showSonder = true;
-                showAuslaufend = true;
-                showEigene = true;
-
                 binding.filterGroup.setVisibility(VISIBLE);
-                Animation fadeIn = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
-                binding.filterGroup.startAnimation(fadeIn);
-
-                binding.buttonDe.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
-
-                binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
-                binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
-                binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
-                binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
             }
+        });
+        binding.buttonDe.setOnLongClickListener(v -> {
+            // Filterzustände toggeln, aber Sichtbarkeit bleibt gleich
+            boolean allActive = showNormal && showSonder && showAuslaufend;
+
+            // Wenn alle aktiv → alles deaktivieren, sonst alles aktivieren
+            showNormal = !allActive;
+            showSonder = !allActive;
+            showAuslaufend = !allActive;
+
+            int color = allActive ? R.color.white : R.color.yellow;
+
+            // Farben der Buttons entsprechend setzen
+            binding.buttonDe.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
 
             updateList();
+            return true;
         });
 
         binding.buttonNormal.setOnClickListener(v -> {
             showNormal = !showNormal;
             int color = showNormal ? R.color.yellow : R.color.white;
             binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            updateDeButtonColor();
             updateList();
         });
 
@@ -242,6 +225,7 @@ public class ListFragment extends Fragment {
             showSonder = !showSonder;
             int color = showSonder ? R.color.yellow : R.color.white;
             binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            updateDeButtonColor();
             updateList();
         });
 
@@ -249,6 +233,7 @@ public class ListFragment extends Fragment {
             showAuslaufend = !showAuslaufend;
             int color = showAuslaufend ? R.color.yellow : R.color.white;
             binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            updateDeButtonColor();
             updateList();
         });
 
@@ -323,6 +308,14 @@ public class ListFragment extends Fragment {
 
     public interface OnConfirmListener {
         void updateList();
+    }
+
+    private void updateDeButtonColor() {
+        if (showNormal || showSonder || showAuslaufend || showEigene) {
+            binding.buttonDe.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+        } else {
+            binding.buttonDe.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+        }
     }
 
     @Override
