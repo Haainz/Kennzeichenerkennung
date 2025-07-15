@@ -177,7 +177,6 @@ public class DayFragment extends Fragment {
 
         binding.likedBtn.setOnClickListener(v -> {
             binding.likedBtn.setVisibility(GONE);
-            binding.countText.setVisibility(GONE);
             kennzeichenKI.changesavestatus(currentKennzeichen, "nein");
         });
 

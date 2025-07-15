@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.BufferedReader;
@@ -16,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Ein Programm, das Fragen nach Ortskürzeln mit dem passenden Ort beantwortet.
@@ -232,82 +235,71 @@ public class Kennzeichen_KI {
     }
 
     public void changesavestatus(Kennzeichen kennzeichen, String savestatus) {
-        try {
-            String filename = kennzeichen.isNormal() ? "kennzeichen.csv" :
-                    kennzeichen.isAuslaufend() ? "kennzeichenauslaufend.csv" :
-                    kennzeichen.isSonder() ? "sonderkennzeichen.csv" :
-                    kennzeichen.isEigene() ? "kennzeicheneigene.csv" : null;
+        String filename = kennzeichen.isNormal() ? "kennzeichen.csv" :
+                kennzeichen.isAuslaufend() ? "kennzeichenauslaufend.csv" :
+                        kennzeichen.isSonder() ? "sonderkennzeichen.csv" :
+                                kennzeichen.isEigene() ? "kennzeicheneigene.csv" : null;
 
-            if (filename == null) {
-                Log.e("KennzeichenEinlesen", "Unbekannter Typ für Kennzeichen: " + kennzeichen.getTyp());
-                return;
-            }
+        if (filename == null) {
+            Log.e("KennzeichenEinlesen", "Unbekannter Typ für Kennzeichen: " + kennzeichen.getTyp());
+            return;
+        }
 
-            File file = new File(context.getFilesDir(), filename);
-            if (!file.exists()) {
-                Log.e("KennzeichenEinlesen", "Datei existiert nicht: " + filename);
-                return;
-            }
+        File file = new File(context.getFilesDir(), filename);
+        if (!file.exists()) {
+            Log.e("KennzeichenEinlesen", "Datei existiert nicht: " + filename);
+            return;
+        }
 
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            StringBuilder content = new StringBuilder();
-            String headerLine = reader.readLine();
-            if (headerLine == null) {
-                reader.close();
-                Log.e("KennzeichenEinlesen", "Datei ist leer: " + filename);
-                return;
-            }
+        try (
+                Reader reader = new FileReader(file);
+                CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader());
+        ) {
+            List<CSVRecord> records = csvParser.getRecords();
+            List<String> headers = csvParser.getHeaderNames();
 
-            // Kopfzeile verarbeiten
-            String[] headers = headerLine.split(",");
-            int gespeichertIndex = -1;
-            int oertskuerzelIndex = -1;
-
-            for (int i = 0; i < headers.length; i++) {
-                if (headers[i].trim().equalsIgnoreCase("gespeichert")) {
-                    gespeichertIndex = i;
-                }
-                if (headers[i].trim().equalsIgnoreCase("Unterscheidungszeichen")) {
-                    oertskuerzelIndex = i;
-                }
-            }
+            int gespeichertIndex = headers.indexOf("gespeichert");
+            int oertskuerzelIndex = headers.indexOf("Unterscheidungszeichen");
 
             if (gespeichertIndex == -1 || oertskuerzelIndex == -1) {
-                reader.close();
                 Log.e("KennzeichenEinlesen", "Wichtige Spalte fehlt in: " + filename);
                 return;
             }
 
-            content.append(headerLine).append("\n"); // Kopfzeile behalten
-            String line;
+            List<List<String>> updatedRows = new ArrayList<>();
             boolean found = false;
 
-            while ((line = reader.readLine()) != null) {
-                String[] values = line.split(",", -1); // auch leere Felder beibehalten
-
-                if (values.length > Math.max(gespeichertIndex, oertskuerzelIndex) &&
-                        values[oertskuerzelIndex].equals(kennzeichen.OertskuerzelGeben())) {
-
-                    values[gespeichertIndex] = savestatus;
-                    found = true;
-                    Log.e("KennzeichenEinlesen", "Gespeichert-Wert geändert für: " + values[oertskuerzelIndex]);
+            for (CSVRecord record : records) {
+                List<String> row = new ArrayList<>();
+                for (String header : headers) {
+                    row.add(record.get(header));
                 }
 
-                String updatedLine = TextUtils.join(",", values);
-                content.append(updatedLine).append("\n");
+                if (record.get("Unterscheidungszeichen").equals(kennzeichen.OertskuerzelGeben())) {
+                    row.set(gespeichertIndex, savestatus);
+                    found = true;
+                    Log.e("KennzeichenEinlesen", "Gespeichert-Wert geändert für: " + record.get("Unterscheidungszeichen"));
+                }
+
+                updatedRows.add(row);
             }
 
-            reader.close();
+            // Schreibe aktualisierte CSV zurück
+            try (
+                    FileWriter writer = new FileWriter(file);
+                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(headers.toArray(new String[0])))
+            ) {
+                for (List<String> row : updatedRows) {
+                    csvPrinter.printRecord(row);
+                }
+            }
 
-            FileWriter writer = new FileWriter(file);
-            writer.write(content.toString());
-            writer.close();
-
-            kennzeichen.saved=savestatus;
+            kennzeichen.saved = savestatus;
 
             if (!found) {
                 Log.w("KennzeichenEinlesen", "Kennzeichen nicht gefunden in: " + filename);
             }
+
         } catch (IOException e) {
             Log.e("KennzeichenEinlesen", "Fehler beim Bearbeiten der Datei: " + e.getMessage());
         }
