@@ -4,6 +4,9 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -692,6 +695,7 @@ public class HomeFragment extends Fragment {
                             Response response = client.newCall(request).execute();
                             String responseData = response.body().string();
                             Log.d("API_RESPONSE", responseData);
+                            openResponse(responseData);
 
                             if (response.isSuccessful()) {
                                 if (isAdded() && getActivity() != null) {
@@ -883,5 +887,26 @@ public class HomeFragment extends Fragment {
 
     public interface OnModelIdReceivedListener {
         void onModelIdReceived(String modelId) throws JSONException;
+    }
+
+    private void openResponse(String response) {
+        String cleanedResponse = response.trim();
+
+        binding.infotexttitel.setOnLongClickListener(v -> {
+            requireActivity().runOnUiThread(() ->
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle("API-Antwort")
+                            .setMessage(cleanedResponse)
+                            .setPositiveButton("Kopieren", (dialog, which) -> {
+                                ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                                ClipData clip = ClipData.newPlainText("API Response", cleanedResponse);
+                                clipboard.setPrimaryClip(clip);
+                                Toast.makeText(requireContext(), "Antwort kopiert", Toast.LENGTH_SHORT).show();
+                            })
+                            .setNegativeButton("Abbrechen", null)
+                            .show()
+            );
+            return true;
+        });
     }
 }
