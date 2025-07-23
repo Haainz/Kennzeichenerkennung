@@ -1,7 +1,7 @@
 {
     "ai_models": [
         {
-            "id": "deepseek/deepseek-chat:free",
+            "id": "deepseek/deepseek-chat-v3-0324:free",
             "name": "DeepSeek V3",
             "brand": "Deepseek",
             "working": true
@@ -13,8 +13,8 @@
             "working": false
         },
         {
-            "id": "google/gemma-3-1b-it:free",
-            "name": "Google Gemma 3 1b",
+            "id": "google/gemma-3-27b-it:free",
+            "name": "Google Gemma 3 27b",
             "brand": "Google",
             "working": true
         },
@@ -31,7 +31,7 @@
             "working": true
         },
         {
-            "id": "nvidia/llama-3.3-nemotron-super-49b-v1:free",
+            "id": "nvidia/llama-3.1-nemotron-ultra-253b-v1:free",
             "name": "NVIDIA Llama 3.3 Nemotron",
             "brand": "NVIDIA",
             "working": false
