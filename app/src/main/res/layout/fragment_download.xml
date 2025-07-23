@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Exportieren:"
+            android:text="Speichern:"
             android:textSize="20sp"
             android:textStyle="normal"
             android:textColor="@color/white"
@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
-            android:text="Wähle aus, welche Dateien als CSV-Datei in den Downloadspeicher exportiert werden sollen. Jede Datei wird dabei einzeln gespeichert."
+            android:text="Wähle aus, welche Daten als CSV-Datei in den Downloadspeicher exportiert werden sollen. Jede Datei wird dabei einzeln gespeichert."
             android:textStyle="bold"
             android:textSize="14dp"/>
 

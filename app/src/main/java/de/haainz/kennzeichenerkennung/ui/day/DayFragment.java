@@ -366,7 +366,7 @@ public class DayFragment extends Fragment {
 
         ArrayList<Kennzeichen> filteredList = new ArrayList<>();
         for (Kennzeichen kennzeichen : kennzeichenListe) {
-            if (kennzeichen.isNormal()) {
+            if (kennzeichen.isNormalDE()) {
                 filteredList.add(kennzeichen);
             }
         }

@@ -3,6 +3,7 @@ package de.haainz.kennzeichenerkennung.ui.list;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.PopupMenu;
@@ -97,7 +99,12 @@ public class ListFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                binding.x.setVisibility(VISIBLE);
+                // Sichtbarkeit von X je nach Inhalt
+                if (s.length() == 0) {
+                    binding.x.setVisibility(GONE);
+                } else {
+                    binding.x.setVisibility(VISIBLE);
+                }
                 updateList();
             }
 
@@ -105,13 +112,23 @@ public class ListFragment extends Fragment {
             public void afterTextChanged(Editable s) {}
         });
 
+        binding.searchInput.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == android.view.inputmethod.EditorInfo.IME_ACTION_DONE) {
+                // Tastatur ausblenden
+                InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(binding.searchInput.getWindowToken(), 0);
+                }
+                return true;
+            }
+            return false;
+        });
+
         binding.x.setOnClickListener(v -> {
             binding.searchInput.setText("");
             binding.x.setVisibility(GONE);
             updateList();
         });
-
-        binding.filterGroup.setVisibility(View.GONE);
 
         setupFilterButtons();
 
@@ -123,7 +140,7 @@ public class ListFragment extends Fragment {
         binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
         binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
 
-        binding.buttonDe.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
         binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
 
         binding.buttonLike1.setVisibility(VISIBLE);
@@ -182,17 +199,7 @@ public class ListFragment extends Fragment {
     }
 
     private void setupFilterButtons() {
-        binding.buttonDe.setOnClickListener(v -> {
-            // Nur Sichtbarkeit toggeln, ohne Filterzustände zu verändern
-            boolean filtersVisible = binding.filterGroup.getVisibility() == VISIBLE;
-
-            if (filtersVisible) {
-                binding.filterGroup.setVisibility(GONE);
-            } else {
-                binding.filterGroup.setVisibility(VISIBLE);
-            }
-        });
-        binding.buttonDe.setOnLongClickListener(v -> {
+        binding.buttonAlle.setOnClickListener(v -> {
             // Filterzustände toggeln, aber Sichtbarkeit bleibt gleich
             boolean allActive = showNormal && showSonder && showAuslaufend;
 
@@ -200,17 +207,18 @@ public class ListFragment extends Fragment {
             showNormal = !allActive;
             showSonder = !allActive;
             showAuslaufend = !allActive;
+            showEigene = !allActive;
 
             int color = allActive ? R.color.white : R.color.yellow;
 
             // Farben der Buttons entsprechend setzen
-            binding.buttonDe.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
             binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
             binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
             binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
 
             updateList();
-            return true;
         });
 
         binding.buttonNormal.setOnClickListener(v -> {
@@ -241,6 +249,7 @@ public class ListFragment extends Fragment {
             showEigene = !showEigene;
             int color = showEigene ? R.color.yellow : R.color.white;
             binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            updateDeButtonColor();
             updateList();
         });
 
@@ -274,12 +283,14 @@ public class ListFragment extends Fragment {
     public void updateList() {
         String searchQuery = binding.searchInput.getText().toString().toLowerCase();
         ArrayList<Kennzeichen> filteredList = new ArrayList<>();
+        Kennzeichen_KI kennzeichenKI2 = new Kennzeichen_KI(getActivity());
+        kennzeichenListe = kennzeichenKI2.getKennzeichenListe();
 
         for (Kennzeichen k : kennzeichenListe) {
             boolean matchesType =
-                    (showNormal && k.isNormal()) ||
-                            (showSonder && k.isSonder()) ||
-                            (showAuslaufend && k.isAuslaufend()) ||
+                    (showNormal && k.isNormalDE()) ||
+                            (showSonder && k.isSonderDE()) ||
+                            (showAuslaufend && k.isAuslaufendDE()) ||
                             (showEigene && k.isEigene());
 
             boolean matchesLikeFilter =
@@ -311,10 +322,10 @@ public class ListFragment extends Fragment {
     }
 
     private void updateDeButtonColor() {
-        if (showNormal || showSonder || showAuslaufend || showEigene) {
-            binding.buttonDe.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+        if (showNormal && showSonder && showAuslaufend && showEigene) {
+            binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
         } else {
-            binding.buttonDe.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+            binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
         }
     }
 

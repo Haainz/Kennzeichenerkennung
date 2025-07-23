@@ -49,7 +49,7 @@ public class ConfirmFragment extends DialogFragment {
                 // Hier löschen wir das Kennzeichen
                 if (kennzeichenKI != null) {
                     kennzeichenKI.deleteKennzeichen(kennzeichen);
-                    Toast.makeText(getActivity(), "Kennzeichen gelöscht\nBitte aktualisiere die Liste", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Kennzeichen gelöscht", Toast.LENGTH_SHORT).show();
                 }
                 if (onConfirmListener != null) {
                     onConfirmListener.updateList();

@@ -1,7 +1,6 @@
 package de.haainz.kennzeichenerkennung;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 
 import org.apache.commons.csv.CSVFormat;
@@ -38,13 +37,13 @@ public class Kennzeichen_KI {
         kennzeichenliste = new ArrayList<>();
 
         // 📁 Sicherstellen, dass die CSV-Dateien im internen Speicher existieren
-        copyAssetToFileDirIfNeeded("kennzeichen.csv");
-        copyAssetToFileDirIfNeeded("kennzeichenauslaufend.csv");
-        copyAssetToFileDirIfNeeded("sonderkennzeichen.csv");
+        copyAssetToFileDirIfNeeded("de_kennzeichen.csv");
+        copyAssetToFileDirIfNeeded("de_kennzeichenauslaufend.csv");
+        copyAssetToFileDirIfNeeded("de_sonderkennzeichen.csv");
 
-        KennzeichenNormalEinlesen();
-        KennzeichenSonderEinlesen();
-        KennzeichenAuslaufendEinlesen();
+        KennzeichenDENormalEinlesen();
+        KennzeichenDESonderEinlesen();
+        KennzeichenDEAuslaufendEinlesen();
         KennzeichenEigeneEinlesen();
     }
 
@@ -76,6 +75,15 @@ public class Kennzeichen_KI {
         return bundesland;
     }
 
+    public Kennzeichen KennzeichenZuOrtAusgeben(String ort) {
+        for (Kennzeichen kennzeichen : kennzeichenliste) {
+            if (kennzeichen.OertskuerzelGeben() != null && kennzeichen.OrtGeben().equals(ort)) {
+                return kennzeichen;
+            }
+        }
+        return null;
+    }
+
     public Kennzeichen getKennzeichen(String kuerzel) {
         for (Kennzeichen kennzeichen : kennzeichenliste) {
             if (kennzeichen.OrtGeben() != null && kennzeichen.OertskuerzelGeben().equals(kuerzel)) {
@@ -85,9 +93,9 @@ public class Kennzeichen_KI {
         return null;
     }
 
-    private void KennzeichenNormalEinlesen() {
+    private void KennzeichenDENormalEinlesen() {
         try {
-            File file = new File(context.getFilesDir(), "kennzeichen.csv");
+            File file = new File(context.getFilesDir(), "de_kennzeichen.csv");
             Reader reader = new FileReader(file);
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(reader);
 
@@ -102,7 +110,7 @@ public class Kennzeichen_KI {
                 kennzeichen.fussnote = record.get("Fußnoten");
                 kennzeichen.bemerkungen = record.get("Bemerkung");
                 kennzeichen.saved = record.get("gespeichert");
-                kennzeichen.setTyp("normal");
+                kennzeichen.setTyp("normal_de");
                 kennzeichenliste.add(kennzeichen);
             }
             reader.close();
@@ -111,10 +119,9 @@ public class Kennzeichen_KI {
         }
     }
 
-
-    private void KennzeichenSonderEinlesen() {
+    private void KennzeichenDESonderEinlesen() {
         try {
-            File file = new File(context.getFilesDir(), "sonderkennzeichen.csv");
+            File file = new File(context.getFilesDir(), "de_sonderkennzeichen.csv");
             Reader reader = new FileReader(file);
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(reader);
 
@@ -126,7 +133,7 @@ public class Kennzeichen_KI {
                 kennzeichen.ort = record.get("Bedeutung");
                 kennzeichen.bundesland = record.get("Typ");
                 kennzeichen.saved = record.get("gespeichert");
-                kennzeichen.setTyp("sonder");
+                kennzeichen.setTyp("sonder_de");
                 kennzeichenliste.add(kennzeichen);
             }
             reader.close();
@@ -135,9 +142,9 @@ public class Kennzeichen_KI {
         }
     }
 
-    private void KennzeichenAuslaufendEinlesen() {
+    private void KennzeichenDEAuslaufendEinlesen() {
         try {
-            File file = new File(context.getFilesDir(), "kennzeichenauslaufend.csv");
+            File file = new File(context.getFilesDir(), "de_kennzeichenauslaufend.csv");
             Reader reader = new FileReader(file);
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.withHeader().parse(reader);
 
@@ -148,7 +155,7 @@ public class Kennzeichen_KI {
                 kennzeichen.stadtkreis = record.get("Abwicklung");
                 kennzeichen.ort = record.get("BisherigerVerwaltungsbezirkOderKreis");
                 kennzeichen.saved = record.get("gespeichert");
-                kennzeichen.setTyp("auslaufend");
+                kennzeichen.setTyp("auslaufend_de");
                 kennzeichenliste.add(kennzeichen);
             }
             reader.close();
@@ -208,36 +215,76 @@ public class Kennzeichen_KI {
     }
 
     public void deleteKennzeichen(Kennzeichen kennzeichen) {
-        if (kennzeichen.getTyp().equals("eigene")) {
-            try {
-                File file = new File(context.getFilesDir(), "kennzeicheneigene.csv");
-                if (file.exists()) {
-                    BufferedReader reader = new BufferedReader(new FileReader(file));
-                    StringBuilder content = new StringBuilder();
-                    String line;
-                    reader.readLine(); // Überspringen der Spaltennamen
-                    while ((line = reader.readLine()) != null) {
-                        String[] values = line.split(",(?! )");
-                        if (!values[1].equals(kennzeichen.OertskuerzelGeben())) {
-                            content.append(line).append("\n");
-                        }
-                    }
-                    reader.close();
-                } else {
-                    Log.e("KennzeichenEinlesen", "Die Datei kennzeicheneigene.csv existiert nicht.");
-                }
-            } catch (IOException e) {
+        if (!kennzeichen.isEigene()) {
+            Log.e("delete", "Nur eigene Kennzeichen dürfen gelöscht werden.");
+            return;
+        }
 
-                Log.e("KennzeichenEinlesen", "Fehler bei der Einlesung der Datei: " + e.getMessage());
+        File file = new File(context.getFilesDir(), "kennzeicheneigene.csv");
+        if (!file.exists()) {
+            Log.e("delete", "Datei kennzeicheneigene.csv existiert nicht.");
+            return;
+        }
+
+        try {
+            // CSV einlesen
+            Reader reader = new FileReader(file);
+            CSVParser csvParser = CSVFormat.DEFAULT
+                    .withFirstRecordAsHeader()
+                    .parse(reader);
+
+            List<CSVRecord> records = csvParser.getRecords();
+            List<String> headers = csvParser.getHeaderNames();
+
+            // Neue Liste ohne das zu löschende Kennzeichen aufbauen
+            List<List<String>> updatedRows = new ArrayList<>();
+            String target = kennzeichen.OertskuerzelGeben();
+            boolean found = false;
+
+            for (CSVRecord record : records) {
+                if (!record.get("Unterscheidungszeichen").equals(target)) {
+                    List<String> row = new ArrayList<>();
+                    for (String header : headers) {
+                        row.add(record.get(header));
+                    }
+                    updatedRows.add(row);
+                } else {
+                    found = true;
+                    Log.i("delete", "Kennzeichen zum Löschen gefunden: " + target);
+                }
             }
+
+            reader.close();
+
+            if (!found) {
+                Log.w("delete", "Kennzeichen nicht in Datei gefunden: " + target);
+            }
+
+            // Neue Datei schreiben
+            FileWriter writer = new FileWriter(file);
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(headers.toArray(new String[0])));
+
+            for (List<String> row : updatedRows) {
+                csvPrinter.printRecord(row);
+            }
+
+            csvPrinter.flush();
+            csvPrinter.close();
+
+            // Aus In-Memory-Liste löschen
             kennzeichenliste.remove(kennzeichen);
+
+            Log.i("delete", "Kennzeichen erfolgreich gelöscht: " + target);
+
+        } catch (IOException e) {
+            Log.e("delete", "Fehler beim Bearbeiten der Datei: " + e.getMessage());
         }
     }
 
     public void changesavestatus(Kennzeichen kennzeichen, String savestatus) {
-        String filename = kennzeichen.isNormal() ? "kennzeichen.csv" :
-                kennzeichen.isAuslaufend() ? "kennzeichenauslaufend.csv" :
-                        kennzeichen.isSonder() ? "sonderkennzeichen.csv" :
+        String filename = kennzeichen.isNormalDE() ? "de_kennzeichen.csv" :
+                kennzeichen.isAuslaufendDE() ? "de_kennzeichenauslaufend.csv" :
+                        kennzeichen.isSonderDE() ? "de_sonderkennzeichen.csv" :
                                 kennzeichen.isEigene() ? "kennzeicheneigene.csv" : null;
 
         if (filename == null) {

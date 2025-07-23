@@ -132,7 +132,7 @@ public class InfosFragment extends DialogFragment {
             bemerkungenWert.setText(kennzeichen.BemerkungenGeben());
         }
 
-        if (kennzeichen.isSonder()) {
+        if (kennzeichen.isSonderDE()) {
             bemerkungenWert.setVisibility(GONE);
             bemerkungenTitel.setVisibility(GONE);
             fussnotenWert.setVisibility(GONE);
@@ -142,7 +142,7 @@ public class InfosFragment extends DialogFragment {
             stadtOderKreisTitel.setText("Typ:  ");
             herleitungTitel.setText("Bedeutung:  ");
             bundeslandTitel.setText("Zulassungsbehörde:  ");
-        } else if (kennzeichen.isAuslaufend()) {
+        } else if (kennzeichen.isAuslaufendDE()) {
             bemerkungenWert.setVisibility(GONE);
             bemerkungenTitel.setVisibility(GONE);
             fussnotenWert.setVisibility(GONE);
@@ -172,7 +172,7 @@ public class InfosFragment extends DialogFragment {
             public void onClick(View v) {
                 likedBtn.setVisibility(GONE);
                 kennzeichenKI.changesavestatus(kennzeichen, "nein");
-                Toast.makeText(getActivity(), "Kennzeichen entfernt.\nBitte aktualisiere die Liste", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Kennzeichen entfernt.", Toast.LENGTH_SHORT).show();
 
                 // Hier sollten Sie die updateList() Methode aufrufen, um die Anzeige zu aktualisieren
                 if (getTargetFragment() instanceof ListFragment) {
@@ -181,7 +181,7 @@ public class InfosFragment extends DialogFragment {
             }
         });
 
-        if (isNetworkAvailable() && !kennzeichen.isSonder()) {
+        if (isNetworkAvailable() && !kennzeichen.isSonderDE()) {
             mapView = view.findViewById(R.id.map);
             mapCardView = view.findViewById(R.id.cardviewmap);
             Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_container2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbarSize="0dp">
+    android:scrollbarSize="0dp"
+    android:id="@+id/fragment_container2">
 
     <RelativeLayout
         android:id="@+id/search_user_layout"
@@ -23,6 +23,8 @@
             android:background="@drawable/edit_text_rounded_corner"
             android:backgroundTint="?attr/colorOnPrimary"
             android:elevation="4dp"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
             android:hint="🔎 Durchsuche..."
             android:inputType="textCapWords"
             android:padding="10dp"
@@ -67,6 +69,7 @@
             android:textStyle="bold" />
 
 
+
         <HorizontalScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -80,82 +83,69 @@
                 android:layout_below="@+id/search_input">
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/button_de"
-                    android:layout_width="50dp"
+                    android:id="@+id/button_alle"
+                    android:layout_width="45dp"
                     android:layout_height="30dp"
                     android:layout_below="@+id/search_input"
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
-                    android:text="DE"
+                    android:text="Alle"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="20dp"
+                    android:textSize="10dp"
                     android:textStyle="bold" />
 
-                <LinearLayout
-                    android:id="@+id/filter_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginStart="-6dp"
-                    android:visibility="gone"
-                    android:divider="?android:dividerVertical"
-                    android:showDividers="middle"
-                    android:animateLayoutChanges="true">
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/button_normal"
+                    android:layout_width="70dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toLeftOf="@+id/button_sonder"
+                    android:background="@drawable/edit_text_rounded_corner_more"
+                    android:text="Standard"
+                    android:textColor="@color/black"
+                    android:textSize="10dp"
+                    android:textStyle="bold" />
 
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/button_normal"
-                        android:layout_width="68dp"
-                        android:layout_height="24dp"
-                        android:background="@drawable/button_filter_middle"
-                        android:text="  Standard"
-                        android:textColor="@color/black"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:padding="0dp"
-                        android:minHeight="0dp"
-                        android:minWidth="0dp" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/button_sonder"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toLeftOf="@+id/button_auslaufend"
+                    android:background="@drawable/edit_text_rounded_corner_more"
+                    android:text="Sonder"
+                    android:textColor="@color/black"
+                    android:textSize="10dp"
+                    android:textStyle="bold" />
 
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/button_sonder"
-                        android:layout_width="50dp"
-                        android:layout_height="24dp"
-                        android:background="@drawable/button_filter_middle"
-                        android:text="Sonder"
-                        android:textColor="@color/black"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:padding="0dp"
-                        android:minHeight="0dp"
-                        android:minWidth="0dp" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/button_auslaufend"
-                        android:layout_width="76dp"
-                        android:layout_height="24dp"
-                        android:background="@drawable/button_filter_right"
-                        android:text="Auslaufend"
-                        android:textColor="@color/black"
-                        android:textSize="10sp"
-                        android:textStyle="bold"
-                        android:padding="0dp"
-                        android:minHeight="0dp"
-                        android:minWidth="0dp" />
-                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/button_auslaufend"
+                    android:layout_width="80dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toLeftOf="@+id/button_eigene"
+                    android:background="@drawable/edit_text_rounded_corner_more"
+                    android:text="auslaufend"
+                    android:textColor="@color/black"
+                    android:textSize="10dp"
+                    android:textStyle="bold" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/button_eigene"
-                    android:layout_width="70dp"
+                    android:layout_width="55dp"
                     android:layout_height="30dp"
-                    android:layout_below="@+id/search_input"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="2dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginTop="5dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
-                    android:text="Eigene"
+                    android:text="eigene"
                     android:textColor="@color/black"
-                    android:textSize="12sp"
+                    android:textSize="10dp"
                     android:textStyle="bold" />
 
                 <ImageView
@@ -163,7 +153,7 @@
                     android:layout_width="45dp"
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="7dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
@@ -175,7 +165,7 @@
                     android:layout_width="45dp"
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="7dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
@@ -188,7 +178,7 @@
                     android:layout_width="45dp"
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="7dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginTop="5dp"
                     android:background="@drawable/edit_text_rounded_corner_more"
@@ -223,6 +213,4 @@
             android:layout_height="match_parent" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-
 </RelativeLayout>

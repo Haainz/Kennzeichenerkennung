@@ -17,6 +17,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.KeyEvent;
@@ -131,6 +134,7 @@ public class HomeFragment extends Fragment {
         searchPic = binding.imageView2;
         textViewAusgabe = binding.textViewAusgabe;
         kuerzelEingabe = binding.kuerzeleingabe;
+        kuerzelEingabe.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
         textViewAusgabe2 = binding.textViewAusgabe2;
         kennzeichenKI = new Kennzeichen_KI(getContext());
 
@@ -162,6 +166,24 @@ public class HomeFragment extends Fragment {
         tourbtn.setOnClickListener(v -> {
             TourPopupDialog dialog = new TourPopupDialog(getContext());
             dialog.show();
+        });
+
+        kuerzelEingabe.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // "X"-Button ein-/ausblenden
+                if (s.length() > 0) {
+                    binding.x.setVisibility(View.VISIBLE);
+                } else {
+                    binding.x.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
 
         deleteText.setOnClickListener(v -> {
@@ -376,13 +398,13 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-                if (kennzeichen.isSonder()) {
+                if (kennzeichen.isSonderDE()) {
                     binding.bundeslandIsoWert.setVisibility(GONE);
                     binding.bundeslandIsoTitel.setVisibility(GONE);
                     binding.stadtoderkreistitel.setText("Typ:  ");
                     binding.herleitungstitel.setText("Bedeutung:  ");
                     binding.bundeslandtitel.setText("Zulassungsbehörde:  ");
-                } else if (kennzeichen.isAuslaufend()) {
+                } else if (kennzeichen.isAuslaufendDE()) {
                     binding.bundeslandwert.setVisibility(GONE);
                     binding.bundeslandtitel.setVisibility(GONE);
                     binding.bundeslandIsoWert.setVisibility(GONE);
@@ -408,7 +430,7 @@ public class HomeFragment extends Fragment {
                     mapView.setMultiTouchControls(true);
                     mapCardView.setVisibility(View.VISIBLE);
 
-                    if(!kennzeichen.isSonder()) {
+                    if(!kennzeichen.isSonderDE()) {
                         getCoordinates(kennzeichen.OrtGeben() + "_" + kennzeichen.BundeslandGeben());
                     } else {
                         binding.mapcardview.setVisibility(GONE);
@@ -691,6 +713,7 @@ public class HomeFragment extends Fragment {
                                                 e.printStackTrace();
                                                 stopLoadingAnimation();
                                                 fragment.showErrorState();
+                                                Log.e("ai1", String.valueOf(e));
                                             }
                                         }
                                     });
@@ -703,6 +726,7 @@ public class HomeFragment extends Fragment {
                                     if (fragment != null && fragment.isAdded() && fragment.binding != null) {
                                         fragment.stopLoadingAnimation();
                                         fragment.showErrorState();
+                                        Log.e("ai2", String.valueOf(e));
                                     }
                                 });
                             }
@@ -714,6 +738,7 @@ public class HomeFragment extends Fragment {
                                 HomeFragment fragment = fragmentRef.get();
                                 if (fragment != null && fragment.isAdded() && fragment.binding != null) {
                                     fragment.showErrorState();
+                                    Log.e("ai3", "Model == Fehler");
                                 }
                             });
                         }
@@ -726,6 +751,7 @@ public class HomeFragment extends Fragment {
                         if (fragment != null && fragment.isAdded() && fragment.binding != null) {
                             fragment.stopLoadingAnimation();
                             fragment.showErrorState();
+                            Log.e("ai4", String.valueOf(e));
                         }
                     });
                 }

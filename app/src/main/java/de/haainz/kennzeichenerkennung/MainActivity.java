@@ -111,6 +111,11 @@ public class MainActivity extends AppCompatActivity {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com/donate/?hosted_button_id=XUTQZBWGBWCLN"));
             startActivity(browserIntent);
         });
+        ImageButton uploadButton = findViewById(R.id.button_upload);
+        uploadButton.setOnClickListener(v -> {
+            UploadFragment uploadFragment = new UploadFragment();
+            uploadFragment.show(getSupportFragmentManager(), "UploadFragment");
+        });
         ImageButton downloadButton = findViewById(R.id.button_download);
         downloadButton.setOnClickListener(v -> {
             DownloadFragment downloadFragment = new DownloadFragment();

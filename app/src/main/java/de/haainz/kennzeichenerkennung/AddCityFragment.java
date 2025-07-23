@@ -1,6 +1,7 @@
 package de.haainz.kennzeichenerkennung;
 
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,7 @@ public class AddCityFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_add_city, container, false);
 
         kuerzeleingabe = view.findViewById(R.id.kuerzeleingabe);
+        kuerzeleingabe.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
         herleitungeingabe = view.findViewById(R.id.herleitungeingabe);
         orteingabe = view.findViewById(R.id.orteingabe);
         bundeslandeingabe = view.findViewById(R.id.bundeslandeingabe);
@@ -97,7 +99,7 @@ public class AddCityFragment extends DialogFragment {
             return;
         }
 
-        String csvZeile = nationalitaetszeichen + "," + unterscheidungszeichen + "," + stadtOderKreis + "," + herleitung + "," + bundeslandName + "," + bundeslandIso31662 + "," + fussnoten + "," + bemerkung + ", " + "nein";
+        String csvZeile = nationalitaetszeichen + "," + unterscheidungszeichen + "," + stadtOderKreis + "," + herleitung + "," + bundeslandName + "," + bundeslandIso31662 + "," + fussnoten + "," + bemerkung + "," + "nein";
 
         try {
             File file = new File(getActivity().getFilesDir(), "kennzeicheneigene.csv");

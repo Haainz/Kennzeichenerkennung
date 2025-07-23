@@ -82,7 +82,7 @@ public class KennzeichenWidgetProvider extends AppWidgetProvider {
         // Filtere die Liste nach normalen Kennzeichen
         ArrayList<Kennzeichen> filteredList = new ArrayList<>();
         for (Kennzeichen kennzeichen : kennzeichenListe) {
-            if (kennzeichen.isNormal()) {
+            if (kennzeichen.isNormalDE()) {
                 filteredList.add(kennzeichen);
             }
         }

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
@@ -53,6 +51,9 @@ public class DownloadFragment extends DialogFragment {
         auslaufendChk = view.findViewById(R.id.auslaufend_chk);
         eigeneChk = view.findViewById(R.id.eigene_chk);
 
+        ImageButton xBtn  = view.findViewById(R.id.x);
+        xBtn.setOnClickListener(v -> dismiss());
+
         // Hauptcheckbox steuert Unterboxen
         deChk.setOnCheckedChangeListener((buttonView, isChecked) -> {
             standardChk.setChecked(isChecked);
@@ -85,9 +86,6 @@ public class DownloadFragment extends DialogFragment {
         Button speichernButton = view.findViewById(R.id.export_btn);
         speichernButton.setOnClickListener(v -> export());
 
-        ImageButton xBtn = view.findViewById(R.id.x);
-        xBtn.setOnClickListener(v -> dismiss());
-
         return view;
     }
 
@@ -96,22 +94,22 @@ public class DownloadFragment extends DialogFragment {
         File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
         ArrayList<String> exportedFiles = new ArrayList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm", Locale.getDefault());
         String timestamp = sdf.format(new Date());
 
         if (standardChk.isChecked()) {
             String name = "de_kennzeichenstandard_" + timestamp + ".csv";
-            exportFile("kennzeichen.csv", filesDir, downloadDir, name);
+            exportFile("de_kennzeichen.csv", filesDir, downloadDir, name);
             exportedFiles.add(name);
         }
         if (sonderChk.isChecked()) {
             String name = "de_sonderkennzeichen_" + timestamp + ".csv";
-            exportFile("sonderkennzeichen.csv", filesDir, downloadDir, name);
+            exportFile("de_sonderkennzeichen.csv", filesDir, downloadDir, name);
             exportedFiles.add(name);
         }
         if (auslaufendChk.isChecked()) {
             String name = "de_kennzeichenauslaufend_" + timestamp + ".csv";
-            exportFile("kennzeichenauslaufend.csv", filesDir, downloadDir, name);
+            exportFile("de_kennzeichenauslaufend.csv", filesDir, downloadDir, name);
             exportedFiles.add(name);
         }
         if (eigeneChk.isChecked()) {

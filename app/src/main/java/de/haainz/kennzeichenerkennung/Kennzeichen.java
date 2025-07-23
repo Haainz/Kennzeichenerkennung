@@ -19,7 +19,7 @@ public class Kennzeichen implements Serializable
     public String bundeslandiso;
     public String bemerkungen;
     public String fussnote = "6";
-    public String saved = "nein";
+    public String saved;
     private String typ;
 
     /**
@@ -80,16 +80,16 @@ public class Kennzeichen implements Serializable
         this.typ = typ;
     }
 
-    public boolean isNormal() {
-        return typ.equals("normal");
+    public boolean isNormalDE() {
+        return typ.equals("normal_de");
     }
 
-    public boolean isSonder() {
-        return typ.equals("sonder");
+    public boolean isSonderDE() {
+        return typ.equals("sonder_de");
     }
 
-    public boolean isAuslaufend() {
-        return typ.equals("auslaufend");
+    public boolean isAuslaufendDE() {
+        return typ.equals("auslaufend_de");
     }
 
     public boolean isEigene() {
