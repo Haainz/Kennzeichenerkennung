@@ -260,6 +260,7 @@ public class DayFragment extends Fragment {
                 Log.e("DayFragment", "mapView is not visible, cannot get coordinates.");
             }
         } else {
+            binding.mapCard.setVisibility(GONE);
             binding.map.setVisibility(GONE);
             binding.maprel.setVisibility(GONE);
         }
