@@ -1,27 +1,27 @@
-Nationalitätszeichen,Unterscheidungszeichen,Typ,Bedeutung,Zulassungsbehörde,gespeichert
-D,BD,Bund,"Dienstfahrzeuge des Bundestages, des Bundesrates, des Bundespräsidialamtes, der Bundesregierung, der Bundesministerien, der Bundesfinanzverwaltung, des Bundesverfassungsgerichts und des Bundeskriminalamtes","Zulassungsbehörde Berlin, Zulassungsbehörde Bonn, Stadt. Für BD 8 und 16 Kfz-Zulassungsstelle bei der „Generalzolldirektion"" - Dienstort Offenbach",nein
-D,BG,Bund,Dienstfahrzeuge der Bundespolizei,"Kfz-Zulassungsstelle beim „Beschaffungsamt des Bundesministeriums des Innern"" in Bonn als zentrale Zulassungsbehörde (noch gültig, wird nicht mehr zugeteilt)",nein
-D,BP,Bund,Dienstfahrzeuge der Bundespolizei,"Kfz-Zulassungsstelle beim „Beschaffungsamt des Bundesministeriums des Innern"" in Bonn als zentrale Zulassungsbehörde",nein
-D,BW,Bund,Bundes-Wasserstraßen- und Schifffahrtsverwaltung,Generaldirektion Wasserstraßen und Schifffahrt,nein
-D,THW,Bund,Dienstfahrzeuge der Bundesanstalt Technisches Hilfswerk,"Kfz-Zulassungsstelle beim „Beschaffungsamt des Bundesministeriums des Innern"" in Bonn als zentrale Zulassungsbehörde",nein
-D,Y,Bund,Dienstfahrzeuge der Bundeswehr,"Zentrale Militärkraftfahrtstelle - ZMK, Hardter Straße 9, 41179 Mönchengladbach/Rheindahlen",nein
-D,X,Bund,"Dienstfahrzeuge der auf Grund des Nordatlantikvertrages errichteten internationalen militärischen Hauptquartiere, die ihren regelmäßigen Standort in der Bundesrepublik Deutschland haben","Zentrale Militärkraftfahrtstelle - ZMK, Hardter Straße 9, 41179 Mönchengladbach/Rheindahlen",nein
-D,B,Länder,Berlin Senat und Abgeordnetenhaus,Zulassungsbehörde Berlin,nein
-D,BBL,Länder,"Brandenburg Landesregierung, Landtag und Polizei","Zulassungsbehörde Potsdam, Stadt. Für die Polizei Innenministerium Zentraldienst der Polizei Brandenburg",nein
-D,BWL,Länder,"Baden-Württemberg Landesregierung, Landtag und Polizei","Zulassungsbehörde Stuttgart, Stadt. Für die Polizei Innenministerium Baden-Württemberg - Landespolizeipräsidium",nein
-D,BYL,Länder,Bayern Landesregierung und Landtag,"Zulassungsbehörde München, Stadt",nein
-D,HB,Länder,Freie Hansestadt Bremen Senat und Bürgerschaft,"Zulassungsbehörde Bremen, Stadt",nein
-D,HEL,Länder,Hessen Landesregierung und Landtag,"Zulassungsbehörde Wiesbaden, Stadt",nein
-D,HH,Länder,Freie und Hansestadt Hamburg Senat und Bürgerschaft,"Zulassungsbehörde Hamburg, Stadt",nein
-D,LSA,Länder,"Sachsen-Anhalt Landesregierung, Landtag und Polizei","Zulassungsbehörde Magdeburg, Stadt",nein
-D,LSN,Länder,Sachsen Landesregierung und Landtag,"Zulassungsbehörde Dresden, Stadt",nein
-D,MVL,Länder,Mecklenburg-Vorpommern Landesregierung (einschließlich Landespolizei) und Landtag,"Zulassungsbehörde Schwerin, Stadt",nein
-D,NL,Länder,Niedersachsen Landesregierung und Landtag,"Zulassungsbehörde Hannover, Stadt",nein
-D,NRW,Länder,"Nordrhein-Westfalen Landesregierung, Landtag und Polizei","Zulassungsbehörde Düsseldorf, Stadt. Für die Polizei Landesamt für Zentrale Polizeiliche Dienste des Landes NRW, Duisburg",nein
-D,RPL,Länder,"Rheinland-Pfalz Landesregierung, Landtag und Polizei","Zulassungsbehörde Mainz, Stadt",nein
-D,SAL,Länder,"Saarland Landesregierung, Landtag und Polizei","Zulassungsbehörde Stadt Saarbrücken, Stadt und Regionalverband. Für die Polizei Landespolizeipräsidium - Direktion LPP 4 Zentrale Dienste - LPP 4.8 Kraftfahrzeugtechnik",nein
-D,SH,Länder,"Schleswig-Holstein Landesregierung, Landtag und Polizei","Zulassungsbehörde Kiel, Stadt",nein
-D,THL,Länder,Thüringen Landesregierung und Landtag,"Zulassungsbehörde Erfurt, Stadt",nein
-D,0,Diplo,Diplomatische Vertretungen oder internationale Organisationen und in Abhängigkeit vom Status der bevorrechtigten Person,"Zulassungsbehörde Berlin, Zulassungsbehörde Bonn, Stadt",nein
-D,B,Diplo,Diplomatische Vertretungen oder internationale Organisationen und in Abhängigkeit vom Status der bevorrechtigten Person,"Zulassungsbehörde Berlin, Zulassungsbehörde Bonn, Stadt",nein
-D,BN,Diplo,Diplomatische Vertretungen oder internationale Organisationen und in Abhängigkeit vom Status der bevorrechtigten Person,"Zulassungsbehörde Berlin, Zulassungsbehörde Bonn, Stadt",nein
+Nationalitätszeichen,Unterscheidungszeichen,Typ,Bedeutung,Zulassungsbehörde,KI-Text,gespeichert
+D,BD,Bund,"Dienstfahrzeuge des Bundestages, des Bundesrates, des Bundespräsidialamtes, der Bundesregierung, der Bundesministerien, der Bundesfinanzverwaltung, des Bundesverfassungsgerichts und des Bundeskriminalamtes","Zulassungsbehörde Berlin, Zulassungsbehörde Bonn, Stadt. Für BD 8 und 16 Kfz-Zulassungsstelle bei der „Generalzolldirektion"" - Dienstort Offenbach",,nein
+D,BG,Bund,Dienstfahrzeuge der Bundespolizei,"Kfz-Zulassungsstelle beim „Beschaffungsamt des Bundesministeriums des Innern"" in Bonn als zentrale Zulassungsbehörde (noch gültig, wird nicht mehr zugeteilt)",,nein
+D,BP,Bund,Dienstfahrzeuge der Bundespolizei,"Kfz-Zulassungsstelle beim „Beschaffungsamt des Bundesministeriums des Innern"" in Bonn als zentrale Zulassungsbehörde",,nein
+D,BW,Bund,Bundes-Wasserstraßen- und Schifffahrtsverwaltung,Generaldirektion Wasserstraßen und Schifffahrt,,nein
+D,THW,Bund,Dienstfahrzeuge der Bundesanstalt Technisches Hilfswerk,"Kfz-Zulassungsstelle beim „Beschaffungsamt des Bundesministeriums des Innern"" in Bonn als zentrale Zulassungsbehörde",,nein
+D,Y,Bund,Dienstfahrzeuge der Bundeswehr,"Zentrale Militärkraftfahrtstelle - ZMK, Hardter Straße 9, 41179 Mönchengladbach/Rheindahlen",,nein
+D,X,Bund,"Dienstfahrzeuge der auf Grund des Nordatlantikvertrages errichteten internationalen militärischen Hauptquartiere, die ihren regelmäßigen Standort in der Bundesrepublik Deutschland haben","Zentrale Militärkraftfahrtstelle - ZMK, Hardter Straße 9, 41179 Mönchengladbach/Rheindahlen",,nein
+D,B,Länder,Berlin Senat und Abgeordnetenhaus,Zulassungsbehörde Berlin,,nein
+D,BBL,Länder,"Brandenburg Landesregierung, Landtag und Polizei","Zulassungsbehörde Potsdam, Stadt. Für die Polizei Innenministerium Zentraldienst der Polizei Brandenburg",,nein
+D,BWL,Länder,"Baden-Württemberg Landesregierung, Landtag und Polizei","Zulassungsbehörde Stuttgart, Stadt. Für die Polizei Innenministerium Baden-Württemberg - Landespolizeipräsidium",,nein
+D,BYL,Länder,Bayern Landesregierung und Landtag,"Zulassungsbehörde München, Stadt",,nein
+D,HB,Länder,Freie Hansestadt Bremen Senat und Bürgerschaft,"Zulassungsbehörde Bremen, Stadt",,nein
+D,HEL,Länder,Hessen Landesregierung und Landtag,"Zulassungsbehörde Wiesbaden, Stadt",,nein
+D,HH,Länder,Freie und Hansestadt Hamburg Senat und Bürgerschaft,"Zulassungsbehörde Hamburg, Stadt",,nein
+D,LSA,Länder,"Sachsen-Anhalt Landesregierung, Landtag und Polizei","Zulassungsbehörde Magdeburg, Stadt",,nein
+D,LSN,Länder,Sachsen Landesregierung und Landtag,"Zulassungsbehörde Dresden, Stadt",,nein
+D,MVL,Länder,Mecklenburg-Vorpommern Landesregierung (einschließlich Landespolizei) und Landtag,"Zulassungsbehörde Schwerin, Stadt",,nein
+D,NL,Länder,Niedersachsen Landesregierung und Landtag,"Zulassungsbehörde Hannover, Stadt",,nein
+D,NRW,Länder,"Nordrhein-Westfalen Landesregierung, Landtag und Polizei","Zulassungsbehörde Düsseldorf, Stadt. Für die Polizei Landesamt für Zentrale Polizeiliche Dienste des Landes NRW, Duisburg",,nein
+D,RPL,Länder,"Rheinland-Pfalz Landesregierung, Landtag und Polizei","Zulassungsbehörde Mainz, Stadt",,nein
+D,SAL,Länder,"Saarland Landesregierung, Landtag und Polizei","Zulassungsbehörde Stadt Saarbrücken, Stadt und Regionalverband. Für die Polizei Landespolizeipräsidium - Direktion LPP 4 Zentrale Dienste - LPP 4.8 Kraftfahrzeugtechnik",,nein
+D,SH,Länder,"Schleswig-Holstein Landesregierung, Landtag und Polizei","Zulassungsbehörde Kiel, Stadt",,nein
+D,THL,Länder,Thüringen Landesregierung und Landtag,"Zulassungsbehörde Erfurt, Stadt",,nein
+D,0,Diplo,Diplomatische Vertretungen oder internationale Organisationen und in Abhängigkeit vom Status der bevorrechtigten Person,"Zulassungsbehörde Berlin, Zulassungsbehörde Bonn, Stadt",,nein
+D,B,Diplo,Diplomatische Vertretungen oder internationale Organisationen und in Abhängigkeit vom Status der bevorrechtigten Person,"Zulassungsbehörde Berlin, Zulassungsbehörde Bonn, Stadt",,nein
+D,BN,Diplo,Diplomatische Vertretungen oder internationale Organisationen und in Abhängigkeit vom Status der bevorrechtigten Person,"Zulassungsbehörde Berlin, Zulassungsbehörde Bonn, Stadt",,nein

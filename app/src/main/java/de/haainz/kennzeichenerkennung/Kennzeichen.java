@@ -19,6 +19,7 @@ public class Kennzeichen implements Serializable
     public String bundeslandiso;
     public String bemerkungen;
     public String fussnote = "6";
+    public String aitext;
     public String saved;
     private String typ;
 
@@ -70,6 +71,10 @@ public class Kennzeichen implements Serializable
 
     public String FussnoteGeben() {
         return fussnote;
+    }
+
+    public String aiTextGeben() {
+        return aitext;
     }
 
     public String SavedGeben() {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.RadioGroup;
 
 import androidx.appcompat.app.AppCompatDelegate;
@@ -36,6 +37,9 @@ public class DarkmodeDialogFragment extends DialogFragment {
             requireActivity().recreate(); // <- wichtig: Activity neu laden
             dismiss();
         });
+
+        ImageButton xBtn = view.findViewById(R.id.x);
+        xBtn.setOnClickListener(v -> dismiss());
 
         return view;
     }

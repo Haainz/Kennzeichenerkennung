@@ -52,18 +52,21 @@
             android:id="@+id/radio_light"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorTextNormal"
             android:text="Hell" />
 
         <RadioButton
             android:id="@+id/radio_dark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorTextNormal"
             android:text="Dunkel" />
 
         <RadioButton
             android:id="@+id/radio_system"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="?attr/colorTextNormal"
             android:text="Systemstandard" />
     </RadioGroup>
 </RelativeLayout>

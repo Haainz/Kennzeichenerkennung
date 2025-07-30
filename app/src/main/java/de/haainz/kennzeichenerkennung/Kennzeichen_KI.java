@@ -75,15 +75,6 @@ public class Kennzeichen_KI {
         return bundesland;
     }
 
-    public Kennzeichen KennzeichenZuOrtAusgeben(String ort) {
-        for (Kennzeichen kennzeichen : kennzeichenliste) {
-            if (kennzeichen.OertskuerzelGeben() != null && kennzeichen.OrtGeben().equals(ort)) {
-                return kennzeichen;
-            }
-        }
-        return null;
-    }
-
     public Kennzeichen getKennzeichen(String kuerzel) {
         for (Kennzeichen kennzeichen : kennzeichenliste) {
             if (kennzeichen.OrtGeben() != null && kennzeichen.OertskuerzelGeben().equals(kuerzel)) {
@@ -109,6 +100,7 @@ public class Kennzeichen_KI {
                 kennzeichen.bundeslandiso = record.get("Bundesland.Iso3166-2");
                 kennzeichen.fussnote = record.get("Fußnoten");
                 kennzeichen.bemerkungen = record.get("Bemerkung");
+                kennzeichen.aitext = record.get("KI-Text");
                 kennzeichen.saved = record.get("gespeichert");
                 kennzeichen.setTyp("normal_de");
                 kennzeichenliste.add(kennzeichen);
@@ -132,6 +124,7 @@ public class Kennzeichen_KI {
                 kennzeichen.stadtkreis = record.get("Zulassungsbehörde");
                 kennzeichen.ort = record.get("Bedeutung");
                 kennzeichen.bundesland = record.get("Typ");
+                kennzeichen.aitext = record.get("KI-Text");
                 kennzeichen.saved = record.get("gespeichert");
                 kennzeichen.setTyp("sonder_de");
                 kennzeichenliste.add(kennzeichen);
@@ -154,6 +147,7 @@ public class Kennzeichen_KI {
                 kennzeichen.oertskuerzel = record.get("Unterscheidungszeichen");
                 kennzeichen.stadtkreis = record.get("Abwicklung");
                 kennzeichen.ort = record.get("BisherigerVerwaltungsbezirkOderKreis");
+                kennzeichen.aitext = record.get("KI-Text");
                 kennzeichen.saved = record.get("gespeichert");
                 kennzeichen.setTyp("auslaufend_de");
                 kennzeichenliste.add(kennzeichen);
@@ -170,7 +164,7 @@ public class Kennzeichen_KI {
             if (!file.exists()) {
                 file.createNewFile();
                 FileWriter headerWriter = new FileWriter(file);
-                headerWriter.write("Nationalitätszeichen,Unterscheidungszeichen,StadtOderKreis,Herleitung,Bundesland.Name,Bundesland.Iso3166-2,Fußnoten,Bemerkung,gespeichert\n");
+                headerWriter.write("Nationalitätszeichen,Unterscheidungszeichen,StadtOderKreis,Herleitung,Bundesland.Name,Bundesland.Iso3166-2,Fußnoten,Bemerkung,KI-Text,gespeichert\n");
                 headerWriter.close();
             }
             Reader reader = new FileReader(file);
@@ -185,6 +179,7 @@ public class Kennzeichen_KI {
                 kennzeichen.bundeslandiso = record.get("Bundesland.Iso3166-2");
                 kennzeichen.fussnote = record.get("Fußnoten");
                 kennzeichen.bemerkungen = record.get("Bemerkung");
+                kennzeichen.aitext = record.get("KI-Text");
                 kennzeichen.saved = record.get("gespeichert");
                 kennzeichen.setTyp("eigene");
                 kennzeichenliste.add(kennzeichen);
@@ -278,6 +273,78 @@ public class Kennzeichen_KI {
 
         } catch (IOException e) {
             Log.e("delete", "Fehler beim Bearbeiten der Datei: " + e.getMessage());
+        }
+    }
+
+    public void setaiText(Kennzeichen kennzeichen, String aitext) {
+        String filename = kennzeichen.isNormalDE() ? "de_kennzeichen.csv" :
+                kennzeichen.isAuslaufendDE() ? "de_kennzeichenauslaufend.csv" :
+                        kennzeichen.isSonderDE() ? "de_sonderkennzeichen.csv" :
+                                kennzeichen.isEigene() ? "kennzeicheneigene.csv" : null;
+
+        if (filename == null) {
+            Log.e("KennzeichenEinlesen", "Unbekannter Typ für Kennzeichen: " + kennzeichen.getTyp());
+            return;
+        }
+
+        File file = new File(context.getFilesDir(), filename);
+        if (!file.exists()) {
+            Log.e("KennzeichenEinlesen", "Datei existiert nicht: " + filename);
+            return;
+        }
+
+        try (
+                Reader reader = new FileReader(file);
+                CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader());
+        ) {
+            List<CSVRecord> records = csvParser.getRecords();
+            List<String> headers = csvParser.getHeaderNames();
+
+            int aitextIndex = headers.indexOf("KI-Text");
+            int oertskuerzelIndex = headers.indexOf("Unterscheidungszeichen");
+            int stadtkreisIndex = 3;
+
+            if (aitextIndex == -1 || oertskuerzelIndex == -1) {
+                Log.e("KennzeichenEinlesen", "Wichtige Spalte fehlt in: " + filename);
+                return;
+            }
+
+            List<List<String>> updatedRows = new ArrayList<>();
+            boolean found = false;
+
+            for (CSVRecord record : records) {
+                List<String> row = new ArrayList<>();
+                for (String header : headers) {
+                    row.add(record.get(header));
+                }
+
+                if (record.get("Unterscheidungszeichen").equals(kennzeichen.OertskuerzelGeben()) && record.get(3).equals(kennzeichen.OrtGeben())) {
+                    row.set(aitextIndex, aitext);
+                    found = true;
+                    Log.e("KennzeichenEinlesen", "KI-Text-Wert geändert für: " + record.get("Unterscheidungszeichen") + ", " + record.get(3));
+                }
+
+                updatedRows.add(row);
+            }
+
+            // Schreibe aktualisierte CSV zurück
+            try (
+                    FileWriter writer = new FileWriter(file);
+                    CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(headers.toArray(new String[0])))
+            ) {
+                for (List<String> row : updatedRows) {
+                    csvPrinter.printRecord(row);
+                }
+            }
+
+            kennzeichen.aitext = aitext;
+
+            if (!found) {
+                Log.w("KennzeichenEinlesen", "Kennzeichen nicht gefunden in: " + filename);
+            }
+
+        } catch (IOException e) {
+            Log.e("KennzeichenEinlesen", "Fehler beim Bearbeiten der Datei: " + e.getMessage());
         }
     }
 

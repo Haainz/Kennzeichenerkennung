@@ -1,434 +1,541 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.day.DayFragment">
 
-    <ScrollView
+    <LinearLayout
+        android:id="@+id/titleContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="15dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title_line1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="1.0"
+            android:text="Kennzeichen des Tages"
+            android:textAlignment="textStart"
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/title_line2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="1.0"
+            android:text="Heute, 28.07.2025:"
+            android:textAlignment="textStart"
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_below="@id/titleContainer"
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="80dp"
-                android:layout_marginEnd="20dp"
-                android:textAlignment="textStart"
-                android:textSize="25sp"
-                android:textStyle="bold"
-                android:text="Kennzeichen des Tages\nHeute, 10.10.2024:"
-                android:textColor="?attr/colorTextNormal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="94dp"
-                android:layout_marginTop="90dp"
-                android:scaleType="centerCrop"
-                android:foregroundGravity="center"
-                android:id="@+id/imageoftheday"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/maincontent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="top"
-                android:id="@+id/buttons"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/imageoftheday"
-                android:layout_marginTop="140dp">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:id="@+id/like_btn"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginStart="2dp"
-                    android:src="@drawable/icon_heartempty"
-                    app:tint="?attr/colorTextNormal"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"/>
+                    android:id="@+id/imageoftheday"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/liked_btn"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginStart="0dp"
-                    android:src="@drawable/icon_heartfull"
-                    app:tint="#FF0000"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"/>
-
-                <TextView
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/buttons"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
-                    android:id="@+id/count_text"
-                    android:textColor="?attr/colorTextNormal"
-                    android:textSize="12dp"
-                    app:layout_constraintEnd_toEndOf="@+id/like_btn"
-                    app:layout_constraintStart_toStartOf="@+id/like_btn"
-                    app:layout_constraintTop_toBottomOf="@id/like_btn" />
+                    android:layout_marginTop="80dp"
+                    android:layout_marginBottom="200dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/imageoftheday">
 
-                <ImageView
-                    android:id="@+id/save_btn"
-                    android:layout_width="29dp"
-                    android:layout_height="29dp"
-                    android:layout_marginStart="55dp"
-                    android:src="@drawable/icon_save"
-                    app:tint="?attr/colorTextNormal"
-                    app:layout_constraintLeft_toRightOf="@id/like_btn"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    <ImageView
+                        android:id="@+id/like_btn"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="2dp"
+                        android:src="@drawable/icon_heartempty"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="?attr/colorTextNormal" />
 
-                <ImageView
-                    android:id="@+id/share_btn"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_marginStart="55dp"
-                    android:src="@drawable/icon_share"
-                    app:tint="?attr/colorTextNormal"
-                    app:layout_constraintLeft_toRightOf="@id/save_btn"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    <ImageView
+                        android:id="@+id/liked_btn"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="0dp"
+                        android:layout_marginTop="0dp"
+                        android:src="@drawable/icon_heartfull"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="#FF0000" />
 
-                <ImageView
-                    android:id="@+id/picinfo_btn"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_marginStart="55dp"
-                    android:src="@drawable/icon_info"
-                    android:layout_marginEnd="0dp"
-                    app:tint="?attr/colorTextNormal"
-                    app:layout_constraintLeft_toRightOf="@id/share_btn"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"/>
+                    <TextView
+                        android:id="@+id/count_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="?attr/colorTextNormal"
+                        android:textSize="12dp"
+                        app:layout_constraintStart_toStartOf="@id/like_btn"
+                        app:layout_constraintTop_toBottomOf="@id/like_btn" />
+
+                    <ImageView
+                        android:id="@+id/save_btn"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="55dp"
+                        android:src="@drawable/icon_save"
+                        app:layout_constraintStart_toEndOf="@id/like_btn"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="?attr/colorTextNormal" />
+
+                    <ImageView
+                        android:id="@+id/share_btn"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="55dp"
+                        android:src="@drawable/icon_share"
+                        app:layout_constraintStart_toEndOf="@id/save_btn"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="?attr/colorTextNormal" />
+
+                    <ImageView
+                        android:id="@+id/picinfo_btn"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="55dp"
+                        android:layout_marginEnd="0dp"
+                        android:src="@drawable/icon_info"
+                        app:layout_constraintStart_toEndOf="@id/share_btn"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="?attr/colorTextNormal" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/buttons" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/text_ofthedaytitel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="258dp"
-                android:layout_marginBottom="50dp"
-                android:layout_marginEnd="20dp"
-                android:textAlignment="textStart"
-                android:textSize="17sp"
-                android:textStyle="bold|italic"
-                android:text="Über das Kennzeichen:"
-                android:textColor="?attr/colorSecondary"
-                app:layout_constraintTop_toTopOf="@+id/imageoftheday"
-                app:layout_constraintStart_toStartOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/think_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="22dp"
-                android:text="💭"
-                android:textColor="?attr/colorSecondary"
-                android:textSize="23sp"
-                app:layout_constraintBottom_toBottomOf="@+id/text_ofthedaytitel"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/text_ofthedaytitel" />
-
-            <TextView
-                android:id="@+id/text_oftheday"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="35dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="20dp"
-                android:textAlignment="textStart"
-                android:textSize="16sp"
-                android:textStyle="normal"
-                android:text="test"
-                android:textIsSelectable="true"
-                app:layout_constraintTop_toBottomOf="@id/text_ofthedaytitel"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
             <androidx.cardview.widget.CardView
-                android:id="@+id/mapCard"
+                android:id="@+id/card_oftheday"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="100dp"
-                android:overScrollMode="ifContentScrolls"
-                app:layout_constraintTop_toBottomOf="@id/text_oftheday"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 app:cardCornerRadius="22dp"
-                app:cardElevation="4dp"
-                app:cardPreventCornerOverlap="true"
-                app:cardUseCompatPadding="true">
+                app:cardElevation="1dp"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintBottom_toTopOf="@id/constMainLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/maincontent">
 
-                <org.osmdroid.views.MapView
-                    android:id="@+id/map"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="wrap_content"
+                    android:padding="14dp">
 
-                <RelativeLayout
-                    android:id="@+id/maprel"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    <TextView
+                        android:id="@+id/text_ofthedaytitel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Über das Kennzeichen:"
+                        android:textAlignment="textStart"
+                        android:textColor="?attr/colorSecondary"
+                        android:textSize="17sp"
+                        android:textStyle="bold|italic"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/text_oftheday"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="test"
+                        android:textAlignment="textStart"
+                        android:textColor="?attr/colorTextNormal"
+                        android:textIsSelectable="true"
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/text_ofthedaytitel" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/edit_text_rounded_corner_more2"
-        android:backgroundTint="?attr/greyslider"
-        app:behavior_peekHeight="60dp"
-        app:layout_anchorGravity="top|center"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
-        <RelativeLayout
-            android:id="@+id/slider"
-            android:layout_width="75dp"
-            android:layout_height="6dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/edit_text_rounded_corner_more"
-            android:backgroundTint="?attr/colorPrimary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/infotitel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:text="Alle Fakten auf einen Blick:"
-            android:textAlignment="textStart"
-            android:textColor="?attr/colorTextNormal"
-            android:textSize="17sp"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/slider" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="30dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/infotitel">
-
-            <RelativeLayout
-                android:id="@+id/fragment_container1"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constMainLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:layout_marginTop="13dp">
+                app:layout_constraintBottom_toTopOf="@id/aicard_oftheday"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_oftheday">
 
-                <TextView
-                    android:id="@+id/kuerzeltitel"
-                    android:layout_width="wrap_content"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/factscard_oftheday"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Kürzel:  "
-                    android:textSize="17dp"
-                    android:textColor="@color/yellow"
-                    android:textStyle="italic|bold" />
+                    android:layout_weight="1"
+                    app:cardCornerRadius="22dp"
+                    app:cardElevation="1dp"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintEnd_toStartOf="@id/MapConstLayout"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/kuerzelwert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/kuerzeltitel"
-                    android:text="AN"
-                    android:textIsSelectable="true"
-                    android:textColor="?attr/colorTextNormal"
-                    android:textSize="17dp" />
-
-                <TextView
-                    android:id="@+id/herleitungstitel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/kuerzelwert"
-                    android:text="Herleitung:  "
-                    android:textSize="17dp"
-                    android:textColor="@color/yellow"
-                    android:textStyle="italic|bold" />
-
-                <TextView
-                    android:id="@+id/herleitungswert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/kuerzelwert"
-                    android:layout_toRightOf="@id/herleitungstitel"
-                    android:text="ANsbach"
-                    android:textIsSelectable="true"
-                    android:textColor="?attr/colorTextNormal"
-                    android:textSize="17dp" />
-
-                <TextView
-                    android:id="@+id/stadtoderkreistitel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/herleitungswert"
-                    android:text="Stadt oder Kreis:  "
-                    android:textSize="17dp"
-                    android:textColor="@color/yellow"
-                    android:textStyle="italic|bold" />
-
-                <TextView
-                    android:id="@+id/stadtoderkreiswert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/herleitungswert"
-                    android:layout_toRightOf="@id/stadtoderkreistitel"
-                    android:text="Ansbach"
-                    android:textIsSelectable="true"
-                    android:textColor="?attr/colorTextNormal"
-                    android:textSize="17dp" />
-
-                <TextView
-                    android:id="@+id/bundeslandtitel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/stadtoderkreiswert"
-                    android:text="Bundesland:  "
-                    android:textSize="17dp"
-                    android:textColor="@color/yellow"
-                    android:textStyle="italic|bold" />
-
-                <TextView
-                    android:id="@+id/bundeslandwert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/stadtoderkreiswert"
-                    android:layout_toRightOf="@id/bundeslandtitel"
-                    android:text=""
-                    android:textIsSelectable="true"
-                    android:textColor="?attr/colorTextNormal"
-                    android:textSize="17dp" />
-
-                <TextView
-                    android:id="@+id/bundesland_iso_titel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/bundeslandwert"
-                    android:text="Bundesland (Iso3166-2):  "
-                    android:textSize="17dp"
-                    android:textColor="@color/yellow"
-                    android:textStyle="italic|bold" />
-
-                <TextView
-                    android:id="@+id/bundesland_iso_wert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/bundeslandwert"
-                    android:layout_toRightOf="@id/bundesland_iso_titel"
-                    android:text=""
-                    android:textIsSelectable="true"
-                    android:textColor="?attr/colorTextNormal"
-                    android:textSize="17dp" />
-
-                <TextView
-                    android:id="@+id/landtitel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/bundesland_iso_wert"
-                    android:text="Nationalitätszeichen:  "
-                    android:textSize="17dp"
-                    android:textColor="@color/yellow"
-                    android:textStyle="italic|bold" />
-
-                <TextView
-                    android:id="@+id/landwert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/bundesland_iso_wert"
-                    android:layout_toRightOf="@id/landtitel"
-                    android:text=""
-                    android:textIsSelectable="true"
-                    android:textColor="?attr/colorTextNormal"
-                    android:textSize="17dp" />
-
-                <TextView
-                    android:id="@+id/bemerkungentitel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/landwert"
-                    android:text="Bemerkungen:  "
-                    android:textSize="17dp"
-                    android:textColor="@color/yellow"
-                    android:textStyle="italic|bold" />
-
-                <TextView
-                    android:id="@+id/Bemerkungenwert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/landwert"
-                    android:layout_toRightOf="@id/bemerkungentitel"
-                    android:text=" ---"
-                    android:textIsSelectable="true"
-                    android:textColor="?attr/colorTextNormal"
-                    android:textSize="17dp" />
-
-                <androidx.core.widget.NestedScrollView
-                    android:id="@+id/fussnoten"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/Bemerkungenwert">
-
-                    <RelativeLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:padding="14dp">
 
                         <TextView
-                            android:id="@+id/fussnotentitel"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/facts_ofthedaytitel"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Fußnoten: "
-                            android:textSize="17dp"
-                            android:textColor="@color/yellow"
-                            android:textStyle="italic|bold" />
+                            android:text="Fakten:"
+                            android:textAlignment="textStart"
+                            android:textColor="?attr/colorSecondary"
+                            android:textSize="17sp"
+                            android:textStyle="bold|italic"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/facts_ofthedaytitel">
+
+                            <RelativeLayout
+                                android:id="@+id/fragment_container1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp">
+
+                                <TextView
+                                    android:id="@+id/kuerzeltitel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Kürzel:  "
+                                    android:textColor="@color/yellow"
+                                    android:textSize="14dp"
+                                    android:textStyle="italic|bold" />
+
+                                <TextView
+                                    android:id="@+id/kuerzelwert"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_toRightOf="@id/kuerzeltitel"
+                                    android:text="AN"
+                                    android:textColor="?attr/colorTextNormal"
+                                    android:textSize="14dp" />
+
+                                <TextView
+                                    android:id="@+id/herleitungstitel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/kuerzelwert"
+                                    android:text="Von:  "
+                                    android:textColor="@color/yellow"
+                                    android:textSize="14dp"
+                                    android:textStyle="italic|bold" />
+
+                                <TextView
+                                    android:id="@+id/herleitungswert"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/kuerzelwert"
+                                    android:layout_toRightOf="@id/herleitungstitel"
+                                    android:text="ANsbach"
+                                    android:textColor="?attr/colorTextNormal"
+                                    android:textSize="14dp" />
+
+                                <TextView
+                                    android:id="@+id/stadtoderkreistitel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/herleitungswert"
+                                    android:text="Kreis:  "
+                                    android:textColor="@color/yellow"
+                                    android:textSize="14dp"
+                                    android:textStyle="italic|bold" />
+
+                                <TextView
+                                    android:id="@+id/stadtoderkreiswert"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/herleitungswert"
+                                    android:layout_toRightOf="@id/stadtoderkreistitel"
+                                    android:text="Ansbach"
+                                    android:textColor="?attr/colorTextNormal"
+                                    android:textSize="14dp" />
+
+                                <TextView
+                                    android:id="@+id/bundeslandtitel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/stadtoderkreiswert"
+                                    android:text="B-Land: "
+                                    android:textColor="@color/yellow"
+                                    android:textSize="14dp"
+                                    android:textStyle="italic|bold" />
+
+                                <TextView
+                                    android:id="@+id/bundeslandwert"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/stadtoderkreiswert"
+                                    android:layout_toRightOf="@id/bundeslandtitel"
+                                    android:text=""
+                                    android:textColor="?attr/colorTextNormal"
+                                    android:textSize="13.9dp" />
+
+                                <TextView
+                                    android:id="@+id/bundesland_iso_titel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/bundeslandwert"
+                                    android:text="Iso3166-2:  "
+                                    android:textColor="@color/yellow"
+                                    android:textSize="14dp"
+                                    android:textStyle="italic|bold" />
+
+                                <TextView
+                                    android:id="@+id/bundesland_iso_wert"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/bundeslandwert"
+                                    android:layout_toRightOf="@id/bundesland_iso_titel"
+                                    android:text=""
+                                    android:textColor="?attr/colorTextNormal"
+                                    android:textSize="14dp" />
+
+                                <TextView
+                                    android:id="@+id/landtitel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/bundesland_iso_wert"
+                                    android:text="Land:  "
+                                    android:textColor="@color/yellow"
+                                    android:textSize="14dp"
+                                    android:textStyle="italic|bold" />
+
+                                <TextView
+                                    android:id="@+id/landwert"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/bundesland_iso_wert"
+                                    android:layout_toRightOf="@id/landtitel"
+                                    android:text=""
+                                    android:textColor="?attr/colorTextNormal"
+                                    android:textSize="14dp" />
+
+                                <TextView
+                                    android:id="@+id/Bemerkungenwert"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/landwert"
+                                    android:text="---"
+                                    android:textColor="?attr/colorTextNormal"
+                                    android:textSize="14dp" />
+                            </RelativeLayout>
+                        </RelativeLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/imagecard_oftheday"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:cardCornerRadius="22dp"
+                    app:cardElevation="1dp"
+                    app:cardBackgroundColor="@color/red"
+                    app:cardPreventCornerOverlap="true"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintBottom_toBottomOf="@id/MapConstLayout"
+                    app:layout_constraintEnd_toStartOf="@id/MapConstLayout"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/factscard_oftheday">
+
+                    <ImageView
+                        android:id="@+id/imagecardoftheday"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitCenter"
+                        android:scaleX="1.15"
+                        android:scaleY="1.15" />
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/MapConstLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/factscard_oftheday"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/mapCard"
+                        android:layout_width="0dp"
+                        android:layout_height="380dp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="22dp"
+                        app:cardElevation="1dp"
+                        app:cardPreventCornerOverlap="true"
+                        app:cardUseCompatPadding="true"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <org.osmdroid.views.MapView
+                            android:id="@+id/map"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+
+                        <RelativeLayout
+                            android:id="@+id/maprel"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/kurzCard"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:cardBackgroundColor="@color/red"
+                        app:cardCornerRadius="999dp"
+                        app:cardElevation="2dp"
+                        app:cardPreventCornerOverlap="false"
+                        app:cardUseCompatPadding="true"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
-                            android:id="@+id/fussnotenwert"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_toRightOf="@id/fussnotentitel"
-                            android:text=" ---"
-                            android:textColor="?attr/colorTextNormal"
-                            android:textSize="17dp" />
-                    </RelativeLayout>
-                </androidx.core.widget.NestedScrollView>
+                            android:id="@+id/kurzCardText"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:fontFamily="@font/schriftkraftfahrzeugkennzeichen"
+                            android:gravity="center"
+                            android:text="WUG"
+                            android:textAlignment="center"
+                            android:textColor="@color/white"
+                            android:textSize="90sp"
+                            android:textStyle="bold" />
+                    </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <RelativeLayout
+            <androidx.cardview.widget.CardView
+                android:id="@+id/aicard_oftheday"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:cardCornerRadius="22dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/constMainLayout">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="15dp"
-                    android:layout_below="@+id/bemerkungentitel" />
-            </RelativeLayout>
-        </RelativeLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+                    android:layout_height="wrap_content"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:id="@+id/aitext_ofthedaytitel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Weiterführende Informationen:"
+                        android:textAlignment="textStart"
+                        android:textColor="?attr/colorSecondary"
+                        android:textSize="17sp"
+                        android:textStyle="bold|italic"
+                        app:layout_constraintEnd_toStartOf="@id/think_btn"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/think_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💭"
+                        android:textColor="?attr/colorSecondary"
+                        android:textSize="23sp"
+                        app:layout_constraintBottom_toBottomOf="@id/aitext_ofthedaytitel"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/aitext_ofthedaytitel" />
+
+                    <TextView
+                        android:id="@+id/aitext_oftheday"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="test"
+                        android:textAlignment="textStart"
+                        android:textColor="?attr/colorTextNormal"
+                        android:textIsSelectable="true"
+                        android:textSize="15sp"
+                        android:textStyle="normal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/aitext_ofthedaytitel" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="750dp"
+                app:layout_constraintTop_toTopOf="@id/card_oftheday"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</RelativeLayout>

@@ -3,35 +3,21 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="\app\src\main\assets\at_kennzeichen.csv">
+        <entry key="\app\src\main\assets\de_kennzeichen.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\app\src\main\assets\at_sonderkennzeichen.csv">
+        <entry key="\app\src\main\assets\de_kennzeichenauslaufend.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\app\src\main\assets\kennzeichen.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\app\src\main\assets\kennzeichenauslaufend.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\app\src\main\assets\sonderkennzeichen.csv">
+        <entry key="\app\src\main\assets\de_sonderkennzeichen.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

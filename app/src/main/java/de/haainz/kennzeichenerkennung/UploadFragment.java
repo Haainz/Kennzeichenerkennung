@@ -111,13 +111,13 @@ public class UploadFragment extends DialogFragment {
 
         if (filename.contains("standard")) {
             expected = Arrays.asList("Nationalitätszeichen", "Unterscheidungszeichen", "StadtOderKreis", "Herleitung",
-                    "Bundesland.Name", "Bundesland.Iso3166-2", "Fußnoten", "Bemerkung", "gespeichert");
+                    "Bundesland.Name", "Bundesland.Iso3166-2", "Fußnoten", "Bemerkung", "KI-Text", "gespeichert");
         } else if (filename.contains("sonder")) {
-            expected = Arrays.asList("Nationalitätszeichen", "Unterscheidungszeichen", "Zulassungsbehörde", "Bedeutung", "Typ", "gespeichert");
+            expected = Arrays.asList("Nationalitätszeichen", "Unterscheidungszeichen", "Zulassungsbehörde", "Bedeutung", "Typ", "KI-Text", "gespeichert");
         } else if (filename.contains("auslaufend")) {
-            expected = Arrays.asList("Nationalitätszeichen", "Unterscheidungszeichen", "Abwicklung", "BisherigerVerwaltungsbezirkOderKreis", "gespeichert");
+            expected = Arrays.asList("Nationalitätszeichen", "Unterscheidungszeichen", "Abwicklung", "BisherigerVerwaltungsbezirkOderKreis", "KI-Text", "gespeichert");
         } else if (filename.contains("eigene")) {
-            expected = Arrays.asList("Nationalitätszeichen", "Unterscheidungszeichen", "StadtOderKreis", "Herleitung",
+            expected = Arrays.asList("Nationalitätszeichen", "Unterscheidungszeichen", "StadtOderKreis", "KI-Text", "Herleitung",
                     "Bundesland.Name", "Bundesland.Iso3166-2", "Fußnoten", "Bemerkung", "gespeichert");
         } else {
             return false;
@@ -265,7 +265,7 @@ public class UploadFragment extends DialogFragment {
         try {
             // Datei überschreiben (löschen und neu erstellen mit Header)
             FileOutputStream outputStream = new FileOutputStream(file, false); // false = überschreiben
-            String header = "Nationalitätszeichen,Unterscheidungszeichen,StadtOderKreis,Herleitung,Bundesland.Name,Bundesland.Iso3166-2,Fußnoten,Bemerkung,gespeichert\n";
+            String header = "Nationalitätszeichen,Unterscheidungszeichen,StadtOderKreis,Herleitung,Bundesland.Name,Bundesland.Iso3166-2,Fußnoten,Bemerkung,KI-Text,gespeichert\n";
             outputStream.write(header.getBytes());
 
             // Neue Datensätze hinzufügen
@@ -278,11 +278,12 @@ public class UploadFragment extends DialogFragment {
                 String bundeslandIso31662 = record.get("Bundesland.Iso3166-2");
                 String fussnoten = record.get("Fußnoten");
                 String bemerkung = record.get("Bemerkung");
+                String aitext = record.get("KI-Text");
                 String gespeichert = record.get("gespeichert");
 
                 String csvZeile = nationalitaetszeichen + "," + unterscheidungszeichen + "," + stadtOderKreis + "," +
                         herleitung + "," + bundeslandName + "," + bundeslandIso31662 + "," +
-                        fussnoten + "," + bemerkung + "," + gespeichert + "\n";
+                        fussnoten + "," + bemerkung + "," + aitext + "," + gespeichert + "\n";
 
                 outputStream.write(csvZeile.getBytes());
             }

@@ -3,6 +3,7 @@ package de.haainz.kennzeichenerkennung.ui.day;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -24,14 +25,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
+import de.haainz.kennzeichenerkennung.InfosFragment;
 import de.haainz.kennzeichenerkennung.Kennzeichen;
 import de.haainz.kennzeichenerkennung.KennzeichenGenerator;
 import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
@@ -86,6 +95,20 @@ public class DayFragment extends Fragment {
     private Handler loadingHandler;
     private Runnable loadingRunnable;
     private int loadingStep = 0;
+    private NestedScrollView scrollView;
+    private View mainContent;
+    private float originalScale = 1.0f;
+    private float minScale = 0.0f;
+    private boolean isSnapping = false;
+    private Handler handler = new Handler();
+    private Runnable snapRunnable;
+    private int snapDistance = 1300; // Höhe des schrumpfenden Elements (kannst du dynamisch setzen)
+    private int snapThreshold = 500;
+    private TextView title1, title2;
+    private int titleStartMargin = 80; // dp
+    private int titleEndMargin = -15;   // dp
+    private int titleStartMarginPx, titleEndMarginPx;
+    private LinearLayout titleContainer;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -100,10 +123,7 @@ public class DayFragment extends Fragment {
         kennzeichenKI = new Kennzeichen_KI(getActivity());
         kennzeichenGenerator = new KennzeichenGenerator(getContext());
 
-        binding.fussnotenwert.setVisibility(VISIBLE);
-        binding.fussnotentitel.setVisibility(VISIBLE);
         binding.Bemerkungenwert.setVisibility(VISIBLE);
-        binding.bemerkungentitel.setVisibility(VISIBLE);
 
         Calendar calendar = Calendar.getInstance();
         int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
@@ -119,11 +139,10 @@ public class DayFragment extends Fragment {
 
         imageBitmap = generateImage(currentKennzeichen);
         binding.imageoftheday.setImageBitmap(imageBitmap);
+        binding.imagecardoftheday.setImageBitmap(imageBitmap);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         String currentDate = dateFormat.format(new Date());
-        binding.title.setText("Kennzeichen des Tages\nHeute, " + currentDate + ":");
-
-        checkNetworkAndGenerateText(currentKennzeichen, dayOfYear);
+        binding.titleLine2.setText("Heute, " + currentDate + ":");
 
         binding.kuerzelwert.setText(currentKennzeichen.OertskuerzelGeben());
         binding.herleitungswert.setText(currentKennzeichen.OrtGeben());
@@ -151,22 +170,15 @@ public class DayFragment extends Fragment {
                         "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n\nweiterer amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen " +
                         "führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
         };
-        if (!currentKennzeichen.FussnoteGeben().isEmpty()) {
-            binding.fussnotenwert.setText(fussnoten[fussnoteNummer]);
-        } else {
-            binding.fussnotenwert.setVisibility(GONE);
-            binding.fussnotentitel.setVisibility(GONE);
-        }
         if (!currentKennzeichen.BemerkungenGeben().isEmpty()) {
             binding.Bemerkungenwert.setText(currentKennzeichen.BemerkungenGeben());
         } else {
             binding.Bemerkungenwert.setVisibility(GONE);
-            binding.bemerkungentitel.setVisibility(GONE);
         }
 
         binding.thinkBtn.setOnClickListener(v -> {
             stopLoadingAnimation();
-            checkNetworkAndGenerateText(currentKennzeichen, dayOfYear);
+            checkNetworkAndGenerateText(currentKennzeichen);
         });
 
         binding.likeBtn.setOnClickListener(v -> {
@@ -244,6 +256,26 @@ public class DayFragment extends Fragment {
             mapFragment.show(getParentFragmentManager(), "MapFragment");
         });
 
+        binding.imagecardoftheday.setOnClickListener(v -> {
+            int currentY = scrollView.getScrollY();
+
+            ValueAnimator animator = ValueAnimator.ofInt(currentY, 0);
+            animator.setDuration(600); // Dauer in Millisekunden – hier: 600ms für langsameres Scrollen
+            animator.setInterpolator(new DecelerateInterpolator()); // sanftes Abbremsen
+            animator.addUpdateListener(animation -> {
+                int animatedValue = (int) animation.getAnimatedValue();
+                scrollView.scrollTo(0, animatedValue);
+            });
+            animator.start();
+        });
+
+        binding.kurzCard.setOnClickListener(v -> binding.imagecardoftheday.performClick());
+
+        binding.factscardOftheday.setOnClickListener(v -> {
+            InfosFragment infosFragment = new InfosFragment(currentKennzeichen);
+            infosFragment.show(getParentFragmentManager(), "InfosFragment");
+        });
+
         Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));
 
         if (isNetworkAvailable()) {
@@ -253,6 +285,10 @@ public class DayFragment extends Fragment {
             mapView.setMultiTouchControls(false);
             mapView.setVisibility(VISIBLE);
             binding.maprel.setVisibility(VISIBLE);
+            binding.kurzCard.setVisibility(GONE);
+            binding.imagecardOftheday.setVisibility(VISIBLE);
+            showaiText(currentKennzeichen, "on");
+            binding.thinkBtn.setVisibility(VISIBLE);
 
             if (mapView.getVisibility() == View.VISIBLE) {
                 getCoordinates(currentKennzeichen.OrtGeben() + "_" + currentKennzeichen.BundeslandGeben());
@@ -263,8 +299,89 @@ public class DayFragment extends Fragment {
             binding.mapCard.setVisibility(GONE);
             binding.map.setVisibility(GONE);
             binding.maprel.setVisibility(GONE);
+            binding.kurzCard.setVisibility(VISIBLE);
+            binding.kurzCardText.setText(currentKennzeichen.oertskuerzel);
+            binding.imagecardOftheday.setVisibility(GONE);
+            showaiText(currentKennzeichen, "off");
+            binding.thinkBtn.setVisibility(GONE);
         }
+        showStandardText(currentKennzeichen, dayOfYear);
+
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        scrollView = view.findViewById(R.id.scroll);
+        mainContent = view.findViewById(R.id.maincontent);
+        scrollView = view.findViewById(R.id.scroll);
+        mainContent = view.findViewById(R.id.maincontent);
+        title1 = view.findViewById(R.id.title_line1);
+        title2 = view.findViewById(R.id.title_line2);
+        titleContainer = view.findViewById(R.id.titleContainer);
+
+        // Umrechnung von dp in px
+        float density = getResources().getDisplayMetrics().density;
+        titleStartMarginPx = (int) (titleStartMargin * density);
+        titleEndMarginPx = (int) (titleEndMargin * density);
+
+        scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            private int lastScrollY = 0;
+            private long lastScrollTime = 0;
+            private final long SCROLL_IDLE_DELAY = 150; // ms bis wir Scroll-Stillstand annehmen
+
+            private final Handler idleHandler = new Handler();
+            private Runnable idleRunnable = null;
+
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                lastScrollY = scrollY;
+
+                // ⬇️ Dynamisches Schrumpfen von maincontent
+                float factor = 1 - (scrollY / (float) snapDistance);
+                if (factor < minScale) factor = minScale;
+                if (factor > originalScale) factor = originalScale;
+
+                mainContent.setScaleX(factor);
+                mainContent.setScaleY(factor);
+                mainContent.setPivotX(mainContent.getWidth() / 2f);
+                mainContent.setPivotY(mainContent.getHeight());
+
+                // ⬇️ Dynamisches Margin für Title
+                float marginFactor = Math.max(0f, Math.min(1f, scrollY / (float) snapDistance));
+                int newMarginTop = (int) (titleStartMarginPx - (titleStartMarginPx - titleEndMarginPx) * marginFactor);
+
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) titleContainer.getLayoutParams();
+                params.topMargin = newMarginTop;
+                titleContainer.post(() -> titleContainer.setLayoutParams(params));
+
+                // Fade out titleLine1
+                float fadeFactor = 1f - marginFactor; // 1 → 0
+                title1.setAlpha(fadeFactor);
+
+                // 🧲 Snap nur wenn Scrollen stoppt
+                if (idleRunnable != null) idleHandler.removeCallbacks(idleRunnable);
+                idleRunnable = () -> {
+                    if (isSnapping) return;
+                    if (lastScrollY < snapThreshold) {
+                        smoothScrollTo(0);
+                    } else if (lastScrollY < snapDistance) {
+                        smoothScrollTo(snapDistance);
+                    }
+                };
+                idleHandler.postDelayed(idleRunnable, SCROLL_IDLE_DELAY);
+            }
+        });
+    }
+
+    private void smoothScrollTo(int targetY) {
+        isSnapping = true;
+        scrollView.post(() -> {
+            scrollView.smoothScrollTo(0, targetY);
+            scrollView.postDelayed(() -> isSnapping = false, 300);
+        });
     }
 
     private boolean isNetworkAvailable() {
@@ -331,7 +448,7 @@ public class DayFragment extends Fragment {
             try {
             if (fragment != null && fragment.mapView != null) { // Überprüfe, ob mapView nicht null ist
                 if (geoPoint != null) {
-                    fragment.mapView.getController().setZoom(6.5);
+                    fragment.mapView.getController().setZoom(6.25);
                     fragment.mapView.getController().setCenter(new GeoPoint(51.163409, 10.447718));
                     Marker marker = new Marker(fragment.mapView);
                     marker.setPosition(geoPoint);
@@ -390,16 +507,16 @@ public class DayFragment extends Fragment {
         return kennzeichenGenerator.generateImage(img, kennzeichen);
     }
 
-    private void checkNetworkAndGenerateText(Kennzeichen kennzeichen, int dayOfYear) {
+    private void checkNetworkAndGenerateText(Kennzeichen kennzeichen) {
         if (isNetworkAvailable() && !isOfflineMode()) {
-            generateAIText(kennzeichen, dayOfYear);
-            binding.textOftheday.setText("Analysiere Informationen...");
+            generateAIText(kennzeichen);
+            binding.aitextOftheday.setText("Analysiere Informationen...");
         } else {
-            showStandardText(kennzeichen, dayOfYear);
+            showaiText(kennzeichen, "off");
         }
     }
 
-    private void generateAIText(Kennzeichen kennzeichen, int dayOfYear) {
+    private void generateAIText(Kennzeichen kennzeichen) {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         String aiModel = sharedPreferences.getString("selectedAIModel", "Deepseek V3");
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -457,13 +574,12 @@ public class DayFragment extends Fragment {
                                                         .getString("content");
 
                                                 stopLoadingAnimation();
-                                                fragment.binding.textOftheday.setText(
-                                                        fragment.formatAIText(aiText, kennzeichen, dayOfYear)
-                                                );
+                                                kennzeichenKI.setaiText(currentKennzeichen, aiText);
+                                                binding.aitextOftheday.setText(formatAIText(aiText));
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                                 stopLoadingAnimation();
-                                                fragment.showStandardText(kennzeichen, dayOfYear);
+                                                fragment.showaiText(kennzeichen, "on");
                                             }
                                         }
                                     });
@@ -474,7 +590,7 @@ public class DayFragment extends Fragment {
                                     getActivity().runOnUiThread(() -> {
                                         DayFragment fragment = fragmentRef.get();
                                         if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                            fragment.showStandardText(kennzeichen, dayOfYear);
+                                            binding.aitextOftheday.setText("Fehler mit dem KI-Modell");
                                         }
                                     });
                                 }
@@ -485,7 +601,7 @@ public class DayFragment extends Fragment {
                                 getActivity().runOnUiThread(() -> {
                                     DayFragment fragment = fragmentRef.get();
                                     if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                        fragment.showStandardText(kennzeichen, dayOfYear);
+                                        binding.aitextOftheday.setText("Fehler, bitte wähle das KI-Modell erneut in den Einstellungen aus");
                                     }
                                 });
                             }
@@ -496,7 +612,7 @@ public class DayFragment extends Fragment {
                             getActivity().runOnUiThread(() -> {
                                 DayFragment fragment = fragmentRef.get();
                                 if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                    fragment.showStandardText(kennzeichen, dayOfYear);
+                                    fragment.showaiText(kennzeichen, "on");
                                 }
                             });
                         }
@@ -508,7 +624,7 @@ public class DayFragment extends Fragment {
                     getActivity().runOnUiThread(() -> {
                         DayFragment fragment = fragmentRef.get();
                         if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                            fragment.showStandardText(kennzeichen, dayOfYear);
+                            fragment.showaiText(kennzeichen, "on");
                         }
                     });
                 }
@@ -516,36 +632,36 @@ public class DayFragment extends Fragment {
         });
     }
 
-    private String formatAIText(String aiText, Kennzeichen kennzeichen, int dayOfYear) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        String currentDate = dateFormat.format(new Date());
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro 2.0");
-
-        return "KI-Infotext für " + currentDate + " (" + dayOfYear + ". Tag):\n\n" +
-                kennzeichen.OertskuerzelGeben() + " - " + kennzeichen.OrtGeben() + "\n\n" +
-                aiText.trim() + "\n\n(Quelle: KI-generiert von " + aiModel + ", keine Gewähr)";
+    private String formatAIText(String aiText) {
+        return aiText.trim() + "\n\n(KI-generierter Inhalt, keine Gewähr)";
     }
 
     private void showStandardText(Kennzeichen kennzeichen, int dayOfYear) {
-        String bemerk = "";
-        if (!kennzeichen.BemerkungenGeben().equals("---") && !kennzeichen.BemerkungenGeben().isEmpty()) {
-            bemerk = "Folgende Bemerkung ist noch hinterlegt: " + kennzeichen.BemerkungenGeben();
-        }
-
         String standardText = "Heute, am " + new SimpleDateFormat("dd.MM.yyyy").format(new Date()) +
                 ", dem " + dayOfYear + ". Tag diesen Jahres ist das Kennzeichen-Kürzel des Tages " +
                 kennzeichen.OertskuerzelGeben() + ". " + kennzeichen.OertskuerzelGeben() +
                 " leitet sich von " + kennzeichen.OrtGeben() + " ab und gehört zur Stadt bzw. zum Kreis " +
                 kennzeichen.StadtKreisGeben() + ".\n" + kennzeichen.StadtKreisGeben() +
-                " liegt in Deutschland im Bundesland " + kennzeichen.BundeslandGeben() + ".\n" + bemerk;
+                " liegt in Deutschland im Bundesland " + kennzeichen.BundeslandGeben() + ".";
 
         binding.textOftheday.setText(standardText);
     }
 
+    private void showaiText(Kennzeichen kennzeichen, String onlinestatus) {
+        if(!Objects.equals(kennzeichen.aiTextGeben(), "")) {
+            binding.aitextOftheday.setText(formatAIText(kennzeichen.aiTextGeben()));
+        } else {
+            String standardText = "Es wurde noch kein KI-Text zu diesem Kennzeichen erstellt. Klicke auf die Denkblase um einen zu generieren.";
+            if(Objects.equals(onlinestatus, "off")) {
+                standardText = "Es wurde noch kein KI-Text zu diesem Kennzeichen erstellt.";
+            }
+            binding.aitextOftheday.setText(standardText);
+        }
+    }
+
     private void startLoadingAnimation() {
         if (binding != null) {
-            binding.textOftheday.setText("Analysiere Informationen");
+            binding.aitextOftheday.setText("Analysiere Informationen");
 
             loadingHandler = new Handler();
             loadingRunnable = new Runnable() {
@@ -553,16 +669,16 @@ public class DayFragment extends Fragment {
                 public void run() {
                     switch (loadingStep % 4) {
                         case 0:
-                            binding.textOftheday.setText("Analysiere Informationen.");
+                            binding.aitextOftheday.setText("Analysiere Informationen.");
                             break;
                         case 1:
-                            binding.textOftheday.setText("Analysiere Informationen..");
+                            binding.aitextOftheday.setText("Analysiere Informationen..");
                             break;
                         case 2:
-                            binding.textOftheday.setText("Analysiere Informationen...");
+                            binding.aitextOftheday.setText("Analysiere Informationen...");
                             break;
                         case 3:
-                            binding.textOftheday.setText("Analysiere Informationen");
+                            binding.aitextOftheday.setText("Analysiere Informationen");
                             break;
                     }
                     loadingStep++;
