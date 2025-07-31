@@ -82,10 +82,13 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.haainz.kennzeichenerkennung.ui.AIManager;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -432,6 +435,7 @@ public class HomeFragment extends Fragment {
                     mapView.setBuiltInZoomControls(true);
                     mapView.setMultiTouchControls(true);
                     mapCardView.setVisibility(View.VISIBLE);
+                    showaiText(kennzeichen, "on");
 
                     if(!kennzeichen.isSonderDE()) {
                         getCoordinates(kennzeichen.OrtGeben() + "_" + kennzeichen.BundeslandGeben());
@@ -440,6 +444,7 @@ public class HomeFragment extends Fragment {
                     }
                 } else {
                     binding.mapcardview.setVisibility(View.GONE);
+                    showaiText(kennzeichen, "off");
                 }
             } else {
                 binding.sliderview.setVisibility(View.GONE);
@@ -637,6 +642,22 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private String formatAIText(String aiText) {
+        return aiText.trim() + "\n\n(KI-generierter Inhalt, keine Gewähr)";
+    }
+
+    public void showaiText(Kennzeichen kennzeichen, String onlinestatus) {
+        if(!Objects.equals(kennzeichen.aiTextGeben(), "")) {
+            binding.infotextwert.setText(formatAIText(kennzeichen.aiTextGeben()));
+        } else {
+            String standardText = "Es wurde noch kein KI-Text zu diesem Kennzeichen erstellt. Klicke hier um einen zu generieren.";
+            if(Objects.equals(onlinestatus, "off")) {
+                standardText = "Es wurde noch kein KI-Text zu diesem Kennzeichen erstellt.";
+            }
+            binding.infotextwert.setText(standardText);
+        }
+    }
+
     private void checkNetworkAndGenerateText(Kennzeichen kennzeichen) {
         if (isNetworkAvailable() && !isOfflineMode()) {
             binding.infotexttitel.setVisibility(View.VISIBLE);
@@ -649,124 +670,35 @@ public class HomeFragment extends Fragment {
                 generateAIText(kennzeichen);
             }
         } else {
-            binding.infotexttitel.setVisibility(View.GONE);
-            binding.infotextwert.setVisibility(View.GONE);
+            showaiText(kennzeichen, "off");
         }
     }
 
     private void generateAIText(Kennzeichen kennzeichen) {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro 2.0");
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        final WeakReference<HomeFragment> fragmentRef = new WeakReference<>(this);
-        executor.execute(() -> {
-            try {
-                if (isAdded()) {
-                    getActivity().runOnUiThread(this::startLoadingAnimation);
-                }
-                String prompt = "Erstelle mir einen sehr kurzen informativen Text (maximal 75 Wörter) über " + kennzeichen.OrtGeben() +
-                        " in " + kennzeichen.StadtKreisGeben() + " im Bundesland " + kennzeichen.BundeslandGeben() +
-                        ". Gib auch wichtige Fakten wie Einwohnerzahl, geografische Besonderheiten und " +
-                        "historische Hintergründe an. Sei präzise, antworte auf deutsch und halte dich an nachweisbare Fakten.";
+        AIManager aiManager = new AIManager(requireContext(), null, this);
 
-                getaiModel(aiModel, modelId -> {
-                    if (!modelId.equals("Fehler")) {
-                        JSONObject jsonBody = new JSONObject();
-                        JSONArray messages = new JSONArray();
-                        JSONObject message = new JSONObject();
-                        message.put("content", prompt);
-                        message.put("role", "user");
-                        messages.put(message);
+        startLoadingAnimation();
 
-                        try {
-                            jsonBody.put("model", modelId);
-                            jsonBody.put("messages", messages);
-
-                            RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json"));
-
-                            Request request = new Request.Builder()
-                                    .url("https://openrouter.ai/api/v1/chat/completions")
-                                    .post(body)
-                                    .addHeader("Authorization", "Bearer " + sharedPreferences.getString("apikey", getResources().getString(R.string.api_key)))
-                                    .addHeader("Content-Type", "application/json")
-                                    .build();
-
-                            OkHttpClient client = new OkHttpClient();
-                            Response response = client.newCall(request).execute();
-                            String responseData = response.body().string();
-                            Log.d("API_RESPONSE", responseData);
-                            openResponse(responseData);
-
-                            if (response.isSuccessful()) {
-                                if (isAdded() && getActivity() != null) {
-                                    getActivity().runOnUiThread(() -> {
-                                        HomeFragment fragment = fragmentRef.get();
-                                        if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                            try {
-                                                JSONObject jsonResponse = new JSONObject(responseData);
-                                                String aiText = jsonResponse.getJSONArray("choices")
-                                                        .getJSONObject(0)
-                                                        .getJSONObject("message")
-                                                        .getString("content");
-
-                                                stopLoadingAnimation();
-                                                fragment.binding.infotextwert.setText(
-                                                        fragment.formatAIText(aiText)
-                                                );
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                                stopLoadingAnimation();
-                                                fragment.showErrorState();
-                                                Log.e("ai1", String.valueOf(e));
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        } catch (Exception e) {
-                            if (isAdded() && getActivity() != null) {
-                                getActivity().runOnUiThread(() -> {
-                                    HomeFragment fragment = fragmentRef.get();
-                                    if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                        fragment.stopLoadingAnimation();
-                                        fragment.showErrorState();
-                                        Log.e("ai2", String.valueOf(e));
-                                    }
-                                });
-                            }
-                        }
-                    } else {
-                        stopLoadingAnimation();
-                        if (isAdded() && getActivity() != null) {
-                            getActivity().runOnUiThread(() -> {
-                                HomeFragment fragment = fragmentRef.get();
-                                if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                    fragment.showErrorState();
-                                    Log.e("ai3", "Model == Fehler");
-                                }
-                            });
-                        }
-                    }
+        aiManager.generateAIText(kennzeichen, new AIManager.AICallback() {
+            @Override
+            public void onResult(String aiText) {
+                if (!isAdded()) return;
+                requireActivity().runOnUiThread(() -> {
+                    stopLoadingAnimation();
+                    binding.infotextwert.setText(aiText);
                 });
-            } catch (Exception e) {
-                if (isAdded() && getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        HomeFragment fragment = fragmentRef.get();
-                        if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                            fragment.stopLoadingAnimation();
-                            fragment.showErrorState();
-                            Log.e("ai4", String.valueOf(e));
-                        }
-                    });
-                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (!isAdded()) return;
+                requireActivity().runOnUiThread(() -> {
+                    stopLoadingAnimation();
+                    showErrorState();
+                    Log.e("AI_ERROR", errorMessage);
+                });
             }
         });
-    }
-
-    private String formatAIText(String aiText) {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String aiModel = sharedPreferences.getString("selectedAIModel", "Gemini Pro 2.0");
-        return aiText.trim() + "\n(Quelle: KI-generiert von " + aiModel + ", keine Gewähr)";
     }
 
     private void startLoadingAnimation() {
@@ -827,86 +759,5 @@ public class HomeFragment extends Fragment {
     private boolean isOfflineMode() {
         SharedPreferences prefs = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         return prefs.getBoolean("offlineSwitch", false);
-    }
-
-    private void getaiModel(String aiModel, OnModelIdReceivedListener listener) {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("https://raw.githubusercontent.com/Haainz/Kennzeichenerkennung/refs/heads/master/aimodels.json")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("HomeFragment", "Error loading AI models", e);
-                try {
-                    listener.onModelIdReceived("Fehler");
-                } catch (JSONException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    try {
-                        String jsonData = response.body().string();
-                        JSONObject json = new JSONObject(jsonData);
-                        JSONArray models = json.getJSONArray("ai_models");
-
-                        for (int i = 0; i < models.length(); i++) {
-                            JSONObject model = models.getJSONObject(i);
-                            String name = model.getString("name");
-                            String id = model.getString("id");
-
-                            if (name.equals(aiModel)) {
-                                listener.onModelIdReceived(id);
-                                return;
-                            }
-                        }
-                        listener.onModelIdReceived("Fehler");
-                    } catch (JSONException e) {
-                        Log.e("HomeFragment", "Error parsing JSON", e);
-                        try {
-                            listener.onModelIdReceived("Fehler");
-                        } catch (JSONException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-                } else {
-                    Log.e("HomeFragment", "Response not successful: " + response.code());
-                    try {
-                        listener.onModelIdReceived("Fehler");
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        });
-    }
-
-    public interface OnModelIdReceivedListener {
-        void onModelIdReceived(String modelId) throws JSONException;
-    }
-
-    private void openResponse(String response) {
-        String cleanedResponse = response.trim();
-
-        binding.infotexttitel.setOnLongClickListener(v -> {
-            requireActivity().runOnUiThread(() ->
-                    new AlertDialog.Builder(requireContext())
-                            .setTitle("API-Antwort")
-                            .setMessage(cleanedResponse)
-                            .setPositiveButton("Kopieren", (dialog, which) -> {
-                                ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                                ClipData clip = ClipData.newPlainText("API Response", cleanedResponse);
-                                clipboard.setPrimaryClip(clip);
-                                Toast.makeText(requireContext(), "Antwort kopiert", Toast.LENGTH_SHORT).show();
-                            })
-                            .setNegativeButton("Abbrechen", null)
-                            .show()
-            );
-            return true;
-        });
     }
 }

@@ -302,7 +302,6 @@ public class Kennzeichen_KI {
 
             int aitextIndex = headers.indexOf("KI-Text");
             int oertskuerzelIndex = headers.indexOf("Unterscheidungszeichen");
-            int stadtkreisIndex = 3;
 
             if (aitextIndex == -1 || oertskuerzelIndex == -1) {
                 Log.e("KennzeichenEinlesen", "Wichtige Spalte fehlt in: " + filename);

@@ -4,9 +4,6 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.animation.ValueAnimator;
-import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,12 +30,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.preference.PreferenceManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import de.haainz.kennzeichenerkennung.InfosFragment;
 import de.haainz.kennzeichenerkennung.Kennzeichen;
@@ -50,7 +51,6 @@ import de.haainz.kennzeichenerkennung.R;
 import de.haainz.kennzeichenerkennung.databinding.FragmentDayBinding;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -61,7 +61,6 @@ import org.osmdroid.views.overlay.Marker;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
@@ -73,25 +72,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import de.haainz.kennzeichenerkennung.ui.AIManager;
 
 public class DayFragment extends Fragment {
 
-    private FragmentDayBinding binding;
+    public FragmentDayBinding binding;
     private Kennzeichen_KI kennzeichenKI;
     private KennzeichenGenerator kennzeichenGenerator;
     private Bitmap imageBitmap;
     private MapView mapView;
-    private Kennzeichen currentKennzeichen;
+    public Kennzeichen currentKennzeichen;
     private Handler loadingHandler;
     private Runnable loadingRunnable;
     private int loadingStep = 0;
@@ -100,8 +91,6 @@ public class DayFragment extends Fragment {
     private float originalScale = 1.0f;
     private float minScale = 0.0f;
     private boolean isSnapping = false;
-    private Handler handler = new Handler();
-    private Runnable snapRunnable;
     private int snapDistance = 1300; // Höhe des schrumpfenden Elements (kannst du dynamisch setzen)
     private int snapThreshold = 500;
     private TextView title1, title2;
@@ -109,6 +98,7 @@ public class DayFragment extends Fragment {
     private int titleEndMargin = -15;   // dp
     private int titleStartMarginPx, titleEndMarginPx;
     private LinearLayout titleContainer;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -150,26 +140,6 @@ public class DayFragment extends Fragment {
         binding.bundeslandwert.setText(currentKennzeichen.BundeslandGeben());
         binding.bundeslandIsoWert.setText(currentKennzeichen.BundeslandIsoGeben());
         binding.landwert.setText(currentKennzeichen.LandGeben());
-        int fussnoteNummer = 7;
-        if (!Objects.equals(currentKennzeichen.FussnoteGeben(), "")) {
-            fussnoteNummer = Integer.parseInt(currentKennzeichen.FussnoteGeben());
-        }
-        String[] fussnoten = {
-                "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungs nummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzliche Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
-                "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle stellt durch geeignete verwaltungsinterne Maßnahmen sicher, dass eine Doppelvergabe desselben Kennzeichens ausgeschlossen ist.",
-                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
-                        "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
-                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
-                        "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Sachsen-Anhalt im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Baden-Württemberg.",
-                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
-                        "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.",
-                "amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde " +
-                        "oder die nach Landesrecht zuständige Stelle.",
-                "---",
-                "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
-                        "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n\nweiterer amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen " +
-                        "führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
-        };
         if (!currentKennzeichen.BemerkungenGeben().isEmpty()) {
             binding.Bemerkungenwert.setText(currentKennzeichen.BemerkungenGeben());
         } else {
@@ -321,6 +291,13 @@ public class DayFragment extends Fragment {
         title1 = view.findViewById(R.id.title_line1);
         title2 = view.findViewById(R.id.title_line2);
         titleContainer = view.findViewById(R.id.titleContainer);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.popBackStack(); // Entfernt das Fragment
+            navController.navigate(R.id.nav_gallery); // Navigiert neu zum selben Fragment
+        });
 
         // Umrechnung von dp in px
         float density = getResources().getDisplayMetrics().density;
@@ -329,7 +306,6 @@ public class DayFragment extends Fragment {
 
         scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             private int lastScrollY = 0;
-            private long lastScrollTime = 0;
             private final long SCROLL_IDLE_DELAY = 150; // ms bis wir Scroll-Stillstand annehmen
 
             private final Handler idleHandler = new Handler();
@@ -508,128 +484,13 @@ public class DayFragment extends Fragment {
     }
 
     private void checkNetworkAndGenerateText(Kennzeichen kennzeichen) {
+        AIManager aiManager = new AIManager(requireContext(), this, null);
         if (isNetworkAvailable() && !isOfflineMode()) {
-            generateAIText(kennzeichen);
+            aiManager.generateAIText(kennzeichen, null);
             binding.aitextOftheday.setText("Analysiere Informationen...");
         } else {
             showaiText(kennzeichen, "off");
         }
-    }
-
-    private void generateAIText(Kennzeichen kennzeichen) {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String aiModel = sharedPreferences.getString("selectedAIModel", "Deepseek V3");
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        final WeakReference<DayFragment> fragmentRef = new WeakReference<>(this);
-        checkModelWorking(aiModel);
-        executor.execute(() -> {
-            try {
-                if (isAdded()) {
-                    getActivity().runOnUiThread(this::startLoadingAnimation);
-                }
-                String prompt = "Erstelle mir einen sehr kurzen informativen Text (maximal 75 Wörter) über " + kennzeichen.OrtGeben() +
-                        " in " + kennzeichen.StadtKreisGeben() + " im Bundesland " + kennzeichen.BundeslandGeben() +
-                        ". Gib auch wichtige Fakten wie Einwohnerzahl, geografische Besonderheiten und " +
-                        "historische Hintergründe an. Sei präzise, antworte auf deutsch, halte dich an nachweisbare Fakten und gebe mir nur den Text.";
-
-                getaiModel(aiModel, modelId -> {
-                    if (!modelId.equals("Fehler")) {
-                        // Proceed with AI text generation using the modelId
-                        JSONObject jsonBody = new JSONObject();
-                        JSONArray messages = new JSONArray();
-                        JSONObject message = new JSONObject();
-                        message.put("content", prompt);
-                        message.put("role", "user");
-                        messages.put(message);
-
-                        try {
-                            jsonBody.put("model", modelId);
-                            jsonBody.put("messages", messages);
-
-                            RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json"));
-
-                            Request request = new Request.Builder()
-                                    .url("https://openrouter.ai/api/v1/chat/completions")
-                                    .post(body)
-                                    .addHeader("Authorization", "Bearer " + sharedPreferences.getString("apikey", getResources().getString(R.string.api_key)))
-                                    .addHeader("Content-Type", "application/json")
-                                    .build();
-
-                            OkHttpClient client = new OkHttpClient();
-                            Response response = client.newCall(request).execute();
-                            String responseData = response.body().string();
-                            Log.d("API_RESPONSE", responseData);
-                            openResponse(responseData);
-
-                            if (response.isSuccessful()) {
-                                if (isAdded() && getActivity() != null) {
-                                    getActivity().runOnUiThread(() -> {
-                                        DayFragment fragment = fragmentRef.get();
-                                        if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                            try {
-                                                JSONObject jsonResponse = new JSONObject(responseData);
-                                                String aiText = jsonResponse.getJSONArray("choices")
-                                                        .getJSONObject(0)
-                                                        .getJSONObject("message")
-                                                        .getString("content");
-
-                                                stopLoadingAnimation();
-                                                kennzeichenKI.setaiText(currentKennzeichen, aiText);
-                                                binding.aitextOftheday.setText(formatAIText(aiText));
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                                stopLoadingAnimation();
-                                                fragment.showaiText(kennzeichen, "on");
-                                            }
-                                        }
-                                    });
-                                }
-                            } else {
-                                stopLoadingAnimation();
-                                if (isAdded() && getActivity() != null) {
-                                    getActivity().runOnUiThread(() -> {
-                                        DayFragment fragment = fragmentRef.get();
-                                        if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                            binding.aitextOftheday.setText("Fehler mit dem KI-Modell");
-                                        }
-                                    });
-                                }
-                            }
-                        } catch (Exception e) {
-                            stopLoadingAnimation();
-                            if (isAdded() && getActivity() != null) {
-                                getActivity().runOnUiThread(() -> {
-                                    DayFragment fragment = fragmentRef.get();
-                                    if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                        binding.aitextOftheday.setText("Fehler, bitte wähle das KI-Modell erneut in den Einstellungen aus");
-                                    }
-                                });
-                            }
-                        }
-                    } else {
-                        stopLoadingAnimation();
-                        if (isAdded() && getActivity() != null) {
-                            getActivity().runOnUiThread(() -> {
-                                DayFragment fragment = fragmentRef.get();
-                                if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                                    fragment.showaiText(kennzeichen, "on");
-                                }
-                            });
-                        }
-                    }
-                });
-            } catch (Exception e) {
-                stopLoadingAnimation();
-                if (isAdded() && getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        DayFragment fragment = fragmentRef.get();
-                        if (fragment != null && fragment.isAdded() && fragment.binding != null) {
-                            fragment.showaiText(kennzeichen, "on");
-                        }
-                    });
-                }
-            }
-        });
     }
 
     private String formatAIText(String aiText) {
@@ -647,7 +508,7 @@ public class DayFragment extends Fragment {
         binding.textOftheday.setText(standardText);
     }
 
-    private void showaiText(Kennzeichen kennzeichen, String onlinestatus) {
+    public void showaiText(Kennzeichen kennzeichen, String onlinestatus) {
         if(!Objects.equals(kennzeichen.aiTextGeben(), "")) {
             binding.aitextOftheday.setText(formatAIText(kennzeichen.aiTextGeben()));
         } else {
@@ -659,7 +520,7 @@ public class DayFragment extends Fragment {
         }
     }
 
-    private void startLoadingAnimation() {
+    public void startLoadingAnimation() {
         if (binding != null) {
             binding.aitextOftheday.setText("Analysiere Informationen");
 
@@ -691,7 +552,7 @@ public class DayFragment extends Fragment {
         }
     }
 
-    private void stopLoadingAnimation() {
+    public void stopLoadingAnimation() {
         if (loadingHandler != null && loadingRunnable != null) {
             loadingHandler.removeCallbacks(loadingRunnable);
         }
@@ -722,125 +583,5 @@ public class DayFragment extends Fragment {
     private boolean isOfflineMode() {
         SharedPreferences prefs = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         return prefs.getBoolean("offlineSwitch", false);
-    }
-
-    private void getaiModel(String aiModel, OnModelIdReceivedListener listener) {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("https://raw.githubusercontent.com/Haainz/Kennzeichenerkennung/refs/heads/master/aimodels.json")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("DayFragment", "Error loading AI models", e);
-                try {
-                    listener.onModelIdReceived("Fehler"); // Notify listener of error
-                } catch (JSONException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    try {
-                        String jsonData = response.body().string();
-                        JSONObject json = new JSONObject(jsonData);
-                        JSONArray models = json.getJSONArray("ai_models");
-
-                        for (int i = 0; i < models.length(); i++) {
-                            JSONObject model = models.getJSONObject(i);
-                            String name = model.getString("name");
-                            String id = model.getString("id");
-
-                            if (name.equals(aiModel)) {
-                                listener.onModelIdReceived(id); // Notify listener with the found ID
-                                return;
-                            }
-                        }
-                        listener.onModelIdReceived("Fehler"); // Notify listener if model not found
-                    } catch (JSONException e) {
-                        Log.e("DayFragment", "Error parsing JSON", e);
-                        try {
-                            listener.onModelIdReceived("Fehler"); // Notify listener of JSON parsing error
-                        } catch (JSONException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-                } else {
-                    Log.e("DayFragment", "Response not successful: " + response.code());
-                    try {
-                        listener.onModelIdReceived("Fehler"); // Notify listener of response error
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        });
-    }
-
-    // Define an interface for the callback
-    public interface OnModelIdReceivedListener {
-        void onModelIdReceived(String modelId) throws JSONException;
-    }
-
-    private void checkModelWorking(String modelName) {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("https://raw.githubusercontent.com/Haainz/Kennzeichenerkennung/refs/heads/master/aimodels.json")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("DayFragment", "Error checking model status", e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    try {
-                        String jsonData = response.body().string();
-                        JSONObject json = new JSONObject(jsonData);
-                        JSONArray models = json.getJSONArray("ai_models");
-
-                        for (int i = 0; i < models.length(); i++) {
-                            JSONObject model = models.getJSONObject(i);
-                            String name = model.getString("name");
-                            boolean working = model.getBoolean("working");
-
-                            if (name.equals(modelName) && !working) {
-                                requireActivity().runOnUiThread(() ->
-                                        Toast.makeText(requireContext(), "Achtung: Derzeit liegen bei diesem KI-Modell Fehler vor!", Toast.LENGTH_LONG).show());
-                            }
-                        }
-                    } catch (JSONException e) {
-                        Log.e("DayFragment", "Error parsing JSON", e);
-                    }
-                }
-            }
-        });
-    }
-
-    private void openResponse(String response) {
-        String cleanedResponse = response.trim();
-
-        binding.thinkBtn.setOnLongClickListener(v -> {
-            requireActivity().runOnUiThread(() ->
-                    new AlertDialog.Builder(requireContext())
-                            .setTitle("API-Antwort")
-                            .setMessage(cleanedResponse)
-                            .setPositiveButton("Kopieren", (dialog, which) -> {
-                                ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                                ClipData clip = ClipData.newPlainText("API Response", cleanedResponse);
-                                clipboard.setPrimaryClip(clip);
-                                Toast.makeText(requireContext(), "Antwort kopiert", Toast.LENGTH_SHORT).show();
-                            })
-                            .setNegativeButton("Abbrechen", null)
-                            .show()
-            );
-            return true;
-        });
     }
 }
