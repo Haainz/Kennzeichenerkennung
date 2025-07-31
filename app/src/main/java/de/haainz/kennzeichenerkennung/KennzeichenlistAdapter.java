@@ -4,19 +4,24 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> {
     private final Context context;
     private final List<Kennzeichen> kennzeichenList;
+    private List<Kennzeichen> selectedItems = new ArrayList<>();
 
     public KennzeichenlistAdapter(Context context, List<Kennzeichen> kennzeichenList) {
         super(context, R.layout.list_item_kennzeichen, kennzeichenList);
@@ -41,6 +46,9 @@ public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> {
         TextView textViewDetails2 = convertView.findViewById(R.id.textViewDetails2);
         ImageView imgnation = convertView.findViewById(R.id.D);
         ImageView savedView = convertView.findViewById(R.id.savedview);
+        FrameLayout redDotContainer = convertView.findViewById(R.id.redDotContainer);
+        TextView redDotText = convertView.findViewById(R.id.redDotText);
+        LinearLayout element = convertView.findViewById(R.id.element);
 
         textViewKennzeichen.setText(kennzeichen.OertskuerzelGeben());
         textViewDetails.setText(kennzeichen.OrtGeben() + " - " + kennzeichen.StadtKreisGeben());
@@ -63,6 +71,15 @@ public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> {
             savedView.setVisibility(VISIBLE);
         }
 
+        if (selectedItems.contains(kennzeichen)) {
+            redDotContainer.setVisibility(View.VISIBLE);
+            element.setBackgroundColor(Color.parseColor("#4DFDBB06"));
+            redDotText.setText(String.valueOf(selectedItems.indexOf(kennzeichen) + 1));
+        } else {
+            redDotContainer.setVisibility(View.GONE);
+            element.setBackgroundColor(Color.parseColor("#00FDBB06"));
+        }
+
         return convertView;
     }
 
@@ -72,5 +89,10 @@ public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> {
         android.view.ViewGroup.MarginLayoutParams params = (android.view.ViewGroup.MarginLayoutParams) textViewKennzeichen.getLayoutParams();
         params.setMarginStart(marginInPx);
         textViewKennzeichen.setLayoutParams(params);
+    }
+
+    public void setSelectedItems(List<Kennzeichen> selected) {
+        this.selectedItems = selected;
+        notifyDataSetChanged();
     }
 }

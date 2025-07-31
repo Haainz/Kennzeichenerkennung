@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:id="@+id/element">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -41,6 +42,28 @@
                 android:textColor="@android:color/black"
                 android:textSize="30sp" />
         </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/redDotContainer"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignEnd="@id/kennzeichen"
+            android:layout_alignBottom="@id/kennzeichen"
+            android:layout_marginEnd="-5dp"
+            android:visibility="visible"
+            android:background="@drawable/yellow_circle"
+            android:elevation="10dp">
+
+            <TextView
+                android:id="@+id/redDotText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="✔"
+                android:textColor="@color/black"
+                android:textSize="13sp"
+                android:textStyle="bold"/>
+        </FrameLayout>
 
         <TextView
             android:id="@+id/textViewDetails"

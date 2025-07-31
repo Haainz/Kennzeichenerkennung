@@ -9,6 +9,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,6 +50,8 @@ public class ListFragment extends Fragment {
     private boolean showOnlyNotLiked = false;
     private boolean isUpdatingList = false;
     public ArrayAdapter<Kennzeichen> adapter;
+    private boolean selectionMode = false;
+    private ArrayList<Kennzeichen> selectedKennzeichen = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -66,18 +69,43 @@ public class ListFragment extends Fragment {
         setupButtonColors();
         updateList();
 
-        binding.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Kennzeichen kennzeichen = (Kennzeichen) parent.getItemAtPosition(position);
-                showPopupMenu(view, kennzeichen);
+        binding.xBtn.setOnClickListener(v -> {
+            exitSelectionMode();
+        });
+
+        binding.list.setOnItemClickListener((parent, view, position, id) -> {
+            Kennzeichen k = (Kennzeichen) parent.getItemAtPosition(position);
+
+            if (selectionMode) {
+                toggleSelection(k);
+            } else {
+                showPopupMenu(view, k);
             }
+        });
+
+        binding.list.setOnItemLongClickListener((parent, view, position, id) -> {
+            Kennzeichen k = (Kennzeichen) parent.getItemAtPosition(position);
+            if (!selectionMode) {
+                enterSelectionMode();
+            }
+            toggleSelection(k);
+            return true;
+        });
+
+        binding.heartIcon.setOnClickListener(v -> {
+            for (Kennzeichen k : selectedKennzeichen) {
+                String newStatus = k.isSaved() ? "nein" : "ja";
+                kennzeichenKI.changesavestatus(k, newStatus);
+            }
+            exitSelectionMode();
+            updateList();
         });
 
         binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 updateList();
+                exitSelectionMode();
                 binding.swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(getContext(), "Liste erfolgreich aktualisiert", Toast.LENGTH_SHORT).show();
             }
@@ -306,6 +334,7 @@ public class ListFragment extends Fragment {
         }
 
         adapter = new KennzeichenlistAdapter(getActivity(), filteredList);
+        ((KennzeichenlistAdapter) adapter).setSelectedItems(selectedKennzeichen);
         binding.textViewAnzahl.setText(filteredList.size() + " Kennzeichen gefunden");
         binding.list.setAdapter(adapter);
     }
@@ -327,6 +356,41 @@ public class ListFragment extends Fragment {
         } else {
             binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
         }
+    }
+
+    private void enterSelectionMode() {
+        selectionMode = true;
+        binding.selectionHeader.setVisibility(VISIBLE);
+        binding.searchUserLayout.setVisibility(GONE);
+        selectedKennzeichen.clear();
+        updateSelectionCount();
+    }
+
+    private void exitSelectionMode() {
+        selectionMode = false;
+        selectedKennzeichen.clear();
+        binding.selectionHeader.setVisibility(GONE);
+        binding.searchUserLayout.setVisibility(VISIBLE);
+        updateList(); // um rote Punkte zu entfernen
+    }
+
+    private void toggleSelection(Kennzeichen k) {
+        if (selectedKennzeichen.contains(k)) {
+            selectedKennzeichen.remove(k);
+        } else {
+            selectedKennzeichen.add(k);
+        }
+
+        if (selectedKennzeichen.isEmpty()) {
+            exitSelectionMode();
+        } else {
+            updateSelectionCount();
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    private void updateSelectionCount() {
+        binding.selectionCount.setText(selectedKennzeichen.size() + " ausgewählt");
     }
 
     @Override
