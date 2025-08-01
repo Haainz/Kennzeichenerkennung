@@ -15,17 +15,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
@@ -111,15 +108,15 @@ public class MainActivity extends AppCompatActivity {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com/donate/?hosted_button_id=XUTQZBWGBWCLN"));
             startActivity(browserIntent);
         });
-        ImageButton uploadButton = findViewById(R.id.button_upload);
+        ImageButton uploadButton = findViewById(R.id.button_download);
         uploadButton.setOnClickListener(v -> {
-            UploadFragment uploadFragment = new UploadFragment();
-            uploadFragment.show(getSupportFragmentManager(), "UploadFragment");
+            ImportFragment importFragment = new ImportFragment();
+            importFragment.show(getSupportFragmentManager(), "ImportFragment");
         });
-        ImageButton downloadButton = findViewById(R.id.button_download);
+        ImageButton downloadButton = findViewById(R.id.button_upload);
         downloadButton.setOnClickListener(v -> {
-            DownloadFragment downloadFragment = new DownloadFragment();
-            downloadFragment.show(getSupportFragmentManager(), "DownloadFragment");
+            ExportFragment exportFragment = new ExportFragment();
+            exportFragment.show(getSupportFragmentManager(), "ExportFragment");
         });
         ImageButton settingsButton = findViewById(R.id.button_settings);
         settingsButton.setOnClickListener(v -> {

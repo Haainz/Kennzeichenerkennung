@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".UploadFragment">
+    tools:context=".ImportFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hochladen:"
+            android:text="Importieren:"
             android:textSize="20sp"
             android:textStyle="normal"
             android:textColor="@color/white"
@@ -55,7 +55,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
             android:text="Wähle eine .csv-Datei aus deinem Handyspeicher aus und importiere die Daten in die App."
-            android:textStyle="bold"
             android:textSize="14dp"/>
 
         <TextView
@@ -83,7 +82,7 @@
             android:layout_marginTop="20dp"
             android:background="@drawable/edit_text_rounded_corner"
             android:gravity="center"
-            android:text="Datei importierenn"
+            android:text="Datei importieren"
             android:id="@+id/import_btn"
             android:textColor="@color/white"/>
 

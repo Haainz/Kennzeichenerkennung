@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.PopupMenu;
@@ -52,6 +53,8 @@ public class ListFragment extends Fragment {
     public ArrayAdapter<Kennzeichen> adapter;
     private boolean selectionMode = false;
     private ArrayList<Kennzeichen> selectedKennzeichen = new ArrayList<>();
+    private int lastScrollY = 0;
+    private boolean searchLayoutHidden = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {

@@ -73,7 +73,7 @@ public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> {
 
         if (selectedItems.contains(kennzeichen)) {
             redDotContainer.setVisibility(View.VISIBLE);
-            element.setBackgroundColor(Color.parseColor("#4DFDBB06"));
+            element.setBackgroundColor(Color.parseColor("#40FDBB06"));
             redDotText.setText(String.valueOf(selectedItems.indexOf(kennzeichen) + 1));
         } else {
             redDotContainer.setVisibility(View.GONE);

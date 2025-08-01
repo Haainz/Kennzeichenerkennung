@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class DownloadFragment extends DialogFragment {
+public class ExportFragment extends DialogFragment {
 
     private CheckBox deChk, standardChk, sonderChk, auslaufendChk, eigeneChk;
 
@@ -42,7 +42,7 @@ public class DownloadFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_download, container, false);
+        View view = inflater.inflate(R.layout.fragment_export, container, false);
 
         // Checkboxen initialisieren
         deChk = view.findViewById(R.id.de_chk);

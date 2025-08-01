@@ -1,7 +1,5 @@
 package de.haainz.kennzeichenerkennung;
 
-import static org.osmdroid.tileprovider.cachemanager.CacheManager.getFileName;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,7 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class UploadFragment extends DialogFragment {
+public class ImportFragment extends DialogFragment {
     private static final int REQUEST_CODE_IMPORT_FILE = 100;
 
     @Override
@@ -49,7 +47,7 @@ public class UploadFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_upload, container, false);
+        View view = inflater.inflate(R.layout.fragment_import, container, false);
 
         ImageButton xBtn  = view.findViewById(R.id.x);
         xBtn.setOnClickListener(v -> dismiss());

@@ -332,7 +332,7 @@
                                         android:layout_toRightOf="@id/bundeslandtitel"
                                         android:text=""
                                         android:textColor="?attr/colorTextNormal"
-                                        android:textSize="13.9dp" />
+                                        android:textSize="13.5dp" />
 
                                     <TextView
                                         android:id="@+id/bundesland_iso_titel"

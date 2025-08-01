@@ -43,6 +43,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -116,6 +117,7 @@ public class HomeFragment extends Fragment {
     private Runnable loadingRunnable;
     private int loadingStep = 0;
     private int aistatus = 0;
+    private ConstraintLayout mapconstlayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -139,7 +141,7 @@ public class HomeFragment extends Fragment {
 
         searchPic = binding.imageView2;
         textViewAusgabe = binding.textViewAusgabe;
-        kuerzelEingabe = binding.kuerzeleingabe;
+        kuerzelEingabe = binding.kuerzeleingabe2;
         kuerzelEingabe.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
         textViewAusgabe2 = binding.textViewAusgabe2;
         kennzeichenKI = new Kennzeichen_KI(getContext());
@@ -152,6 +154,7 @@ public class HomeFragment extends Fragment {
         ImageView shareBtn = binding.shareBtn;
         ImageView picinfoBtn = binding.picinfoBtn;
         TextView tourbtn = binding.tourbtn;
+        mapconstlayout = binding.mapconstlayout;
         deleteText.setVisibility(View.GONE);
         deleteBtn.setVisibility(View.GONE);
         saveBtn.setVisibility(View.GONE);
@@ -311,8 +314,6 @@ public class HomeFragment extends Fragment {
         buttongenerate.setOnClickListener(v -> {
             binding.fussnotenwert.setVisibility(VISIBLE);
             binding.fussnotentitel.setVisibility(VISIBLE);
-            binding.bemerkungenwert.setVisibility(VISIBLE);
-            binding.bemerkungentitel.setVisibility(VISIBLE);
             aistatus=0;
             hideKeyboard(v);
             if (!kuerzelEingabe.getText().toString().isEmpty()) {
@@ -372,24 +373,22 @@ public class HomeFragment extends Fragment {
                                 "oder die nach Landesrecht zuständige Stelle.",
                         "---",
                         "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
-                                "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n\nweiterer amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen " +
+                                "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n\n- weiterer amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen " +
                                 "führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
                 };
                 if (kennzeichen.FussnoteGeben().isEmpty() || Objects.equals(kennzeichen.FussnoteGeben(), "6")) {
-                    binding.fussnotenwert.setVisibility(GONE);
-                    binding.fussnotentitel.setVisibility(GONE);
+                    if (kennzeichen.BemerkungenGeben().isEmpty() || Objects.equals(kennzeichen.BemerkungenGeben(), "---")) {
+                        binding.fussnotencard.setVisibility(GONE);
+                    } else {
+                        binding.fussnotencard.setVisibility(VISIBLE);
+                        binding.fussnotenwert.setText("- " + kennzeichen.BemerkungenGeben());
+                    }
+                } else if (kennzeichen.BemerkungenGeben().isEmpty() || Objects.equals(kennzeichen.BemerkungenGeben(), "---")) {
+                    binding.fussnotencard.setVisibility(VISIBLE);
+                    binding.fussnotenwert.setText("- " + fussnoten[fussnoteNummer]);
                 } else {
-                    binding.fussnotenwert.setVisibility(VISIBLE);
-                    binding.fussnotentitel.setVisibility(VISIBLE);
-                    binding.fussnotenwert.setText(fussnoten[fussnoteNummer]);
-                }
-                if (kennzeichen.BemerkungenGeben().isEmpty() || Objects.equals(kennzeichen.BemerkungenGeben(), "---")) {
-                    binding.bemerkungenwert.setVisibility(GONE);
-                    binding.bemerkungentitel.setVisibility(GONE);
-                } else {
-                    binding.bemerkungenwert.setVisibility(VISIBLE);
-                    binding.bemerkungentitel.setVisibility(VISIBLE);
-                    binding.bemerkungenwert.setText(kennzeichen.BemerkungenGeben());
+                    binding.fussnotencard.setVisibility(VISIBLE);
+                    binding.fussnotenwert.setText("- " + kennzeichen.BemerkungenGeben() + "\n\n- " + fussnoten[fussnoteNummer]);
                 }
                 checkNetworkAndGenerateText(kennzeichen);
 
@@ -415,8 +414,8 @@ public class HomeFragment extends Fragment {
                     binding.bundeslandtitel.setVisibility(GONE);
                     binding.bundeslandIsoWert.setVisibility(GONE);
                     binding.bundeslandIsoTitel.setVisibility(GONE);
-                    binding.stadtoderkreistitel.setText("Bisheriger Ver-\nwaltungsbezirk/   \n-kreis:  ");
-                    binding.stadtoderkreistitel.setTextSize(11);
+                    binding.stadtoderkreistitel.setText("Bisheriger Verwaltungsbezirk/-kreis:  ");
+                    binding.stadtoderkreistitel.setTextSize(13.5F);
                     binding.herleitungstitel.setText("Abwicklung:  ");
                 } else {
                     binding.bundeslandIsoWert.setVisibility(VISIBLE);
@@ -435,15 +434,22 @@ public class HomeFragment extends Fragment {
                     mapView.setBuiltInZoomControls(true);
                     mapView.setMultiTouchControls(true);
                     mapCardView.setVisibility(View.VISIBLE);
+                    binding.kurzCard.setVisibility(GONE);
                     showaiText(kennzeichen, "on");
 
                     if(!kennzeichen.isSonderDE()) {
                         getCoordinates(kennzeichen.OrtGeben() + "_" + kennzeichen.BundeslandGeben());
                     } else {
-                        binding.mapcardview.setVisibility(GONE);
+                        mapconstlayout.setVisibility(GONE);
                     }
                 } else {
-                    binding.mapcardview.setVisibility(View.GONE);
+                    if(kennzeichen.isSonderDE()) {
+                        mapconstlayout.setVisibility(GONE);
+                    } else {
+                        mapconstlayout.setVisibility(VISIBLE);
+                        binding.mapcardview.setVisibility(GONE);
+                    }
+                    binding.kurzCard.setVisibility(VISIBLE);
                     showaiText(kennzeichen, "off");
                 }
             } else {
@@ -476,12 +482,6 @@ public class HomeFragment extends Fragment {
             textViewAusgabe2.setVisibility(View.GONE);
         }
         return root;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        kuerzelEingabe.setText("");
     }
 
     @Override
@@ -627,6 +627,7 @@ public class HomeFragment extends Fragment {
             HomeFragment fragment = fragmentReference.get();
             if (fragment != null) {
                 if (geoPoint != null) {
+                    fragment.mapconstlayout.setVisibility(VISIBLE);
                     fragment.mapView.getOverlays().clear();
                     fragment.mapView.getController().setZoom(6.25);
                     fragment.mapView.getController().setCenter(new GeoPoint(51.163409, 10.447718));
@@ -636,7 +637,7 @@ public class HomeFragment extends Fragment {
                     fragment.mapView.getOverlays().add(marker);
                     fragment.mapView.invalidate();
                 } else {
-                    fragment.mapCardView.setVisibility(View.GONE);
+                    fragment.mapconstlayout.setVisibility(GONE);
                 }
             }
         }
