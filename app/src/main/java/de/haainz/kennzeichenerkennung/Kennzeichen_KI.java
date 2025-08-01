@@ -388,10 +388,10 @@ public class Kennzeichen_KI {
                     row.add(record.get(header));
                 }
 
-                if (record.get("Unterscheidungszeichen").equals(kennzeichen.OertskuerzelGeben())) {
+                if (record.get("Unterscheidungszeichen").equals(kennzeichen.OertskuerzelGeben()) && record.get(3).equals(kennzeichen.OrtGeben())) {
                     row.set(gespeichertIndex, savestatus);
                     found = true;
-                    Log.e("KennzeichenEinlesen", "Gespeichert-Wert geändert für: " + record.get("Unterscheidungszeichen"));
+                    Log.e("KennzeichenEinlesen", "Gespeichert-Wert geändert für: " + record.get("Unterscheidungszeichen") + ", " + record.get(3));
                 }
 
                 updatedRows.add(row);
