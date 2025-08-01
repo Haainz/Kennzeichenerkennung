@@ -1,172 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".InfosFragment">
 
     <RelativeLayout
+        android:id="@+id/fragment_container1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/fragment_container1"
         android:layout_marginHorizontal="12dp"
         android:layout_marginTop="13dp">
 
         <TextView
+            android:id="@+id/kuerzeltitel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Kürzel:  "
-            android:textStyle="italic|bold"
+            android:textColor="@color/yellow"
             android:textSize="15dp"
-            android:id="@+id/kuerzeltitel"
-            android:textColor="@color/yellow"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="AN"
-            android:textSize="15dp"
-            android:layout_toRightOf="@id/kuerzeltitel"
-            android:id="@+id/kuerzelwert"
-            android:textColor="?attr/colorTextNormal"
-            android:textIsSelectable="true" />
+            android:textStyle="italic|bold" />
 
         <TextView
+            android:id="@+id/kuerzelwert"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Herleitung:  "
-            android:textStyle="italic|bold"
-            android:textSize="15dp"
-            android:id="@+id/herleitungstitel"
-            android:layout_below="@id/kuerzelwert"
-            android:textColor="@color/yellow" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ANsbach"
-            android:textSize="15dp"
-            android:layout_toRightOf="@id/herleitungstitel"
-            android:id="@+id/herleitungswert"
-            android:layout_below="@+id/kuerzelwert"
+            android:layout_toRightOf="@id/kuerzeltitel"
+            android:text="AN"
             android:textColor="?attr/colorTextNormal"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="true"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/herleitungstitel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/kuerzelwert"
+            android:text="Herleitung:  "
+            android:textColor="@color/yellow"
+            android:textSize="15dp"
+            android:textStyle="italic|bold" />
+
+        <TextView
+            android:id="@+id/herleitungswert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/kuerzelwert"
+            android:layout_toRightOf="@id/herleitungstitel"
+            android:text="ANsbach"
+            android:textColor="?attr/colorTextNormal"
+            android:textIsSelectable="true"
+            android:textSize="15dp" />
 
         <RelativeLayout
+            android:id="@+id/fragment_container2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/fragment_container2"
             android:layout_below="@id/herleitungswert"
             android:textColor="@color/yellow">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Stadt / Kreis:  "
-            android:textStyle="italic|bold"
-            android:textSize="15dp"
-            android:id="@+id/stadtoderkreistitel"
-            android:textColor="@color/yellow"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ansbach"
-            android:textSize="15dp"
-            android:layout_toRightOf="@id/stadtoderkreistitel"
-            android:id="@+id/stadtoderkreiswert"
-            android:textColor="?attr/colorTextNormal"
-            android:textIsSelectable="true"/>
+            <TextView
+                android:id="@+id/stadtoderkreistitel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stadt / Kreis:  "
+                android:textColor="@color/yellow"
+                android:textSize="15dp"
+                android:textStyle="italic|bold" />
+
+            <TextView
+                android:id="@+id/stadtoderkreiswert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/stadtoderkreistitel"
+                android:text="Ansbach"
+                android:textColor="?attr/colorTextNormal"
+                android:textIsSelectable="true"
+                android:textSize="15dp" />
         </RelativeLayout>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bundesland:  "
-            android:textStyle="italic|bold"
-            android:textSize="15dp"
             android:id="@+id/bundeslandtitel"
-            android:textColor="@color/yellow"
-            android:layout_below="@+id/fragment_container2" />
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="15dp"
-            android:layout_toRightOf="@id/bundeslandtitel"
-            android:id="@+id/bundeslandwert"
             android:layout_below="@+id/fragment_container2"
-            android:textColor="?attr/colorTextNormal"
-            android:textIsSelectable="true"/>
+            android:text="Bundesland:  "
+            android:textColor="@color/yellow"
+            android:textSize="15dp"
+            android:textStyle="italic|bold" />
 
         <TextView
+            android:id="@+id/bundeslandwert"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bundesland (Iso3166-2):  "
-            android:textStyle="italic|bold"
-            android:textSize="15dp"
+            android:layout_below="@+id/fragment_container2"
+            android:layout_toRightOf="@id/bundeslandtitel"
+            android:text=""
+            android:textColor="?attr/colorTextNormal"
+            android:textIsSelectable="true"
+            android:textSize="15dp" />
+
+        <TextView
             android:id="@+id/bundesland_iso_titel"
-            android:textColor="@color/yellow"
-            android:layout_below="@id/bundeslandwert" />
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
+            android:layout_below="@id/bundeslandwert"
+            android:text="Bundesland (Iso3166-2):  "
+            android:textColor="@color/yellow"
             android:textSize="15dp"
-            android:layout_toRightOf="@id/bundesland_iso_titel"
+            android:textStyle="italic|bold" />
+
+        <TextView
             android:id="@+id/bundesland_iso_wert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/bundeslandwert"
-            android:textColor="?attr/colorTextNormal"
-            android:textIsSelectable="true"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nationalitätszeichen:  "
-            android:textStyle="italic|bold"
-            android:textSize="15dp"
-            android:id="@+id/landtitel"
-            android:textColor="@color/yellow"
-            android:layout_below="@id/bundesland_iso_wert" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/bundesland_iso_titel"
             android:text=""
-            android:textSize="15dp"
-            android:layout_toRightOf="@id/landtitel"
-            android:id="@+id/landwert"
-            android:layout_below="@+id/bundesland_iso_wert"
             android:textColor="?attr/colorTextNormal"
-            android:textIsSelectable="true"/>
+            android:textIsSelectable="true"
+            android:textSize="15dp" />
 
         <TextView
+            android:id="@+id/landtitel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bemerkungen:  "
-            android:textStyle="italic|bold"
-            android:textSize="15dp"
-            android:id="@+id/bemerkungentitel"
+            android:layout_below="@id/bundesland_iso_wert"
+            android:text="Nationalitätszeichen:  "
             android:textColor="@color/yellow"
-            android:layout_below="@id/landwert" />
+            android:textSize="15dp"
+            android:textStyle="italic|bold" />
+
         <TextView
+            android:id="@+id/landwert"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="---"
-            android:textSize="15dp"
-            android:layout_toRightOf="@id/bemerkungentitel"
-            android:id="@+id/Bemerkungenwert"
-            android:layout_below="@+id/landwert"
+            android:layout_below="@+id/bundesland_iso_wert"
+            android:layout_toRightOf="@id/landtitel"
+            android:text=""
             android:textColor="?attr/colorTextNormal"
-            android:textIsSelectable="true"/>
+            android:textIsSelectable="true"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/bemerkungentitel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/landwert"
+            android:text="Bemerkungen:  "
+            android:textColor="@color/yellow"
+            android:textSize="15dp"
+            android:textStyle="italic|bold" />
+
+        <TextView
+            android:id="@+id/Bemerkungenwert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/landwert"
+            android:layout_toRightOf="@id/bemerkungentitel"
+            android:text="---"
+            android:textColor="?attr/colorTextNormal"
+            android:textIsSelectable="true"
+            android:textSize="15dp" />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardviewmap"
             android:layout_width="match_parent"
             android:layout_height="275dp"
+            android:layout_below="@id/Bemerkungenwert"
+            android:layout_marginHorizontal="0dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:layout_below="@id/Bemerkungenwert"
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
-            android:id="@+id/cardviewmap"
-            android:layout_marginHorizontal="0dp"
             app:cardPreventCornerOverlap="true"
             app:cardUseCompatPadding="false">
 
@@ -177,36 +184,39 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/fussnoten"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/cardviewmap"
-            android:id="@+id/fussnoten">
+            android:layout_below="@id/cardviewmap">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
+                    android:id="@+id/fussnotentitel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Fußnoten: "
-                    android:textStyle="italic|bold"
+                    android:textColor="@color/yellow"
                     android:textSize="15dp"
-                    android:id="@+id/fussnotentitel"
-                    android:textColor="@color/yellow" />
+                    android:textStyle="italic|bold" />
+
                 <TextView
+                    android:id="@+id/fussnotenwert"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=" ---"
-                    android:textSize="15dp"
                     android:layout_toRightOf="@id/fussnotentitel"
+                    android:text=" ---"
                     android:textColor="?attr/colorTextNormal"
-                    android:id="@+id/fussnotenwert" />
+                    android:textSize="15dp" />
             </RelativeLayout>
         </androidx.core.widget.NestedScrollView>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="11dp"
-            android:layout_below="@+id/bemerkungentitel"/>
+            android:layout_below="@+id/bemerkungentitel" />
     </RelativeLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

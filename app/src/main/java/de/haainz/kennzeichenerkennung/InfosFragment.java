@@ -264,6 +264,7 @@ public class InfosFragment extends DialogFragment {
             try {
             if (fragment != null) {
                 if (geoPoint != null) {
+                    fragment.mapCardView.setVisibility(VISIBLE);
                     fragment.mapView.getController().setZoom(6.25);
                     fragment.mapView.getController().setCenter(new GeoPoint(51.163409, 10.447718));
                     Marker marker = new Marker(fragment.mapView);
@@ -272,8 +273,7 @@ public class InfosFragment extends DialogFragment {
                     fragment.mapView.getOverlays().add(marker);
                     fragment.mapView.invalidate();
                 } else {
-                    fragment.mapView.setVisibility(GONE);
-                    fragment.mapView.setVisibility(View.GONE);
+                    fragment.mapCardView.setVisibility(GONE);
                     //Toast.makeText(fragment.getContext(), "Koordinaten konnten nicht gefunden werden", Toast.LENGTH_SHORT).show();
                 }
             }
