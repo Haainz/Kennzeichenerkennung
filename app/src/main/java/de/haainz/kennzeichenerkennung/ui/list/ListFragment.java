@@ -4,24 +4,15 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.PopupMenu;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,7 +20,6 @@ import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import de.haainz.kennzeichenerkennung.AddCityFragment;
-import de.haainz.kennzeichenerkennung.ConfirmFragment;
 import de.haainz.kennzeichenerkennung.InfosFragment;
 import de.haainz.kennzeichenerkennung.Kennzeichen;
 import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
@@ -49,12 +39,9 @@ public class ListFragment extends Fragment {
     private boolean showEigene = true;
     private boolean showOnlyLiked = false;
     private boolean showOnlyNotLiked = false;
-    private boolean isUpdatingList = false;
     public ArrayAdapter<Kennzeichen> adapter;
     private boolean selectionMode = false;
     private ArrayList<Kennzeichen> selectedKennzeichen = new ArrayList<>();
-    private int lastScrollY = 0;
-    private boolean searchLayoutHidden = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -82,7 +69,8 @@ public class ListFragment extends Fragment {
             if (selectionMode) {
                 toggleSelection(k);
             } else {
-                showPopupMenu(view, k);
+                InfosFragment infosFragment = new InfosFragment(k);
+                infosFragment.show(getParentFragmentManager(), "InfosFragment");;
             }
         });
 
@@ -178,55 +166,6 @@ public class ListFragment extends Fragment {
         binding.buttonLike2.setVisibility(GONE);
         binding.buttonLike3.setVisibility(GONE);
         binding.x.setVisibility(GONE);
-    }
-
-    private void showPopupMenu(View view, Kennzeichen kennzeichen) {
-        PopupMenu popupMenu = new PopupMenu(getActivity(), view);
-        popupMenu.inflate(R.menu.popup_menu);
-
-        if (kennzeichen.isEigene()) {
-            popupMenu.getMenu().findItem(R.id.delete).setVisible(true);
-        } else {
-            popupMenu.getMenu().findItem(R.id.delete).setVisible(false);
-        }
-
-        popupMenu.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.infos) {
-                InfosFragment infosFragment = new InfosFragment(kennzeichen);
-                infosFragment.show(getParentFragmentManager(), "InfosFragment");
-                return true;
-            } else if (item.getItemId() == R.id.teilen) {
-                shareKennzeichen(kennzeichen);
-                return true;
-            } else if (item.getItemId() == R.id.delete) {
-                confirmDelete(kennzeichen);
-                return true;
-            } else {
-                return false;
-            }
-        });
-        popupMenu.show();
-    }
-
-    private void shareKennzeichen(Kennzeichen kennzeichen) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, "Kürzel: " + kennzeichen.OertskuerzelGeben() + "\nOrt: " + kennzeichen.OrtGeben() + "\nStadt bzw. Kreis: " + kennzeichen.StadtKreisGeben() + "\nBundesland: " + kennzeichen.BundeslandGeben());
-        startActivity(Intent.createChooser(intent, "Teilen"));
-    }
-
-    private void confirmDelete(Kennzeichen kennzeichen) {
-        ConfirmFragment confirmFragment = new ConfirmFragment();
-        confirmFragment.setKennzeichen(kennzeichen);
-        confirmFragment.setKennzeichenKI(kennzeichenKI);
-        confirmFragment.setOnConfirmListener(() -> {
-            if (!isUpdatingList) {
-                isUpdatingList = true;
-                updateList();
-                isUpdatingList = false;
-            }
-        });
-        confirmFragment.show(getParentFragmentManager(), "ConfirmFragment");
     }
 
     private void setupFilterButtons() {

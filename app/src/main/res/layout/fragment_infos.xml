@@ -26,6 +26,7 @@
             android:id="@+id/kuerzelwert"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/tools"
             android:layout_toRightOf="@id/kuerzeltitel"
             android:text="AN"
             android:textColor="?attr/colorTextNormal"
@@ -47,6 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/kuerzelwert"
+            android:layout_toLeftOf="@id/tools"
             android:layout_toRightOf="@id/herleitungstitel"
             android:text="ANsbach"
             android:textColor="?attr/colorTextNormal"
@@ -58,6 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/herleitungswert"
+            android:layout_toLeftOf="@id/tools"
             android:textColor="@color/yellow">
 
             <TextView
@@ -95,6 +98,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/fragment_container2"
+            android:layout_toLeftOf="@id/tools"
             android:layout_toRightOf="@id/bundeslandtitel"
             android:text=""
             android:textColor="?attr/colorTextNormal"
@@ -116,6 +120,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/bundeslandwert"
+            android:layout_toLeftOf="@id/tools"
             android:layout_toRightOf="@id/bundesland_iso_titel"
             android:text=""
             android:textColor="?attr/colorTextNormal"
@@ -137,6 +142,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/bundesland_iso_wert"
+            android:layout_toLeftOf="@id/tools"
             android:layout_toRightOf="@id/landtitel"
             android:text=""
             android:textColor="?attr/colorTextNormal"
@@ -158,6 +164,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/landwert"
+            android:layout_toLeftOf="@id/tools"
             android:layout_toRightOf="@id/bemerkungentitel"
             android:text="---"
             android:textColor="?attr/colorTextNormal"
@@ -197,7 +204,7 @@
                     android:id="@+id/fussnotentitel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Fußnoten: "
+                    android:text="Fußnoten:"
                     android:textColor="@color/yellow"
                     android:textSize="15dp"
                     android:textStyle="italic|bold" />
@@ -206,7 +213,7 @@
                     android:id="@+id/fussnotenwert"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/fussnotentitel"
+                    android:layout_below="@id/fussnotentitel"
                     android:text=" ---"
                     android:textColor="?attr/colorTextNormal"
                     android:textSize="15dp" />
@@ -217,31 +224,65 @@
             android:layout_width="match_parent"
             android:layout_height="11dp"
             android:layout_below="@+id/bemerkungentitel" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/tools"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp">
+
+            <ImageView
+                android:id="@+id/like_btn"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/icon_heartempty"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/red" />
+
+            <ImageView
+                android:id="@+id/liked_btn"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/icon_heartfull"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/red" />
+
+            <ImageView
+                android:id="@+id/share_btn"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="36dp"
+                android:src="@drawable/icon_share"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/blue_200" />
+
+            <ImageView
+                android:id="@+id/edit_btn"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                android:src="@drawable/icon_edit"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/share_btn"
+                app:tint="@color/yellow" />
+
+            <ImageView
+                android:id="@+id/delete_btn"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="12dp"
+                android:src="@drawable/icon_delete"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/edit_btn"
+                app:tint="@color/red" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="15dp">
-
-        <ImageView
-            android:id="@+id/like_btn"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/icon_heartempty"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="#FF0000" />
-
-        <ImageView
-            android:id="@+id/liked_btn"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/icon_heartfull"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="#FF0000" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </RelativeLayout>

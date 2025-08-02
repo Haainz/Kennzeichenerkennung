@@ -4,6 +4,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -72,6 +73,18 @@ public class InfosFragment extends DialogFragment {
             likedBtn.setVisibility(VISIBLE);
         } else {
             likedBtn.setVisibility(GONE);
+        }
+
+        ImageView sharebtn = view.findViewById(R.id.share_btn);
+        ImageView editbtn = view.findViewById(R.id.edit_btn);
+        ImageView deletebtn = view.findViewById(R.id.delete_btn);
+
+        if (kennzeichen.isEigene()) {
+            editbtn.setVisibility(VISIBLE);
+            deletebtn.setVisibility(VISIBLE);
+        } else {
+            editbtn.setVisibility(GONE);
+            deletebtn.setVisibility(GONE);
         }
 
         TextView kuerzelWert = view.findViewById(R.id.kuerzelwert);
@@ -156,30 +169,28 @@ public class InfosFragment extends DialogFragment {
             herleitungTitel.setText("Abwicklung:  ");
         }
 
-        likeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!kennzeichen.isSaved()) {
-                    likedBtn.setVisibility(VISIBLE);
-                    kennzeichenKI.changesavestatus(kennzeichen, "ja");
-                } else {
-                    Toast.makeText(getActivity(), "Kennzeichen bereits geliked", Toast.LENGTH_SHORT).show();
-                }
+        likeBtn.setOnClickListener(v -> {
+            if (!kennzeichen.isSaved()) {
+                likedBtn.setVisibility(VISIBLE);
+                kennzeichenKI.changesavestatus(kennzeichen, "ja");
+            } else {
+                Toast.makeText(getActivity(), "Kennzeichen bereits geliked", Toast.LENGTH_SHORT).show();
             }
         });
-        likedBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                likedBtn.setVisibility(GONE);
-                kennzeichenKI.changesavestatus(kennzeichen, "nein");
-                Toast.makeText(getActivity(), "Kennzeichen entfernt.", Toast.LENGTH_SHORT).show();
+        likedBtn.setOnClickListener(v -> {
+            likedBtn.setVisibility(GONE);
+            kennzeichenKI.changesavestatus(kennzeichen, "nein");
+            Toast.makeText(getActivity(), "Kennzeichen entfernt.", Toast.LENGTH_SHORT).show();
 
-                // Hier sollten Sie die updateList() Methode aufrufen, um die Anzeige zu aktualisieren
-                if (getTargetFragment() instanceof ListFragment) {
-                    ((ListFragment) getTargetFragment()).updateList();
-                }
+            // Hier sollten Sie die updateList() Methode aufrufen, um die Anzeige zu aktualisieren
+            if (getTargetFragment() instanceof ListFragment) {
+                ((ListFragment) getTargetFragment()).updateList();
             }
         });
+
+        sharebtn.setOnClickListener(v -> shareKennzeichen(kennzeichen));
+
+        deletebtn.setOnClickListener(v -> confirmDelete(kennzeichen));
 
         if (isNetworkAvailable() && !kennzeichen.isSonderDE()) {
             mapView = view.findViewById(R.id.map);
@@ -203,6 +214,20 @@ public class InfosFragment extends DialogFragment {
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected() && !isOfflineMode();
+    }
+
+    private void shareKennzeichen(Kennzeichen kennzeichen) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, "Kürzel: " + kennzeichen.OertskuerzelGeben() + "\nOrt: " + kennzeichen.OrtGeben() + "\nStadt bzw. Kreis: " + kennzeichen.StadtKreisGeben() + "\nBundesland: " + kennzeichen.BundeslandGeben());
+        startActivity(Intent.createChooser(intent, "Teilen"));
+    }
+
+    private void confirmDelete(Kennzeichen kennzeichen) {
+        ConfirmFragment confirmFragment = new ConfirmFragment();
+        confirmFragment.setKennzeichen(kennzeichen);
+        confirmFragment.setKennzeichenKI(kennzeichenKI);
+        confirmFragment.show(getParentFragmentManager(), "ConfirmFragment");
     }
 
     private void setMarkerOnMap(String location) {

@@ -68,8 +68,8 @@
 
         <ImageView
             android:id="@+id/imagekennzeichen"
-            android:layout_width="304dp"
-            android:layout_height="204dp"
+            android:layout_width="280dp"
+            android:layout_height="180dp"
             android:layout_marginTop="225dp"
             android:src="@drawable/img3"
             app:layout_constraintEnd_toEndOf="parent"
@@ -79,18 +79,18 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/kuerzeleingabe1"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="138.5dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="52dp"
+            android:layout_marginTop="44dp"
             android:hint=""
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:boxBackgroundMode="none"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.425"
+            app:layout_constraintHorizontal_bias="0.46"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/imagekennzeichen">
 
@@ -99,6 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusedSearchResultHighlightColor="#00FFFFFF"
+                android:fontFamily="@font/schriftkraftfahrzeugkennzeichen"
                 android:gravity="left|center"
                 android:inputType="textCapCharacters"
                 android:outlineAmbientShadowColor="#00FFFFFF"
@@ -106,23 +107,22 @@
                 android:padding="10dp"
                 android:searchResultHighlightColor="#00FFFFFF"
                 android:textColor="@color/black"
-                android:fontFamily="@font/schriftkraftfahrzeugkennzeichen"
                 android:textColorHighlight="#00BA2626"
                 android:textColorHint="#9B9B9B"
-                android:textCursorDrawable="@color/black"
+                android:textCursorDrawable="?attr/colorTextNormal"
                 android:textIsSelectable="true"
-                android:textSize="54dp"
+                android:textSize="46dp"
                 android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton
             android:id="@+id/x"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="6dp"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_marginStart="-12dp"
             android:backgroundTint="#00FFFFFF"
-            android:src="@drawable/icon_x"
             android:scaleType="fitCenter"
+            android:src="@drawable/icon_x"
             app:layout_constraintBottom_toBottomOf="@+id/kuerzeleingabe1"
             app:layout_constraintStart_toEndOf="@+id/kuerzeleingabe1"
             app:layout_constraintTop_toTopOf="@id/kuerzeleingabe1"
@@ -160,9 +160,9 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/imageView2"
             app:layout_constraintStart_toEndOf="@id/imageView2"
-            app:layout_constraintTop_toTopOf="@+id/imageView2"
-            app:layout_constraintBottom_toBottomOf="@id/imageView2">
+            app:layout_constraintTop_toTopOf="@+id/imageView2">
 
             <ImageView
                 android:id="@+id/delete_btn"
@@ -302,6 +302,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="10dp"
                             android:layout_weight="1"
                             app:cardCornerRadius="12dp"
                             app:cardElevation="4dp">
@@ -433,6 +434,7 @@
                                 android:id="@+id/mapcardview"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:layout_marginBottom="10dp"
                                 app:cardCornerRadius="16dp"
                                 app:cardElevation="4dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -459,7 +461,7 @@
                                 android:layout_height="0dp"
                                 app:cardBackgroundColor="@color/red"
                                 app:cardCornerRadius="999dp"
-                                app:cardElevation="2dp"
+                                app:cardElevation="4dp"
                                 app:cardPreventCornerOverlap="false"
                                 app:cardUseCompatPadding="true"
                                 app:layout_constraintBottom_toBottomOf="parent"
@@ -488,7 +490,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/factsmapcard"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="20dp"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="4dp">
 
@@ -523,7 +526,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/infotextcard"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="-8dp"
                         android:layout_marginBottom="20dp"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="4dp">
