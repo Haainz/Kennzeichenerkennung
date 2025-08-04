@@ -3,14 +3,14 @@
 
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/ic_menu_camera"
+        android:icon="@drawable/icon_camera"
         android:title="@string/menu_home" />
     <item
         android:id="@+id/nav_slideshow"
-        android:icon="@drawable/baseline_format_list_bulleted_24"
+        android:icon="@drawable/icon_list"
         android:title="Kennzeichenliste" />
     <item
         android:id="@+id/nav_gallery"
-        android:icon="@drawable/icon_today"
+        android:icon="@drawable/icon_calendar_31"
         android:title="Kennzeichen des Tages"/>
 </menu>
