@@ -7,7 +7,12 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.fragment.app.DialogFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,6 +51,56 @@ public class AIManager {
     }
 
     public void generateAIText(Kennzeichen kennzeichen, AICallback callback) {
+        showWordCountDialog(kennzeichen, callback);
+    }
+
+    private void showWordCountDialog(Kennzeichen kennzeichen, AICallback callback) {
+        Activity activity = (Activity) context;
+        activity.runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            final AlertDialog dialog = builder.create();
+
+            dialog.setView(activity.getLayoutInflater().inflate(R.layout.dialog_wordcount_picker, null));
+            dialog.setCancelable(false);
+            dialog.show();
+
+            SeekBar slider = dialog.findViewById(R.id.wordcount_slider);
+            TextView countDisplay = dialog.findViewById(R.id.wordcount_display);
+            Button generateBtn = dialog.findViewById(R.id.generate_button);
+            Button cancelBtn = dialog.findViewById(R.id.cancel_button);
+
+            if (slider == null || countDisplay == null || generateBtn == null || cancelBtn == null)
+                return;
+
+            // Diese 5 erlaubten Werte
+            int[] allowedValues = {25, 50, 75, 100, 125};
+            final int[] selectedIndex = {2}; // Standard: 75 Wörter
+
+            countDisplay.setText(allowedValues[selectedIndex[0]] + " Wörter");
+            slider.setProgress(selectedIndex[0]);
+
+            slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    selectedIndex[0] = progress;
+                    countDisplay.setText(allowedValues[progress] + " Wörter");
+                }
+
+                @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+                @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+
+            cancelBtn.setOnClickListener(v -> dialog.dismiss());
+
+            generateBtn.setOnClickListener(v -> {
+                dialog.dismiss();
+                int selectedWordCount = allowedValues[selectedIndex[0]];
+                generateAITextInternal(kennzeichen, callback, selectedWordCount);
+            });
+        });
+    }
+
+    private void generateAITextInternal(Kennzeichen kennzeichen, AICallback callback, int wordLimit) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
         String aiModel = sharedPreferences.getString("selectedAIModel", "Deepseek V3");
 
@@ -63,7 +118,6 @@ public class AIManager {
                 if (modelId.equals("Fehler")) {
                     if (callback != null) {
                         callback.onError("Fehler beim Laden des AI-Modells");
-
                     } else {
                         DayFragment fragment = fragmentRefDay.get();
                         handleError(fragment, null);
@@ -71,7 +125,7 @@ public class AIManager {
                     return;
                 }
 
-                String prompt = "Erstelle mir einen sehr kurzen informativen Text (maximal 75 Wörter) über " +
+                String prompt = "Erstelle mir einen sehr kurzen informativen Text mit maximal " + wordLimit + " Wörtern über " +
                         kennzeichen.OrtGeben() + " in " + kennzeichen.StadtKreisGeben() +
                         " im Bundesland " + kennzeichen.BundeslandGeben() +
                         ". Gib auch wichtige Fakten wie Einwohnerzahl, geografische Besonderheiten und " +
