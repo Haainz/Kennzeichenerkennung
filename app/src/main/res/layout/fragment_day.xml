@@ -321,7 +321,7 @@
                                         android:layout_below="@+id/stadtoderkreiswert"
                                         android:text="B-Land: "
                                         android:textColor="@color/yellow"
-                                        android:textSize="14dp"
+                                        android:textSize="13.9dp"
                                         android:textStyle="italic|bold" />
 
                                     <TextView
