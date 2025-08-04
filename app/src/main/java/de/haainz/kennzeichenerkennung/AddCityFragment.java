@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
@@ -21,6 +22,7 @@ import java.io.InputStreamReader;
 
 public class AddCityFragment extends DialogFragment {
 
+    private TextView titel;
     private EditText nationalitaetseingabe;
     private EditText kuerzeleingabe;
     private EditText herleitungeingabe;
@@ -28,6 +30,11 @@ public class AddCityFragment extends DialogFragment {
     private EditText bundeslandeingabe;
     private EditText anmerkungeneingabe;
     private EditText fussnoteneingabe;
+    private Kennzeichen kennzeichen;
+
+    public AddCityFragment(Kennzeichen kennzeichen) {
+        this.kennzeichen = kennzeichen;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +47,7 @@ public class AddCityFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_city, container, false);
 
+        titel = view.findViewById(R.id.titletext);
         kuerzeleingabe = view.findViewById(R.id.kuerzeleingabe);
         kuerzeleingabe.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
         herleitungeingabe = view.findViewById(R.id.herleitungeingabe);
@@ -49,13 +57,21 @@ public class AddCityFragment extends DialogFragment {
         fussnoteneingabe = view.findViewById(R.id.fussnoteneingabe);
         nationalitaetseingabe = view.findViewById(R.id.nationalitaetseingabe);
 
+        if (kennzeichen != null) {
+            titel.setText("Bearbeiten:");
+            kuerzeleingabe.setText(kennzeichen.oertskuerzel);
+            herleitungeingabe.setText(kennzeichen.ort);
+            orteingabe.setText(kennzeichen.stadtkreis);
+            bundeslandeingabe.setText(kennzeichen.bundesland);
+            anmerkungeneingabe.setText(kennzeichen.bemerkungen);
+            fussnoteneingabe.setText(kennzeichen.fussnote);
+            nationalitaetseingabe.setText(kennzeichen.nationalitaetskuerzel);
+        } else {
+            titel.setText("Erstellen:");
+        }
+
         Button speichernButton = view.findViewById(R.id.save_btn);
-        speichernButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                speichern();
-            }
-        });
+        speichernButton.setOnClickListener(v -> speichern());
 
         ImageButton xBtn = view.findViewById(R.id.x);
         xBtn.setOnClickListener(v -> dismiss());
@@ -95,8 +111,15 @@ public class AddCityFragment extends DialogFragment {
         }
 
         if (istKuerzelBereitsVorhanden(unterscheidungszeichen)) {
-            Toast.makeText(getActivity(), "Das Unterscheidungszeichen ist bereits vorhanden.", Toast.LENGTH_SHORT).show();
+            if (kennzeichen == null) {
+                Toast.makeText(getActivity(), "Das Unterscheidungszeichen ist bereits vorhanden.", Toast.LENGTH_SHORT).show();
+            }
             return;
+        }
+
+        if (kennzeichen != null) {
+            Kennzeichen_KI kennzeichen_ki = new Kennzeichen_KI(getContext());
+            kennzeichen_ki.deleteKennzeichen(kennzeichen);
         }
 
         String csvZeile = nationalitaetszeichen + "," + unterscheidungszeichen + "," + stadtOderKreis + "," + herleitung + "," + bundeslandName + "," + bundeslandIso31662 + "," + fussnoten + "," + bemerkung + ",," + "nein";
@@ -105,7 +128,11 @@ public class AddCityFragment extends DialogFragment {
             File file = new File(getActivity().getFilesDir(), "kennzeicheneigene.csv");
             FileOutputStream fileOutputStream = new FileOutputStream(file, true);
             fileOutputStream.write((csvZeile + "\n").getBytes());
-            Toast.makeText(getActivity(), "Kennzeichen erfolgreich erstellt\nBitte aktualisiere die Liste", Toast.LENGTH_SHORT).show();
+            if (kennzeichen == null) {
+                Toast.makeText(getActivity(), "Kennzeichen erstellt\nBitte aktualisiere die Liste", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "Kennzeichen aktualisiert\nBitte aktualisiere die Liste", Toast.LENGTH_SHORT).show();
+            }
             fileOutputStream.close();
         } catch (Exception e) {
             e.printStackTrace();

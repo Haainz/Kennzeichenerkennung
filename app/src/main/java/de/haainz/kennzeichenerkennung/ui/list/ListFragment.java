@@ -108,7 +108,7 @@ public class ListFragment extends Fragment {
         });
 
         binding.addBtn.setOnClickListener(v -> {
-            AddCityFragment addCityFragment = new AddCityFragment();
+            AddCityFragment addCityFragment = new AddCityFragment(null);
             addCityFragment.show(getParentFragmentManager(), "AddCityFragment");
         });
 

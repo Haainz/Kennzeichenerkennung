@@ -190,6 +190,8 @@ public class InfosFragment extends DialogFragment {
 
         sharebtn.setOnClickListener(v -> shareKennzeichen(kennzeichen));
 
+        editbtn.setOnClickListener(v -> editKennzeichen(kennzeichen));
+
         deletebtn.setOnClickListener(v -> confirmDelete(kennzeichen));
 
         if (isNetworkAvailable() && !kennzeichen.isSonderDE()) {
@@ -221,6 +223,11 @@ public class InfosFragment extends DialogFragment {
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, "Kürzel: " + kennzeichen.OertskuerzelGeben() + "\nOrt: " + kennzeichen.OrtGeben() + "\nStadt bzw. Kreis: " + kennzeichen.StadtKreisGeben() + "\nBundesland: " + kennzeichen.BundeslandGeben());
         startActivity(Intent.createChooser(intent, "Teilen"));
+    }
+
+    private void editKennzeichen(Kennzeichen kennzeichen) {
+        AddCityFragment addCityFragment = new AddCityFragment(kennzeichen);
+        addCityFragment.show(getParentFragmentManager(), "AddCityFragment");
     }
 
     private void confirmDelete(Kennzeichen kennzeichen) {
