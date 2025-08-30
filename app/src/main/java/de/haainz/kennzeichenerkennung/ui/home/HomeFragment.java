@@ -161,8 +161,6 @@ public class HomeFragment extends Fragment {
         shareBtn.setVisibility(View.GONE);
         picinfoBtn.setVisibility(View.GONE);
 
-        updateTextViewAusgabe2();
-
         if (!kuerzelEingabe.getText().toString().isEmpty()) {
             deleteText.setVisibility(View.VISIBLE);
         }
@@ -316,6 +314,7 @@ public class HomeFragment extends Fragment {
             binding.fussnotentitel.setVisibility(VISIBLE);
             aistatus=0;
             hideKeyboard(v);
+            updateTextViewAusgabe2();
             if (!kuerzelEingabe.getText().toString().isEmpty()) {
                 deleteText.setVisibility(View.VISIBLE);
             }
@@ -450,6 +449,7 @@ public class HomeFragment extends Fragment {
                         binding.mapcardview.setVisibility(GONE);
                     }
                     binding.kurzCard.setVisibility(VISIBLE);
+                    binding.kurzCardText.setText(kennzeichen.oertskuerzel);
                     showaiText(kennzeichen, "off");
                 }
             } else {
@@ -475,7 +475,7 @@ public class HomeFragment extends Fragment {
         });
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", getActivity().MODE_PRIVATE);
-        int logSwitchStatus = sharedPreferences.getInt("logSwitch", 1);
+        int logSwitchStatus = sharedPreferences.getInt("logSwitch", 0);
         if (logSwitchStatus == 1) {
             textViewAusgabe2.setVisibility(View.VISIBLE);
         } else {
@@ -560,11 +560,13 @@ public class HomeFragment extends Fragment {
 
     public void updateTextViewAusgabe2() {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("settings", getActivity().MODE_PRIVATE);
-        int logSwitchStatus = sharedPreferences.getInt("logSwitch", 1);
-        if (logSwitchStatus == 1) {
-            textViewAusgabe2.setVisibility(View.VISIBLE);
-        } else {
+        int logSwitchStatus = sharedPreferences.getInt("logSwitch", 0);
+        if (logSwitchStatus == 0) {
             textViewAusgabe2.setVisibility(View.GONE);
+            Log.e("visible", "1");
+        } else {
+            textViewAusgabe2.setVisibility(View.VISIBLE);
+            Log.e("visible", "0");
         }
     }
 

@@ -80,7 +80,8 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         SwitchCompat logSwitch = findViewById(R.id.log_switch);
-        int logSwitchStatus = sharedPreferences.getInt("logSwitch", 1);
+        int logSwitchStatus = sharedPreferences.getInt("logSwitch", 0);
+        Log.e("logswitchstatus", String.valueOf(logSwitchStatus));
         logSwitch.setChecked(logSwitchStatus == 1);
 
         logSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
