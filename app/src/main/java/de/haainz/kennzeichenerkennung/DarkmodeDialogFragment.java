@@ -34,7 +34,6 @@ public class DarkmodeDialogFragment extends DialogFragment {
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             prefs.edit().putInt("theme_mode", checkedId).apply();
             applyTheme(checkedId);
-            requireActivity().recreate(); // <- wichtig: Activity neu laden
             dismiss();
         });
 
@@ -47,10 +46,13 @@ public class DarkmodeDialogFragment extends DialogFragment {
     private void applyTheme(int id) {
         if (id == R.id.radio_light) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            getActivity().recreate();
         } else if (id == R.id.radio_dark) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            getActivity().recreate();
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+            getActivity().recreate();
         }
     }
 }

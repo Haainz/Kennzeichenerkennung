@@ -16,6 +16,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +31,19 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import de.haainz.kennzeichenerkennung.databinding.ActivityMainBinding;
+
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.nativead.MediaView;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.ump.ConsentDebugSettings;
+import com.google.android.ump.ConsentForm;
+import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.UserMessagingPlatform;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,12 +68,14 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable networkCheckRunnable;
     private ImageButton iconInfo;
+    private ConsentInformation consentInformation;
+    private ConsentForm consentForm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         sharedPreferences = getSharedPreferences("settings", MODE_PRIVATE);
         setNightMode();
+        super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -68,6 +83,33 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(binding.appBarMain.toolbar);
         drawerLayout = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
+
+        // 🔧 Optional: Debug-Einstellungen aktivieren (nur für Testgeräte!)
+        ConsentDebugSettings debugSettings = new ConsentDebugSettings.Builder(this)
+                .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA) // EU simulieren
+                //.addTestDeviceHashedId("TEST_DEVICE_ID") // Optional
+                .build();
+
+        ConsentRequestParameters params = new ConsentRequestParameters.Builder()
+                .setConsentDebugSettings(debugSettings)
+                .setTagForUnderAgeOfConsent(false)
+                .build();
+
+        consentInformation = UserMessagingPlatform.getConsentInformation(this);
+
+        // ⬇️ Consent-Status anfragen
+        consentInformation.requestConsentInfoUpdate(
+                this,
+                params,
+                () -> {
+                    if (consentInformation.isConsentFormAvailable()) {
+                        loadAndShowConsentForm();
+                    }
+                },
+                formError -> Log.e("Consent", "Consent error: " + formError.getMessage())
+        );
+
+        MobileAds.initialize(this, initializationStatus -> {});
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
@@ -86,9 +128,7 @@ public class MainActivity extends AppCompatActivity {
         handleIntent(getIntent());
         iconInfo = findViewById(R.id.icon_offline);
         startNetworkCheck();
-
-        // Direkter Aufruf des GitHub Update-Checks
-        checkForUpdates();
+        maybeShowNativeAd();
     }
 
     private void setNightMode() {
@@ -214,131 +254,56 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private int getCurrentAppVersion() {
-        try {
-            return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-        } catch (Exception e) {
-            Log.e(TAG, "Error getting current app version", e);
-            return 1;
-        }
-    }
-
-    void startDownload(String downloadUrl, String version) {
-        String cleanVersion = version.replaceAll("[^a-zA-Z0-9.-]", "_");
-        String fileName = "App-Update-Kennzeichenerkennung-" + cleanVersion + ".apk";
-
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(downloadUrl));
-        request.setTitle("App-Update Kennzeichenerkennung " + version);
-        request.setDescription("Update wird heruntergeladen...");
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
-        request.setMimeType("application/vnd.android.package-archive");
-
-        DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-        long downloadId = downloadManager.enqueue(request);
-
-        BroadcastReceiver onComplete = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                Uri uri = downloadManager.getUriForDownloadedFile(downloadId);
-                if (uri != null) {
-                    Intent installIntent = new Intent(Intent.ACTION_VIEW);
-                    installIntent.setDataAndType(uri, "application/vnd.android.package-archive");
-                    installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(installIntent);
-                } else {
-                    Log.e(TAG, "Download URI is null");
-                }
-                context.unregisterReceiver(this);
-            }
-        };
-        registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), Context.RECEIVER_NOT_EXPORTED);
-    }
-
-    void deleteOldDownloads() {
-        File downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File[] files = downloadsDirectory.listFiles();
-        Log.e(TAG, Arrays.toString(files));
-
-        if (files != null) {
-            boolean anyDeleted = false; // Flag, um zu überprüfen, ob mindestens eine Datei gelöscht wurde
-            for (File file : files) {
-                if (file.isFile() && file.getName().startsWith("App-Update-Kennzeichenerkennung") && file.getName().endsWith(".apk")) {
-                    boolean deleted = file.delete();
-                    if (deleted) {
-                        Log.d(TAG, "Deleted file: " + file.getName());
-                        Toast.makeText(this, file.getName() + " gelöscht", Toast.LENGTH_SHORT).show();
-                        anyDeleted = true; // Setze das Flag, wenn eine Datei gelöscht wurde
-                    } else {
-                        Log.e(TAG, "Failed to delete file: " + file.getName());
-                    }
-                }
-            }
-            if (!anyDeleted) {
-                Toast.makeText(this, "Keine alten Downloads gefunden.", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Log.e(TAG, "Downloads directory is empty or does not exist.");
-        }
-    }
-
-    private void checkForUpdates() {
-        Log.e("sharedPreferences", String.valueOf(sharedPreferences.getBoolean("updateSwitch", true)) + sharedPreferences.getBoolean("offlineSwitch", false));
-        if(sharedPreferences.getBoolean("updateSwitch", true) && !sharedPreferences.getBoolean("offlineSwitch", false)) {
-            OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url("https://api.github.com/repos/Haainz/Kennzeichenerkennung/releases/latest")
-                    .build();
-
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    e.printStackTrace();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        try {
-                            String jsonData = response.body().string();
-                            JSONObject json = new JSONObject(jsonData);
-                            String versionTag = json.getString("tag_name");
-                            int latestVersion = Integer.parseInt(versionTag.replaceAll("[^0-9]", ""));
-                            String body = json.getString("body");
-                            String downloadUrl = json.getJSONArray("assets")
-                                    .getJSONObject(0)
-                                    .getString("browser_download_url");
-                            String updateSize = json.getJSONArray("assets")
-                                    .getJSONObject(0)
-                                    .getString("size");
-
-                            if (latestVersion > getCurrentAppVersion()) {
-                                runOnUiThread(() -> showUpdateDialog(versionTag, body, downloadUrl, updateSize));
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    private void showUpdateDialog(String version, String body, String downloadUrl, String updateSize) {
-        if (!isFinishing() && !isDestroyed()) {
-            UpdateFragment updateFragment = new UpdateFragment();
-            Bundle args = new Bundle();
-            args.putString("version", version);
-            args.putString("body", body);
-            args.putString("downloadUrl", downloadUrl);
-            args.putString("updateSize", updateSize);
-            updateFragment.setArguments(args);
-            updateFragment.show(getSupportFragmentManager(), "UpdateFragment");
-        }
-    }
-
     private boolean isOfflineMode() {
         SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
         return prefs.getBoolean("offlineSwitch", false);
+    }
+
+    private void loadAndShowConsentForm() {
+        UserMessagingPlatform.loadConsentForm(
+                this,
+                form -> {
+                    consentForm = form;
+
+                    if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
+                        consentForm.show(
+                                this,
+                                dismissError -> {
+                                    // Benutzer hat Formular geschlossen – Consent ggf. erneut prüfen
+                                    Log.d("Consent", "Form closed. Status: " + consentInformation.getConsentStatus());
+                                });
+                    }
+                },
+                formError -> Log.e("Consent", "Form load error: " + formError.getMessage())
+        );
+    }
+
+    private void maybeShowNativeAd() {
+        boolean showAds = sharedPreferences.getBoolean("adSwitch", true); // ad_switch Status aus Settings
+        if (!showAds) return;
+
+        NativeAdView adView = findViewById(R.id.native_ad_view);
+        AdLoader adLoader = new AdLoader.Builder(this, this.getString(R.string.admob_native_ad_unit_id_test)) // Test-ID
+                .forNativeAd(nativeAd -> {
+                    // Ad erfolgreich geladen → Layout befüllen
+                    populateNativeAdView(nativeAd, adView);
+                    adView.setVisibility(View.VISIBLE);
+                })
+                .build();
+
+        adLoader.loadAd(new AdRequest.Builder().build());
+    }
+
+    private void populateNativeAdView(NativeAd nativeAd, NativeAdView adView) {
+        TextView headlineView = adView.findViewById(R.id.ad_headline);
+        MediaView mediaView = adView.findViewById(R.id.ad_image); // Das ist jetzt ein MediaView!
+
+        headlineView.setText(nativeAd.getHeadline());
+        adView.setHeadlineView(headlineView);
+
+        // ✅ Das ist korrekt für MediaView:
+        adView.setMediaView(mediaView);
+
+        adView.setNativeAd(nativeAd);
     }
 }

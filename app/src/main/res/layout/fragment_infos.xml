@@ -178,7 +178,6 @@
             android:layout_below="@id/Bemerkungenwert"
             android:layout_marginHorizontal="0dp"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="4dp"
             app:cardPreventCornerOverlap="true"
@@ -190,35 +189,68 @@
                 android:layout_height="match_parent" />
         </androidx.cardview.widget.CardView>
 
-        <androidx.core.widget.NestedScrollView
+        <RelativeLayout
+            android:id="@+id/aitext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cardviewmap"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/aitexttitel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KI-Info:  "
+                android:textColor="@color/yellow"
+                android:textSize="15dp"
+                android:textStyle="italic|bold" />
+
+            <TextView
+                android:id="@+id/aitextwert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_toRightOf="@id/aitexttitel"
+                android:clickable="true"
+                android:ellipsize="end"
+                android:focusable="true"
+                android:maxLines="3"
+                android:singleLine="false"
+                android:text="---"
+                android:textColor="?attr/colorTextNormal"
+                android:textSize="15dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/fussnoten"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/cardviewmap">
+            android:layout_below="@id/aitext">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/fussnotentitel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fußnoten:  "
+                android:textColor="@color/yellow"
+                android:textSize="15dp"
+                android:textStyle="italic|bold" />
 
-                <TextView
-                    android:id="@+id/fussnotentitel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fußnoten:"
-                    android:textColor="@color/yellow"
-                    android:textSize="15dp"
-                    android:textStyle="italic|bold" />
-
-                <TextView
-                    android:id="@+id/fussnotenwert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/fussnotentitel"
-                    android:text=" ---"
-                    android:textColor="?attr/colorTextNormal"
-                    android:textSize="15dp" />
-            </RelativeLayout>
-        </androidx.core.widget.NestedScrollView>
+            <TextView
+                android:id="@+id/fussnotenwert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="13dp"
+                android:layout_toRightOf="@id/fussnotentitel"
+                android:clickable="true"
+                android:ellipsize="end"
+                android:focusable="true"
+                android:maxLines="3"
+                android:singleLine="false"
+                android:text="---"
+                android:textColor="?attr/colorTextNormal"
+                android:textSize="15dp" />
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"

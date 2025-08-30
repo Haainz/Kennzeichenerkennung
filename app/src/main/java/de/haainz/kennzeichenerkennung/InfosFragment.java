@@ -3,6 +3,8 @@ package de.haainz.kennzeichenerkennung;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,10 +12,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +28,7 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceManager;
 
+import de.haainz.kennzeichenerkennung.ui.AIManager;
 import de.haainz.kennzeichenerkennung.ui.list.ListFragment;
 
 import org.json.JSONArray;
@@ -113,6 +120,7 @@ public class InfosFragment extends DialogFragment {
 
         TextView fussnotenWert = view.findViewById(R.id.fussnotenwert);
         TextView fussnotenTitel = view.findViewById(R.id.fussnotentitel);
+
         String fussnoteString = kennzeichen.FussnoteGeben();
         int fussnoteNummer = 6;
 
@@ -136,6 +144,16 @@ public class InfosFragment extends DialogFragment {
         } else {
             fussnotenWert.setText("---\n");
         }
+        fussnotenWert.setOnClickListener(v -> showTextPopup("Fußnoten", fussnotenWert.getText().toString()));
+
+        TextView aiTextWert = view.findViewById(R.id.aitextwert);
+        TextView aiTextTitel = view.findViewById(R.id.aitexttitel);
+        if (kennzeichen.aiTextGeben()=="") {
+            aiTextWert.setText("---");
+        } else {
+            aiTextWert.setText(kennzeichen.aiTextGeben());
+        }
+        aiTextWert.setOnClickListener(v -> showAITextPopup(kennzeichen));
 
         TextView bemerkungenWert = view.findViewById(R.id.Bemerkungenwert);
         TextView bemerkungenTitel = view.findViewById(R.id.bemerkungentitel);
@@ -329,5 +347,84 @@ public class InfosFragment extends DialogFragment {
     private boolean isOfflineMode() {
         SharedPreferences prefs = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         return prefs.getBoolean("offlineSwitch", false);
+    }
+
+    private void showTextPopup(String title, String fullText) {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+        builder.setTitle(title);
+        builder.setMessage(fullText);
+        builder.setPositiveButton("Schließen", null);
+        builder.show();
+    }
+
+    public void showAITextPopup(Kennzeichen kennzeichen) {
+        Activity activity = (Activity) getContext();
+        activity.runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_ai_text_popup, null);
+            builder.setView(dialogView);
+
+            AlertDialog dialog = builder.create();
+            dialog.setCancelable(false);
+            dialog.show();
+
+            TextView aiTextView = dialogView.findViewById(R.id.ai_text_view);
+            EditText aiEditText = dialogView.findViewById(R.id.ai_edit_text);
+            Button btnGenerate = dialogView.findViewById(R.id.button_generate);
+            Button btnEdit = dialogView.findViewById(R.id.button_edit);
+            ImageButton btnClose = dialogView.findViewById(R.id.button_close);
+
+            // Starte mit aktuellem KI-Text
+            String existingText = kennzeichen.aiTextGeben();
+            if (!existingText.isEmpty()) {
+                aiTextView.setText(existingText);
+            } else {
+                aiTextView.setText("Es wurde noch kein Text generiert.");
+            }
+
+            if (isNetworkAvailable() && !isOfflineMode()) {
+                btnGenerate.setVisibility(VISIBLE);
+            } else {
+                btnGenerate.setVisibility(GONE);
+            }
+
+            AIManager aiManager = new AIManager(requireContext(), null, null);
+
+            btnGenerate.setOnClickListener(v -> {
+                aiManager.generateAIText(kennzeichen, new AIManager.AICallback() {
+                    @Override
+                    public void onResult(String aiText) {
+                        activity.runOnUiThread(() -> {
+                            aiTextView.setText(aiText);
+                            aiEditText.setVisibility(View.GONE);
+                            aiTextView.setVisibility(View.VISIBLE);
+                        });
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        Toast.makeText(getContext(), "Fehler: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
+
+            btnEdit.setOnClickListener(v -> {
+                if (aiEditText.getVisibility() == View.GONE) {
+                    aiEditText.setText(aiTextView.getText().toString());
+                    aiTextView.setVisibility(View.GONE);
+                    aiEditText.setVisibility(View.VISIBLE);
+                    btnEdit.setText("Speichern");
+                } else {
+                    String editedText = aiEditText.getText().toString();
+                    aiTextView.setText(editedText);
+                    aiTextView.setVisibility(View.VISIBLE);
+                    aiEditText.setVisibility(View.GONE);
+                    kennzeichenKI.setaiText(kennzeichen, editedText); // Speichern
+                    btnEdit.setText("Bearbeiten");
+                }
+            });
+
+            btnClose.setOnClickListener(v -> dialog.dismiss());
+        });
     }
 }

@@ -31,7 +31,7 @@
                     android:layout_marginStart="12dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="5dp">
+                    android:padding="2dp">
 
                     <TextView
                         android:id="@+id/selectionCount"
@@ -40,14 +40,14 @@
                         android:layout_weight="1"
                         android:text="0 ausgewählt"
                         android:textColor="?attr/colorTextNormal"
-                        android:textSize="17sp" />
+                        android:textSize="16sp" />
 
                     <ImageView
                         android:id="@+id/heartIcon"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:contentDescription="Speichern"
-                        android:padding="6dp"
+                        android:padding="8dp"
                         android:src="@drawable/icon_heart"
                         app:tint="@color/red" />
 
@@ -55,9 +55,9 @@
                         android:id="@+id/xBtn"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
-                        android:paddingVertical="4dp"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="4dp"
+                        android:paddingVertical="6dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="8dp"
                         android:src="@drawable/icon_x"
                         app:tint="@color/red" />
                 </LinearLayout>
@@ -65,6 +65,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
+                    android:layout_marginBottom="6dp"
                     android:background="@color/blue_700"
                     android:backgroundTint="@color/blue_700" />
             </LinearLayout>

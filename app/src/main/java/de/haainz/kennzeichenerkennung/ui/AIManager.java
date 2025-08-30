@@ -7,11 +7,14 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import org.json.JSONArray;
@@ -20,6 +23,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -35,6 +39,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
 
 public class AIManager {
 
@@ -95,21 +107,91 @@ public class AIManager {
             generateBtn.setOnClickListener(v -> {
                 dialog.dismiss();
                 int selectedWordCount = allowedValues[selectedIndex[0]];
-                generateAITextInternal(kennzeichen, callback, selectedWordCount);
+
+                SharedPreferences prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+                boolean skipAdDialog = prefs.getBoolean("skip_ad_confirmation", false);
+
+                if (skipAdDialog) {
+                    showRewardedAd(() -> generateAITextInternal(kennzeichen, callback, selectedWordCount));
+                } else {
+                    showAdConfirmationDialog(() -> generateAITextInternal(kennzeichen, callback, selectedWordCount));
+                }
             });
+        });
+    }
+
+    private void showAdConfirmationDialog(Runnable onAdAccepted) {
+        Activity activity = (Activity) context;
+        activity.runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            final AlertDialog dialog = builder.create();
+
+            dialog.setView(activity.getLayoutInflater().inflate(R.layout.dialog_ad_confirmation, null));
+            dialog.setCancelable(false);
+            dialog.show();
+
+            Button watchAdBtn = dialog.findViewById(R.id.watch_ad_button);
+            Button cancelBtn = dialog.findViewById(R.id.cancel_ad_button);
+            CheckBox dontShowAgainCheckBox = dialog.findViewById(R.id.dont_show_again_checkbox);
+
+            if (watchAdBtn == null || cancelBtn == null || dontShowAgainCheckBox == null)
+                return;
+
+            cancelBtn.setOnClickListener(v -> dialog.dismiss());
+
+            watchAdBtn.setOnClickListener(v -> {
+                if (dontShowAgainCheckBox.isChecked()) {
+                    SharedPreferences.Editor editor = context.getSharedPreferences("settings", Context.MODE_PRIVATE).edit();
+                    editor.putBoolean("skip_ad_confirmation", true);
+                    editor.apply();
+                }
+
+                dialog.dismiss();
+                showRewardedAd(onAdAccepted);
+            });
+        });
+    }
+
+    private void showRewardedAd(Runnable onRewardEarned) {
+        Activity activity = (Activity) context;
+
+        RequestConfiguration configuration = new RequestConfiguration.Builder()
+                .setTestDeviceIds(Arrays.asList("03037079DE1BA04FDA9765080FADF22B"))
+                .build();
+        MobileAds.setRequestConfiguration(configuration);
+
+
+        MobileAds.initialize(context);
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        RewardedAd.load(context, context.getString(R.string.admob_rewarded_ad_unit_id_test), adRequest, new RewardedAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
+                rewardedAd.show(activity, rewardItem -> {
+                    if (onRewardEarned != null) {
+                        onRewardEarned.run();
+                    }
+                });
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull com.google.android.gms.ads.LoadAdError loadAdError) {
+                Toast.makeText(context, "Fehler beim Laden der Werbung", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
     private void generateAITextInternal(Kennzeichen kennzeichen, AICallback callback, int wordLimit) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String aiModel = sharedPreferences.getString("selectedAIModel", "Deepseek V3");
+        String aiModel = sharedPreferences.getString("selectedAIModel", "DeepSeek V3");
 
         checkModelWorking(aiModel, modelWorking -> {
             if (!modelWorking) {
                 if (callback != null) {
                     callback.onError("Das KI-Modell funktioniert derzeit nicht.");
                 } else {
-                    Toast.makeText(context, "Das KI-Modell funktioniert derzeit nicht.", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "Das KI-Modell funktioniert derzeit nicht.", Toast.LENGTH_SHORT).show();
+                    Log.e("ai", "Das KI-Modell funktioniert derzeit nicht.");
                 }
                 return;
             }
@@ -174,15 +256,10 @@ public class AIManager {
                             Log.d("API_RESPONSE", responseData);
 
                             if (callback == null && fragment != null && fragment.isAdded()) {
-                                fragment.binding.thinkBtn.setOnLongClickListener(v -> {
-                                    fragment.requireActivity().runOnUiThread(() -> openResponse(responseData));
-                                    return true;
-                                });
-                            } else {
-                                homefragment.requireView().findViewById(R.id.infotexttitel).setOnLongClickListener(v -> {
-                                    homefragment.requireActivity().runOnUiThread(() -> openResponse(responseData));
-                                    return true;
-                                });
+                                setupLongClickListener(fragment.getActivity(), fragment.binding.thinkBtn, responseData);
+                            } else if (homefragment != null && homefragment.isAdded()) {
+                                View infoTitle = homefragment.requireView().findViewById(R.id.infotexttitel);
+                                setupLongClickListener(homefragment.getActivity(), infoTitle, responseData);
                             }
 
                             if (response.isSuccessful()) {
@@ -378,5 +455,14 @@ public class AIManager {
     public interface AICallback {
         void onResult(String aiText);
         void onError(String errorMessage);
+    }
+
+    private void setupLongClickListener(Activity activity, View view, String responseData) {
+        activity.runOnUiThread(() -> {
+            view.setOnLongClickListener(v -> {
+                openResponse(responseData);
+                return true;
+            });
+        });
     }
 }

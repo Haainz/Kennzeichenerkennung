@@ -58,5 +58,6 @@ dependencies {
     implementation 'org.json:json:20231013'
     implementation 'com.sun.mail:android-mail:1.6.2'
     implementation 'com.sun.mail:android-activation:1.6.2'
-    implementation 'com.github.lriccardo:TimelineView:1.1.2'
+    implementation 'com.google.android.gms:play-services-ads:24.5.0'
+    implementation 'com.google.android.ump:user-messaging-platform:2.1.0'
 }

@@ -1,55 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center"
+    android:orientation="vertical"
     android:padding="16dp"
-    android:baselineAligned="false">
+    android:gravity="center_horizontal">
 
-    <ImageButton
-        android:id="@+id/button_donate"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="7dp"
-        android:background="@drawable/circle_button_background"
-        android:padding="12dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/icon_heart"
-        app:tint="@color/red" />
+    <!-- 📢 Native Ad oben -->
+    <com.google.android.gms.ads.nativead.NativeAdView
+        android:id="@+id/native_ad_view"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:background="#eeeeee"
+        android:orientation="vertical"
+        android:layout_marginVertical="8dp"
+        android:layout_marginBottom="20dp">
 
-    <ImageButton
-        android:id="@+id/button_upload"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="7dp"
-        android:background="@drawable/circle_button_background"
-        android:padding="12dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/icon_upload"
-        app:tint="?attr/colorTextNormal"/>
+        <!-- Ad-Inhalte -->
+        <TextView
+            android:id="@+id/ad_headline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ad Title"
+            android:textStyle="bold"
+            android:textSize="16sp" />
 
-    <ImageButton
-        android:id="@+id/button_download"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="7dp"
-        android:background="@drawable/circle_button_background"
-        android:padding="12dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/icon_download"
-        app:tint="?attr/colorTextNormal"/>
+        <com.google.android.gms.ads.nativead.MediaView
+            android:id="@+id/ad_image"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop" />
+    </com.google.android.gms.ads.nativead.NativeAdView>
 
-    <ImageButton
-        android:id="@+id/button_settings"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="7dp"
-        android:background="@drawable/circle_button_background"
-        android:padding="12dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/icon_settings2"
-        app:tint="?attr/colorTextNormal"/>
+    <!-- 🔘 Button-Reihe -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
 
+        <ImageButton
+            android:id="@+id/button_donate"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="7dp"
+            android:background="@drawable/circle_button_background"
+            android:padding="12dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_heart"
+            app:tint="@color/red" />
+
+        <ImageButton
+            android:id="@+id/button_upload"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="7dp"
+            android:background="@drawable/circle_button_background"
+            android:padding="12dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_upload"
+            app:tint="?attr/colorTextNormal" />
+
+        <ImageButton
+            android:id="@+id/button_download"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="7dp"
+            android:background="@drawable/circle_button_background"
+            android:padding="12dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_download"
+            app:tint="?attr/colorTextNormal" />
+
+        <ImageButton
+            android:id="@+id/button_settings"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="7dp"
+            android:background="@drawable/circle_button_background"
+            android:padding="12dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/icon_settings2"
+            app:tint="?attr/colorTextNormal" />
+    </LinearLayout>
 </LinearLayout>

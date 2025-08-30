@@ -1,5 +1,7 @@
 package de.haainz.kennzeichenerkennung;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -19,6 +21,9 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.UserMessagingPlatform;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,7 +74,10 @@ public class SettingsActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_in_right,R.anim.slide_not);
 
         Button updateInfo = findViewById(R.id.button_update);
-        updateInfo.setOnClickListener(v -> checkForUpdates());
+        updateInfo.setOnClickListener(v -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Haainz/Kennzeichenerkennung/releases/"));
+            startActivity(browserIntent);
+        });
 
         SwitchCompat logSwitch = findViewById(R.id.log_switch);
         int logSwitchStatus = sharedPreferences.getInt("logSwitch", 1);
@@ -91,12 +99,15 @@ public class SettingsActivity extends AppCompatActivity {
             sharedPreferences.edit().putBoolean("offlineSwitch", isChecked).apply();
         });
 
-        SwitchCompat updateSwitch = findViewById(R.id.update_switch);
-        boolean updateSwitchStatus = sharedPreferences.getBoolean("updateSwitch", true);
-        updateSwitch.setChecked(updateSwitchStatus);
+        TextView changeAdBtn = findViewById(R.id.changead_btn);
+        changeAdBtn.setOnClickListener(v -> showConsentForm(SettingsActivity.this));
 
-        updateSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            sharedPreferences.edit().putBoolean("updateSwitch", isChecked).apply();
+        SwitchCompat adSwitch = findViewById(R.id.ad_switch);
+        boolean current = sharedPreferences.getBoolean("adSwitch", false);
+        adSwitch.setChecked(current);
+
+        adSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sharedPreferences.edit().putBoolean("adSwitch", isChecked).apply();
         });
 
         loadAIModels();
@@ -252,71 +263,43 @@ public class SettingsActivity extends AppCompatActivity {
         fragment.show(getSupportFragmentManager(), tag);
     }
 
-    private int getCurrentAppVersion() {
-        try {
-            return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-        } catch (Exception e) {
-            Log.e("SettingsActivity", "Error getting current app version", e);
-            return 1;
-        }
-    }
-
-    private void checkForUpdates() {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("https://api.github.com/repos/Haainz/Kennzeichenerkennung/releases/latest")
+    private void showConsentForm(Activity activity) {
+        ConsentRequestParameters params = new ConsentRequestParameters
+                .Builder()
+                .setTagForUnderAgeOfConsent(false)
                 .build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(() ->
-                        Toast.makeText(SettingsActivity.this, "Fehler bei der Update-Prüfung", Toast.LENGTH_SHORT).show());
-            }
+        ConsentInformation consentInformation = UserMessagingPlatform.getConsentInformation(activity);
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    try {
-                        String jsonData = response.body().string();
-                        JSONObject json = new JSONObject(jsonData);
-                        String versionTag = json.getString("tag_name");
-                        int latestVersion = Integer.parseInt(versionTag.replaceAll("[^0-9]", ""));
-                        String body = json.getString("body");
-                        String downloadUrl = json.getJSONArray("assets")
-                                .getJSONObject(0)
-                                .getString("browser_download_url");
-                        String updateSize = json.getJSONArray("assets")
-                                .getJSONObject(0)
-                                .getString("size");
-
-                        int currentVersion = getCurrentAppVersion();
-
-                        runOnUiThread(() -> {
-                            if (latestVersion > currentVersion) {
-                                showUpdateDialog(versionTag, body, downloadUrl, updateSize);
-                            } else {
-                                Toast.makeText(SettingsActivity.this, "Keine Updates verfügbar", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                    } catch (JSONException e) {
-                        runOnUiThread(() ->
-                                Toast.makeText(SettingsActivity.this, "Fehler beim Verarbeiten der Daten", Toast.LENGTH_SHORT).show());
+        // Zuerst: Informationen anfordern
+        consentInformation.requestConsentInfoUpdate(
+                activity,
+                params,
+                () -> {
+                    // Wenn Formular verfügbar, dann laden & anzeigen
+                    if (consentInformation.isConsentFormAvailable()) {
+                        UserMessagingPlatform.loadConsentForm(
+                                activity,
+                                consentForm -> {
+                                    consentForm.show(
+                                            activity,
+                                            formError -> {
+                                                // Nach Schließen des Formulars
+                                                Log.d("Consent", "Consent-Formular wurde geschlossen");
+                                            }
+                                    );
+                                },
+                                formError -> {
+                                    Log.e("Consent", "Fehler beim Laden des Formulars: " + formError.getMessage());
+                                }
+                        );
+                    } else {
+                        Toast.makeText(activity, "Kein Consent-Formular erforderlich", Toast.LENGTH_SHORT).show();
                     }
+                },
+                formError -> {
+                    Log.e("Consent", "Fehler beim Aktualisieren der ConsentInfo: " + formError.getMessage());
                 }
-            }
-        });
-    }
-
-    private void showUpdateDialog(String version, String body, String downloadUrl, String updateSize) {
-        UpdateFragment updateFragment = new UpdateFragment();
-        Bundle args = new Bundle();
-        args.putString("version", version);
-        args.putString("body", body);
-        args.putString("downloadUrl", downloadUrl);
-        args.putString("updateSize", updateSize);
-        updateFragment.setArguments(args);
-        updateFragment.show(getSupportFragmentManager(), "UpdateFragment");
+        );
     }
 }

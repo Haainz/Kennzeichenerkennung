@@ -51,8 +51,7 @@ public class Kennzeichen_KI {
         return kennzeichenliste;
     }
 
-    public String OrtZuKennzeichenAusgeben(String kennzeichen)
-    {
+    public String OrtZuKennzeichenAusgeben(String kennzeichen) {
         String ort = "Dieses Kennzeichen kenne ich leider nicht 😒!";
         for (Kennzeichen value : kennzeichenliste) {
             if (value.OertskuerzelGeben() != null && value.OertskuerzelGeben().equals(kennzeichen)) {
@@ -63,8 +62,7 @@ public class Kennzeichen_KI {
         return ort;
     }
 
-    public String BundeslandZuKennzeichenAusgeben(String kennzeichen)
-    {
+    public String BundeslandZuKennzeichenAusgeben(String kennzeichen) {
         String bundesland = "";
         for (Kennzeichen value : kennzeichenliste) {
             if (value.OertskuerzelGeben() != null && value.OertskuerzelGeben().equals(kennzeichen)) {
