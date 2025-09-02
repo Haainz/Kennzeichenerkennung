@@ -41,6 +41,9 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
+
 import de.haainz.kennzeichenerkennung.InfosFragment;
 import de.haainz.kennzeichenerkennung.Kennzeichen;
 import de.haainz.kennzeichenerkennung.KennzeichenGenerator;
@@ -99,6 +102,7 @@ public class DayFragment extends Fragment {
     private int titleStartMarginPx, titleEndMarginPx;
     private LinearLayout titleContainer;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private static final String PREF_TOUR_DAY_SHOWN = "tour_day_shown";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -144,6 +148,13 @@ public class DayFragment extends Fragment {
             binding.Bemerkungenwert.setText(currentKennzeichen.BemerkungenGeben());
         } else {
             binding.Bemerkungenwert.setVisibility(GONE);
+        }
+
+        boolean tourShown = sharedPreferences.getBoolean(PREF_TOUR_DAY_SHOWN, false);
+
+        if (!tourShown) {
+            showTour();
+            sharedPreferences.edit().putBoolean(PREF_TOUR_DAY_SHOWN, true).apply();
         }
 
         binding.thinkBtn.setOnClickListener(v -> {
@@ -583,5 +594,33 @@ public class DayFragment extends Fragment {
     private boolean isOfflineMode() {
         SharedPreferences prefs = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         return prefs.getBoolean("offlineSwitch", false);
+    }
+
+    private void showTour() {
+        new TapTargetSequence(requireActivity())
+                .targets(
+                        TapTarget.forView(binding.imageoftheday, "Kennzeichen des Tages", "Lerne jeden Tag ein neues Kennzeichen kennen!\nAuch als Widget für deinen Homescreen verfügbar!")
+                                .outerCircleColor(R.color.yellow)
+                                .transparentTarget(true)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.black)
+                                .descriptionTextColor(android.R.color.black)
+                                .targetRadius(165)
+                                .cancelable(false)
+                )
+                .listener(new TapTargetSequence.Listener() {
+                    @Override
+                    public void onSequenceFinish() {
+                    }
+
+                    @Override
+                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+                    }
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                    }
+                })
+                .start();
     }
 }

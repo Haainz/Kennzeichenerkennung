@@ -60,4 +60,5 @@ dependencies {
     implementation 'com.sun.mail:android-activation:1.6.2'
     implementation 'com.google.android.gms:play-services-ads:24.5.0'
     implementation 'com.google.android.ump:user-messaging-platform:2.1.0'
+    implementation 'com.getkeepsafe.taptargetview:taptargetview:1.15.0'
 }

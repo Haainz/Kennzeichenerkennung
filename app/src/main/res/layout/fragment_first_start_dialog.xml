@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.FirstStartDialogFragment">
+
+    <ImageButton
+        android:id="@+id/x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:backgroundTint="#00FFFFFF"
+        android:src="@drawable/icon_x"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/red" />
+
+    <RelativeLayout
+        android:id="@+id/fragment_container1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="10dp"
+        android:gravity="top"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/title"
+            android:text="Willkommen 🎉"
+            android:textSize="30sp"
+            android:textStyle="normal"
+            android:textColor="?attr/colorTextNormal"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:id="@+id/text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title"
+            android:text="Durch die Nutzung der App stimmst du den rechtlichen Hinweisen zu."
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="15dp"
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/text_view_link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_view"
+            android:text="Rechtliche Bedingungen"
+            android:textColor="@color/yellow"
+            android:textSize="15dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_view2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_view_link"
+            android:layout_marginTop="15dp"
+            android:text="Willst du die App direkt kennenlernen, dann aktiviere doch gerne die Tipps, die dir viele Funktionen vorstellen und erklären werden. Viel Spaß!"
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="16dp"
+            android:textStyle="normal" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view2"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/edit_text_rounded_corner"
+            android:backgroundTint="@color/textlight"
+            android:gravity="center"
+            android:text="  Keine Tipps  "
+            android:textColor="@color/black" />
+
+        <Button
+            android:id="@+id/button_show_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view2"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/edit_text_rounded_corner"
+            android:gravity="center"
+            android:text="Tipps\nanzeigen"
+            android:textColor="@color/white" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@+id/button_show_tips"
+            android:layout_marginTop="17dp"
+            android:background="@color/blue_700" />
+    </RelativeLayout>
+</RelativeLayout>

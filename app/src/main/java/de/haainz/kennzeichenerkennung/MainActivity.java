@@ -1,23 +1,19 @@
 package de.haainz.kennzeichenerkennung;
 
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -32,6 +28,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import de.haainz.kennzeichenerkennung.databinding.ActivityMainBinding;
 
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
@@ -45,19 +43,6 @@ import com.google.android.ump.ConsentInformation;
 import com.google.android.ump.ConsentRequestParameters;
 import com.google.android.ump.UserMessagingPlatform;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -70,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton iconInfo;
     private ConsentInformation consentInformation;
     private ConsentForm consentForm;
+    private static final String PREF_FIRST_TOUR_SHOWN = "first_nav_tour_shown";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
                 formError -> Log.e("Consent", "Consent error: " + formError.getMessage())
         );
 
-        MobileAds.initialize(this, initializationStatus -> {});
+        MobileAds.initialize(this, initializationStatus -> {
+        });
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
@@ -125,10 +112,31 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setupSettingsButtons();
+
+        drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+
+                SharedPreferences sP = getSharedPreferences("settings", MODE_PRIVATE);
+                boolean tourShown = sP.getBoolean(PREF_FIRST_TOUR_SHOWN, false);
+                Log.e("tourShown", String.valueOf(tourShown));
+                if (!tourShown) {
+                    sP.edit().putBoolean(PREF_FIRST_TOUR_SHOWN, true).apply();
+                    startNavigationTour();
+                }
+            }
+        });
+
         handleIntent(getIntent());
         iconInfo = findViewById(R.id.icon_offline);
         startNetworkCheck();
         maybeShowNativeAd();
+
+        if (de.haainz.kennzeichenerkennung.ui.FirstStartDialogFragment.shouldShow(this)) {
+            de.haainz.kennzeichenerkennung.ui.FirstStartDialogFragment.markShown(this);
+            new de.haainz.kennzeichenerkennung.ui.FirstStartDialogFragment().show(getSupportFragmentManager(), "FirstStartDialog");
+        }
     }
 
     private void setNightMode() {
@@ -162,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         settingsButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_not);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
         });
     }
 
@@ -279,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void maybeShowNativeAd() {
-        boolean showAds = sharedPreferences.getBoolean("adSwitch", true); // ad_switch Status aus Settings
+        boolean showAds = sharedPreferences.getBoolean("adSwitch", false); // ad_switch Status aus Settings
         if (!showAds) return;
 
         NativeAdView adView = findViewById(R.id.native_ad_view);
@@ -305,5 +313,55 @@ public class MainActivity extends AppCompatActivity {
         adView.setMediaView(mediaView);
 
         adView.setNativeAd(nativeAd);
+    }
+
+    private void startNavigationTour() {
+        ImageButton donateBtn = findViewById(R.id.button_donate);
+        LinearLayout updownloadBtn = findViewById(R.id.button_layout);
+        ImageButton settingsBtn = findViewById(R.id.button_settings);
+
+        new TapTargetSequence(this)
+                .targets(
+                        TapTarget.forView(donateBtn, "Spenden", "Unterstütze mich gerne mit einer kleinen Spende via PayPal")
+                                .outerCircleColor(R.color.yellow)
+                                .transparentTarget(true)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.black)
+                                .descriptionTextColor(android.R.color.black)
+                                .targetRadius(35)
+                                .cancelable(false),
+
+                        TapTarget.forView(updownloadBtn, "Export & Import", "Exportiere und importiere Kennzeichen und ihre Infos, um sie z.B. auf ein anderes Gerät zu übertragen.")
+                                .outerCircleColor(R.color.red)
+                                .transparentTarget(true)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.black)
+                                .descriptionTextColor(android.R.color.black)
+                                .targetRadius(56)
+                                .cancelable(false),
+
+                        TapTarget.forView(settingsBtn, "Einstellungen", "Passe die App nach deinen Wünschen an.")
+                                .outerCircleColor(R.color.yellow)
+                                .transparentTarget(true)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.black)
+                                .descriptionTextColor(android.R.color.black)
+                                .targetRadius(35)
+                                .cancelable(false)
+                )
+                .listener(new TapTargetSequence.Listener() {
+                    @Override
+                    public void onSequenceFinish() {
+                    }
+
+                    @Override
+                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+                    }
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                    }
+                })
+                .start();
     }
 }

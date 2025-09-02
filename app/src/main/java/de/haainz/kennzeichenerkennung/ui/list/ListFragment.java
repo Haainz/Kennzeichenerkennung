@@ -4,10 +4,12 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
+import com.getkeepsafe.taptargetview.TapTargetView;
 
 import de.haainz.kennzeichenerkennung.AddCityFragment;
 import de.haainz.kennzeichenerkennung.InfosFragment;
@@ -42,6 +48,7 @@ public class ListFragment extends Fragment {
     public ArrayAdapter<Kennzeichen> adapter;
     private boolean selectionMode = false;
     private ArrayList<Kennzeichen> selectedKennzeichen = new ArrayList<>();
+    private static final String PREF_TOUR_LIST_SHOWN = "tour_list_shown";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -58,6 +65,14 @@ public class ListFragment extends Fragment {
 
         setupButtonColors();
         updateList();
+
+        SharedPreferences prefs = requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE);
+        boolean tourShown = prefs.getBoolean(PREF_TOUR_LIST_SHOWN, false);
+
+        if (!tourShown) {
+            binding.list.post(() -> showTour());
+            prefs.edit().putBoolean(PREF_TOUR_LIST_SHOWN, true).apply();
+        }
 
         binding.xBtn.setOnClickListener(v -> {
             exitSelectionMode();
@@ -339,5 +354,43 @@ public class ListFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void showTour() {
+        View listItem = binding.list.getChildAt(4).findViewById(R.id.kennzeichen);
+        new TapTargetSequence(requireActivity())
+                .targets(
+                        TapTarget.forView(binding.addBtn, "Kennzeichen hinzufügen", "Du kennst ein Kennzeichen, z.B. aus einem anderen Land. Dann füge es einfach selbst hinzu!")
+                                .outerCircleColor(R.color.yellow)
+                                .transparentTarget(true)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.black)
+                                .descriptionTextColor(android.R.color.black)
+                                .targetRadius(30)
+                                .cancelable(false),
+
+                        TapTarget.forView(listItem, "Details anzeigen", "Tippe ein Kennzeichen an, um mehr zu erfahren und halte es gedrückt um mehrere auszuwählen.")
+                                .outerCircleColor(R.color.red)
+                                .transparentTarget(true)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.black)
+                                .descriptionTextColor(android.R.color.black)
+                                .targetRadius(45)
+                                .cancelable(false)
+                )
+                .listener(new TapTargetSequence.Listener() {
+                    @Override
+                    public void onSequenceFinish() {
+                    }
+
+                    @Override
+                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+                    }
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                    }
+                })
+                .start();
     }
 }

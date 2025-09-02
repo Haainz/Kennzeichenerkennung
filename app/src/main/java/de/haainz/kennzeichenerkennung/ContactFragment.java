@@ -131,7 +131,7 @@ public class ContactFragment extends DialogFragment {
             try {
                 Message msg = new MimeMessage(session);
                 msg.setFrom(new InternetAddress(username));
-                msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse("aaron.wachtler@gmx.de"));
+                msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse("kennzeichenerkennung@gmail.com"));
                 msg.setSubject("Kennzeichenapp Kontaktaufnahme");
                 msg.setText("E-Mail: " + email + "\n\nName: " + name + "\n\nTags: " + tagsString + "\n\nNachricht: " + message);
 

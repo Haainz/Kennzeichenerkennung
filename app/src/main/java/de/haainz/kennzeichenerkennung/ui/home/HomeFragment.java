@@ -20,8 +20,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseArray;
@@ -42,6 +44,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
@@ -58,6 +61,9 @@ import de.haainz.kennzeichenerkennung.PicInfoDialogFragment;
 import de.haainz.kennzeichenerkennung.R;
 import de.haainz.kennzeichenerkennung.TourPopupDialog;
 import de.haainz.kennzeichenerkennung.databinding.FragmentHomeBinding;
+
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
@@ -84,6 +90,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -118,6 +125,7 @@ public class HomeFragment extends Fragment {
     private int loadingStep = 0;
     private int aistatus = 0;
     private ConstraintLayout mapconstlayout;
+    private TextView tourBtn;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -153,7 +161,7 @@ public class HomeFragment extends Fragment {
         ImageView saveBtn = binding.saveBtn;
         ImageView shareBtn = binding.shareBtn;
         ImageView picinfoBtn = binding.picinfoBtn;
-        TextView tourbtn = binding.tourbtn;
+        tourBtn = binding.tourbtn;
         mapconstlayout = binding.mapconstlayout;
         deleteText.setVisibility(View.GONE);
         deleteBtn.setVisibility(View.GONE);
@@ -170,9 +178,103 @@ public class HomeFragment extends Fragment {
             TourPopupDialog dialog = new TourPopupDialog(getContext());
             dialog.show();
         });
-        tourbtn.setOnClickListener(v -> {
-            TourPopupDialog dialog = new TourPopupDialog(getContext());
-            dialog.show();
+        tourBtn.setOnClickListener(v -> {
+            ImageButton offlineButton = requireActivity().findViewById(R.id.icon_offline);
+            kuerzelEingabe.setText("WOB");
+            buttongenerate.performClick();
+            // Warte sicherheitshalber, bis das Layout geladen ist
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
+
+                toolbar.post(() -> {
+                    CharSequence origDesc = toolbar.getNavigationContentDescription();
+                    boolean hadDesc = !TextUtils.isEmpty(origDesc);
+                    CharSequence navDesc = hadDesc ? origDesc : "navigationIcon";
+                    toolbar.setNavigationContentDescription(navDesc);
+
+                    ArrayList<View> potential = new ArrayList<>();
+                    toolbar.findViewsWithText(potential, navDesc, View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
+                    View menuButton = potential.size() > 0 ? potential.get(0) : null;
+
+                    if (!hadDesc) {
+                        toolbar.setNavigationContentDescription(null);
+                    }
+
+                    // Prüfe, ob alle Views existieren
+                    if (searchPic != null && kuerzelEingabe != null && binding.likeBtn != null && menuButton != null && offlineButton != null) {
+
+                        TapTarget target1 = TapTarget.forView(searchPic, "Bild auswählen", "Hier kannst du ein Bild deines Kennzeichens auswählen.")
+                                .outerCircleColor(R.color.yellow)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.black)
+                                .descriptionTextColor(android.R.color.black)
+                                .transparentTarget(true)
+                                .targetRadius(100)
+                                .cancelable(false);
+
+                        TapTarget target2 = TapTarget.forView(binding.imagekennzeichen, "Kürzel eingeben", "Du kannst ein Ortskürzel auch direkt eintippen.")
+                                .outerCircleColor(R.color.red)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.black)
+                                .descriptionTextColor(android.R.color.black)
+                                .transparentTarget(true)
+                                .targetRadius(100)
+                                .cancelable(false);
+
+                        TapTarget target3 = TapTarget.forView(binding.likeBtn, "Kennzeichen liken", "Klicke hier, um dieses Kennzeichen zu speichern.")
+                                .outerCircleColor(R.color.blue_200)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.black)
+                                .descriptionTextColor(android.R.color.black)
+                                .transparentTarget(true)
+                                .targetRadius(50)
+                                .cancelable(false);
+
+                        TapTarget target4 = TapTarget.forView(offlineButton, "Offline-Modus", "Dieser Button zeigt an, dass du im Offlinemodus bist. Klicke auf ihn, um zu erfahren warum du im Offlinemodus bist.")
+                                .outerCircleColor(R.color.yellow)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.black)
+                                .descriptionTextColor(android.R.color.black)
+                                .transparentTarget(true)
+                                .targetRadius(50)
+                                .cancelable(false);
+
+                        TapTarget target5 = TapTarget.forView(menuButton, "Menü öffnen", "Hier findest du weitere Seiten, Einstellungen und Funktionen.")
+                                .outerCircleColor(R.color.red)
+                                .targetCircleColor(android.R.color.white)
+                                .titleTextColor(android.R.color.black)
+                                .descriptionTextColor(android.R.color.black)
+                                .transparentTarget(true)
+                                .targetRadius(50)
+                                .cancelable(false);
+
+                        new TapTargetSequence(requireActivity())
+                                .targets(target1, target2, target3, target4, target5)
+                                .listener(new TapTargetSequence.Listener() {
+                                    @Override
+                                    public void onSequenceFinish() {}
+
+                                    @Override
+                                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+                                        if (isNetworkAvailable()&&!isOfflineMode()) {
+                                            if (lastTarget == target3) {
+                                                offlineButton.setVisibility(VISIBLE);
+                                            } else {
+                                                offlineButton.setVisibility(GONE);
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onSequenceCanceled(TapTarget lastTarget) {}
+                                })
+                                .start();
+
+                    } else {
+                        Toast.makeText(getContext(), "Ein oder mehrere Tour-Elemente sind nicht verfügbar", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }, 250); // Delay, um sicherzugehen, dass alle Views sichtbar sind
         });
 
         kuerzelEingabe.addTextChangedListener(new TextWatcher() {
@@ -481,6 +583,7 @@ public class HomeFragment extends Fragment {
         } else {
             textViewAusgabe2.setVisibility(View.GONE);
         }
+
         return root;
     }
 
@@ -762,5 +865,11 @@ public class HomeFragment extends Fragment {
     private boolean isOfflineMode() {
         SharedPreferences prefs = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         return prefs.getBoolean("offlineSwitch", false);
+    }
+
+    public void performTourClick() {
+        if (tourBtn != null) {
+            tourBtn.performClick();
+        }
     }
 }
