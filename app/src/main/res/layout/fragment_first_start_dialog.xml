@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/title"
-            android:text="Durch die Nutzung der App stimmst du ausdrücklich den rechtlichen Bedingungen und Datenschutzhinweisen zu."
+            android:text="Durch die Nutzung der App stimmst du ausdrücklich den rechtlichen Bedingungen und Datenschutzhinweisen zu. Außerdem bestätigst du, mindestens 16 Jahre alt zu sein."
             android:textColor="?attr/colorTextNormal"
             android:textSize="15dp"
             android:textStyle="normal" />

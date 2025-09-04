@@ -680,6 +680,8 @@ public class HomeFragment extends Fragment {
                 String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location + "_", "UTF-8") + "&format=json&addressdetails=1";
                 HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
                 connection.setRequestMethod("GET");
+                connection.setRequestProperty("User-Agent", "de.haainz.kennzeichenerkennung/1.0 (mailto:kennzeichenerkennung@gmail.com)");
+                connection.setRequestProperty("Accept-Language", "de");
                 connection.connect();
 
                 int responseCode = connection.getResponseCode();
