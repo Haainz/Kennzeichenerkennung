@@ -10,15 +10,17 @@ android {
         applicationId "de.haainz.kennzeichenerkennung"
         minSdk 26
         targetSdk 35
-        versionCode 6002
-        versionName "6.0.0b"
+        versionCode 6003
+        versionName "6.0.0c"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            //2 darunter zum Debuggen deaktivieren!
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
