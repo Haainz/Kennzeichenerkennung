@@ -4,9 +4,6 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -59,7 +56,6 @@ import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
 import de.haainz.kennzeichenerkennung.MapFragment;
 import de.haainz.kennzeichenerkennung.PicInfoDialogFragment;
 import de.haainz.kennzeichenerkennung.R;
-import de.haainz.kennzeichenerkennung.TourPopupDialog;
 import de.haainz.kennzeichenerkennung.databinding.FragmentHomeBinding;
 
 import com.getkeepsafe.taptargetview.TapTarget;
@@ -70,7 +66,6 @@ import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -82,28 +77,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import de.haainz.kennzeichenerkennung.ui.AIManager;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class HomeFragment extends Fragment {
 
@@ -175,8 +158,7 @@ public class HomeFragment extends Fragment {
 
         TextView infobtn = binding.textHome;
         infobtn.setOnClickListener(v -> {
-            TourPopupDialog dialog = new TourPopupDialog(getContext());
-            dialog.show();
+            tourBtn.performClick();
         });
         tourBtn.setOnClickListener(v -> {
             ImageButton offlineButton = requireActivity().findViewById(R.id.icon_offline);
