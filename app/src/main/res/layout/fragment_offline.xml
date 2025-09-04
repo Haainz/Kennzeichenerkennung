@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="Oh, es sieht so aus\nals wärst du offline. Bitte aktiviere WLAN um Karten angezeigt zu bekommen, Updates zu empfangen und KI-generierte Inhalte angezeigt zu bekommen."
+            android:text="Oh, es sieht so aus\nals wärst du offline. Bitte aktiviere WLAN um Karten angezeigt zu bekommen und Texte KI-generieren zu können."
             android:textColor="?attr/colorTextNormal"
             android:textSize="16dp" />
     </LinearLayout>

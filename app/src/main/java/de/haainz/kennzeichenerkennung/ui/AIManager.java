@@ -155,16 +155,14 @@ public class AIManager {
     private void showRewardedAd(Runnable onRewardEarned) {
         Activity activity = (Activity) context;
 
-        RequestConfiguration configuration = new RequestConfiguration.Builder()
-                .setTestDeviceIds(Arrays.asList("03037079DE1BA04FDA9765080FADF22B"))
-                .build();
+        RequestConfiguration configuration = new RequestConfiguration.Builder().build();
         MobileAds.setRequestConfiguration(configuration);
 
 
         MobileAds.initialize(context);
 
         AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(context, context.getString(R.string.admob_rewarded_ad_unit_id_test), adRequest, new RewardedAdLoadCallback() {
+        RewardedAd.load(context, context.getString(R.string.admob_rewarded_ad_unit_id), adRequest, new RewardedAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
                 rewardedAd.show(activity, rewardItem -> {

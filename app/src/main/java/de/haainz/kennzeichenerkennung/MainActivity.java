@@ -70,14 +70,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
 
-        // 🔧 Optional: Debug-Einstellungen aktivieren (nur für Testgeräte!)
-        ConsentDebugSettings debugSettings = new ConsentDebugSettings.Builder(this)
-                .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA) // EU simulieren
-                //.addTestDeviceHashedId("TEST_DEVICE_ID") // Optional
-                .build();
-
         ConsentRequestParameters params = new ConsentRequestParameters.Builder()
-                .setConsentDebugSettings(debugSettings)
                 .setTagForUnderAgeOfConsent(false)
                 .build();
 
@@ -291,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
         if (!showAds) return;
 
         NativeAdView adView = findViewById(R.id.native_ad_view);
-        AdLoader adLoader = new AdLoader.Builder(this, this.getString(R.string.admob_native_ad_unit_id_test)) // Test-ID
+        AdLoader adLoader = new AdLoader.Builder(this, this.getString(R.string.admob_native_ad_unit_id)) // Test-ID
                 .forNativeAd(nativeAd -> {
                     // Ad erfolgreich geladen → Layout befüllen
                     populateNativeAdView(nativeAd, adView);

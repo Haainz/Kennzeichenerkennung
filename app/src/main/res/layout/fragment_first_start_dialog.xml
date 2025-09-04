@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/title"
-            android:text="Durch die Nutzung der App stimmst du den rechtlichen Hinweisen zu."
+            android:text="Durch die Nutzung der App stimmst du ausdrücklich den rechtlichen Bedingungen und Datenschutzhinweisen zu."
             android:textColor="?attr/colorTextNormal"
             android:textSize="15dp"
             android:textStyle="normal" />
@@ -55,7 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_view"
-            android:text="Rechtliche Bedingungen"
+            android:text="Rechtliche Bedingungen und Datenschutzhinweise"
             android:textColor="@color/yellow"
             android:textSize="15dp"
             android:textStyle="bold" />
