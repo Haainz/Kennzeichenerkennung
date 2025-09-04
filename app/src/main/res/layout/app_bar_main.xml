@@ -12,6 +12,11 @@
         android:layout_width="match_parent"
         android:theme="@style/Theme.Kennzeichenerkennung.AppBarOverlay">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/blue_700"/>
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width = "match_parent"

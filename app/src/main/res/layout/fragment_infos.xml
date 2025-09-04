@@ -225,7 +225,8 @@
             android:id="@+id/fussnoten"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/aitext">
+            android:layout_below="@id/aitext"
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/fussnotentitel"
@@ -245,7 +246,6 @@
                 android:ellipsize="end"
                 android:focusable="true"
                 android:maxLines="3"
-                android:singleLine="false"
                 android:text="---"
                 android:textColor="?attr/colorTextNormal"
                 android:textSize="15dp" />

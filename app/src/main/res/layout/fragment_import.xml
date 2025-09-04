@@ -70,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="Erfahre mehr über das importieren und exportieren von Kennzeichendaten hier."
+            android:text="Weitere Informationen zum Importieren und Exportieren folgen zeitnah."
             android:textStyle="bold"
             android:textColor="@color/yellow"
             android:textSize="14dp"/>
