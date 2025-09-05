@@ -150,4 +150,10 @@
             android:text="🗣️ Kontakt"
             android:textColor="@color/white" />
     </LinearLayout>
+    <View
+        android:id="@+id/navigation_bar_spacer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent" />
 </RelativeLayout>

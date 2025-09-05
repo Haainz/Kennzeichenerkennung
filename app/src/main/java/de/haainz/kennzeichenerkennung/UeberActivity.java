@@ -5,11 +5,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.DialogFragment;
 
 import org.json.JSONException;
@@ -28,7 +32,18 @@ public class UeberActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ueber); // Setze das Layout
+        setContentView(R.layout.activity_ueber);
+
+        View spacer = findViewById(R.id.navigation_bar_spacer);
+        if (spacer != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(spacer, (v, insets) -> {
+                Insets navInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                ViewGroup.LayoutParams params = v.getLayoutParams();
+                params.height = navInsets.bottom;
+                v.setLayoutParams(params);
+                return insets;
+            });
+        }
 
         TextView linkText = findViewById(R.id.gittext);
         linkText.setOnClickListener(v -> {

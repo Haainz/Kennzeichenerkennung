@@ -11,12 +11,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -64,6 +68,32 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        View spacer = findViewById(R.id.navigation_bar_spacer);
+        if (spacer != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(spacer, (v, insets) -> {
+                Insets navInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+                ViewGroup.LayoutParams params = v.getLayoutParams();
+                params.height = navInsets.bottom;
+                v.setLayoutParams(params);
+                return insets;
+            });
+        }
+
+        NavigationView navView = findViewById(R.id.nav_view); // Dein NavigationView
+
+        View drawerSpacer = findViewById(R.id.drawer_navigation_bar_spacer);
+        if (navView != null && drawerSpacer != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(navView, (v, insets) -> {
+                Insets navInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+                ViewGroup.LayoutParams params = drawerSpacer.getLayoutParams();
+                params.height = navInsets.bottom;
+                drawerSpacer.setLayoutParams(params);
+
+                return insets;
+            });
+        }
 
         setSupportActionBar(binding.appBarMain.toolbar);
         drawerLayout = binding.drawerLayout;

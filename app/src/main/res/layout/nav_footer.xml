@@ -11,14 +11,14 @@
     <!-- 📢 Native Ad oben -->
     <com.google.android.gms.ads.nativead.NativeAdView
         android:id="@+id/native_ad_view"
-        android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
         android:background="#eeeeee"
         android:orientation="vertical"
         android:layout_marginVertical="8dp"
-        android:layout_marginBottom="20dp">
+        android:layout_marginBottom="30dp">
 
         <!-- Ad-Inhalte -->
         <TextView
@@ -88,4 +88,9 @@
             android:src="@drawable/icon_settings2"
             app:tint="?attr/colorTextNormal" />
     </LinearLayout>
+    <View
+        android:id="@+id/drawer_navigation_bar_spacer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"/>
 </LinearLayout>
