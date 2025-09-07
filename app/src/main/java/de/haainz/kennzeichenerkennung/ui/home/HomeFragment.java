@@ -426,8 +426,7 @@ public class HomeFragment extends Fragment {
             if (!kuerzelEingabe.getText().toString().isEmpty()) {
                 deleteText.setVisibility(View.VISIBLE);
             }
-            //if (String.valueOf(kuerzelEingabe.getText()).isEmpty()) {
-            if (!searchPic.getDrawable().equals(R.drawable.camera_pic)) {
+            if (String.valueOf(kuerzelEingabe.getText()).isEmpty()) {
                 recognizeTextInImage();
             } else {
                 recognizeCity(String.valueOf(kuerzelEingabe.getText()));
