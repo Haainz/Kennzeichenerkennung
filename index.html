@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>📄 Datenschutz und Nutzungsbedingungen</h1>
-<p><strong>Stand:</strong> 05. September 2025</p>
+<p><strong>Stand:</strong> 07. September 2025</p>
 
 <h2>1. Allgemeines</h2>
 <p>
@@ -53,9 +53,10 @@
   <strong>spätestens nach 6 Monaten gelöscht</strong>, sofern keine gesetzlichen Aufbewahrungspflichten bestehen.
 </p>
 <p>
-  Die App verwendet den ImagePicker (von Dhaval2404) sowie Google Play Services Vision zur Bilderkennung. Diese Funktionen arbeiten vollständig offline.
-  Bilder werden ausschließlich lokal auf dem Gerät verarbeitet und verlassen dieses nicht. Ein Zugriff auf die Fotos erfolgt nur temporär und nur während der aktiven Sitzung,
-  in der das Bild ausgewählt wurde. Es findet keine dauerhafte Speicherung oder Übertragung an Server statt.
+  Die App verwendet zur Bildauswahl das native Android-System (Kamera- und Galerie-Zugriff per Intent) sowie die Open-Source-Bibliothek <strong>uCrop</strong> zum optionalen Bildzuschnitt.
+  Die Bildverarbeitung erfolgt vollständig <strong>lokal auf dem Gerät</strong>. Bilder werden <strong>nicht dauerhaft gespeichert</strong> und <strong>nicht an Server oder Dritte übermittelt</strong>.
+  Der Zugriff auf die Kamera oder Galerie erfolgt nur temporär im Rahmen der aktiven Nutzersitzung, in der das Bild manuell ausgewählt oder aufgenommen wurde.
+  Eine dauerhafte Speicherung oder Hintergrundübertragung von Bilddaten findet <strong>nicht</strong> statt.
 </p>
 
 <h2>4. Rechtsgrundlage der Verarbeitung</h2>
@@ -91,7 +92,7 @@
   <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank">deren Datenschutzrichtlinien</a>.
 </p>
 <p>
-  Weitere Informationen zur Datenverarbeitung durch OpenStreetMap finden Sie unter 
+  Weitere Informationen zur Datenverarbeitung durch OpenStreetMap finden Sie unter
   <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener noreferrer">
     https://wiki.osmfoundation.org/wiki/Privacy_Policy
   </a>.
@@ -122,13 +123,13 @@
   Die IP-Adresse wird laut OpenRouter nicht zu Tracking-Zwecken verwendet.
 </p>
 <p>
-  OpenRouter agiert als <strong>eigenständiger Verantwortlicher</strong> im Sinne der DSGVO. Es gelten die 
+  OpenRouter agiert als <strong>eigenständiger Verantwortlicher</strong> im Sinne der DSGVO. Es gelten die
   <a href="https://openrouter.ai/privacy" target="_blank">Datenschutzrichtlinien von OpenRouter</a>.
   OpenRouter kann zur Beantwortung Ihrer Anfrage weitere Anbieter (z.B. OpenAI, Anthropic, Mistral, DeepSeek) einbinden.
 </p>
 <p>
-  Die Weiterleitung der von Ihnen eingegebenen Inhalte an den KI-Dienst OpenRouter erfolgt durch unsere App auf Grundlage Ihrer ausdrücklichen Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). 
-  Die anschließende Verarbeitung durch OpenRouter erfolgt in eigener datenschutzrechtlicher Verantwortlichkeit. 
+  Die Weiterleitung der von Ihnen eingegebenen Inhalte an den KI-Dienst OpenRouter erfolgt durch unsere App auf Grundlage Ihrer ausdrücklichen Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).
+  Die anschließende Verarbeitung durch OpenRouter erfolgt in eigener datenschutzrechtlicher Verantwortlichkeit.
   Wir selbst speichern keine Inhalte der KI-Anfragen.
 </p>
 <p>
@@ -173,7 +174,7 @@
   <strong>Bitte beachten Sie:</strong> Bei einer Datenübermittlung in die USA besteht derzeit laut EuGH (Schrems II) kein mit der EU vergleichbares Datenschutzniveau. US-Behörden können unter Umständen Zugriff auf personenbezogene Daten erhalten, ohne dass Betroffene hiervon erfahren oder Rechtsmittel dagegen einlegen können. Wir weisen ausdrücklich auf dieses Risiko hin.
 </p>
 <p>
-  Die Speicherdauer der bei Drittanbietern verarbeiteten personenbezogenen Daten richtet sich nach den jeweiligen Datenschutzrichtlinien dieser Anbieter. 
+  Die Speicherdauer der bei Drittanbietern verarbeiteten personenbezogenen Daten richtet sich nach den jeweiligen Datenschutzrichtlinien dieser Anbieter.
   Bitte informieren Sie sich dort über Einzelheiten zur Datenverarbeitung und Löschung (siehe Abschnitt 5).
 </p>
 
@@ -198,8 +199,8 @@
 
 <h3>6.1 Nutzung durch Minderjährige</h3>
 <p>
-  Diese App richtet sich ausschließlich an Personen ab 16 Jahren. 
-  Eine Nutzung durch Kinder unter 16 Jahren ist nur mit ausdrücklicher Zustimmung der Erziehungsberechtigten zulässig. 
+  Diese App richtet sich ausschließlich an Personen ab 16 Jahren.
+  Eine Nutzung durch Kinder unter 16 Jahren ist nur mit ausdrücklicher Zustimmung der Erziehungsberechtigten zulässig.
   Wir fordern keine Altersangaben ab und speichern keine solchen Daten.
 </p>
 
@@ -215,7 +216,7 @@
 </p>
 <ul>
   <li>Speicherung von Einstellungen wie Dark-/Light-Mode oder Aussehen in <strong>SharedPreferences oder csv-Dateien</strong>, die exportiert werden können</li>
-  <li>Verwendung von Bildern über den <strong>ImagePicker</strong> – Bilder verbleiben auf dem Gerät</li>
+  <li>Verwendung von Bildern über Kamera- oder Galerie-Intents sowie Verarbeitung mit <strong>uCrop</strong> – Bilder verbleiben lokal auf dem Gerät</li>
   <li>Bildverarbeitung mit <strong>Google Play Services Vision</strong> erfolgt ausschließlich lokal</li>
 </ul>
 <p>
@@ -227,8 +228,8 @@
 </p>
 <h3>7.4 Datenschutz durch Technikgestaltung</h3>
 <p>
-  Die App wurde unter Beachtung des Grundsatzes „Datenschutz durch Technikgestaltung“ (Privacy by Design) (Art. 25 DSGVO) entwickelt. 
-  Personenbezogene Daten werden nur verarbeitet, wenn es für die Funktionalität der App unbedingt erforderlich ist. 
+  Die App wurde unter Beachtung des Grundsatzes „Datenschutz durch Technikgestaltung“ (Privacy by Design) (Art. 25 DSGVO) entwickelt.
+  Personenbezogene Daten werden nur verarbeitet, wenn es für die Funktionalität der App unbedingt erforderlich ist.
   Viele Funktionen arbeiten vollständig lokal und ohne jegliche Übertragung an Dritte.
 </p>
 
@@ -244,7 +245,7 @@
     Webseitennachweis: <a href="https://www.vecteezy.com/free-vector/photography">Photography Vectors by Vecteezy</a>
   </li>
   <li>Schriftart Kraftfahrzeugkennzeichen<br>
-    Quelle: <a href="https://www.dafont.com/de/kraftfahrzeugkennzeichen.font" target="_blank">https://www.dafont.com/de/kraftfahrzeugkennzeichen.font</a>
+    Quelle: <a href="https://www.dafont.com/de/kraftfahrzeugkennzeichen.font" target="_blank">dafont.com Kraftfahrzeugkennzeichen</a>
   <li>Alle weiteren in der App verwendeten grafischen Elemente stehen unter der <strong>Apache License, Version 2.0</strong>.</li>
   <li>Die Darstellungen der Kfz-Kennzeichen wurden hingegen individuell gestaltet und sind <strong>urheberrechtlich geschützt</strong>.</li>
 </ul>
@@ -259,7 +260,7 @@
   <li>Android Lifecycle-Komponenten wie LiveData und ViewModel</li>
   <li>Navigation-Komponenten für eine fragmentbasierte Navigation</li>
   <li>JUnit und Espresso für Unit- und UI-Tests</li>
-  <li>ImagePicker (von Dhaval2404) und Glide für Bildverarbeitung</li>
+  <li>Glide für Bildanzeige sowie uCrop (Yalantis) für optionalen Bildzuschnitt</li>
   <li>OpenCSV und Apache Commons CSV für die Arbeit mit CSV-Dateien</li>
   <li>Google Play Services Vision für einfache Bilderkennung</li>
   <li>OSMDroid zur Kartendarstellung auf OpenStreetMap-Basis</li>
@@ -291,12 +292,7 @@
 <h2>12. Kontakt</h2>
 <p>
   Bei Fragen, Anregungen oder Problemen können Sie mich jederzeit über das <strong>Kontaktformular in der App</strong>
-  erreichen oder direkt per E-Mail an: <a href="mailto:kennzeichenerkennung@gmail.com">kennzeichenerkennung@gmail.com</a>
+  erreichen oder direkt per E-Mail an: <a href="mailto:kennzeichenerkennung@gmail.com">kennzeichenerkennung@gmail.com</a><br><br><br><br>
 </p>
 </body>
 </html>
-
-
-
-
-
