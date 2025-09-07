@@ -291,7 +291,7 @@
                 android:src="@drawable/icon_share"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/blue_200" />
+                app:tint="?attr/blueText" />
 
             <ImageView
                 android:id="@+id/edit_btn"
@@ -302,7 +302,7 @@
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/share_btn"
-                app:tint="@color/yellow" />
+                app:tint="?attr/blueText" />
 
             <ImageView
                 android:id="@+id/delete_btn"
@@ -313,7 +313,7 @@
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/edit_btn"
-                app:tint="@color/red" />
+                app:tint="?attr/blueText" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
 </RelativeLayout>

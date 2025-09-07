@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowInsetsController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,10 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.DialogFragment;
 
@@ -58,6 +61,9 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        Window window = getWindow();
+        WindowCompat.setDecorFitsSystemWindows(window, false);
+
         View spacer = findViewById(R.id.navigation_bar_spacer);
         if (spacer != null) {
             ViewCompat.setOnApplyWindowInsetsListener(spacer, (v, insets) -> {
@@ -65,6 +71,23 @@ public class SettingsActivity extends AppCompatActivity {
                 ViewGroup.LayoutParams params = v.getLayoutParams();
                 params.height = navInsets.bottom;
                 v.setLayoutParams(params);
+                return insets;
+            });
+        }
+
+        View statusbarView = findViewById(R.id.statusbar);
+        if (statusbarView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(statusbarView, (v, insets) -> {
+                Insets sysInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+                // Höhe manuell setzen
+                ViewGroup.LayoutParams params = v.getLayoutParams();
+                params.height = sysInsets.top;
+                v.setLayoutParams(params);
+
+                // Hintergrundfarbe setzen
+                v.setBackgroundColor(ContextCompat.getColor(this, R.color.blue_700));
+
                 return insets;
             });
         }
@@ -93,7 +116,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         Button updateInfo = findViewById(R.id.button_update);
         updateInfo.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Haainz/Kennzeichenerkennung/releases/"));
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=de.haainz.kennzeichenerkennung"));
             startActivity(browserIntent);
         });
 
@@ -180,6 +203,7 @@ public class SettingsActivity extends AppCompatActivity {
             });
             apitext.setOnClickListener(v -> showDialogFragment(new ApikeyFragment(), "ApikeyFragment"));
         }
+        setStatusBarAppearance();
     }
 
     private void loadAIModels() {
@@ -320,5 +344,28 @@ public class SettingsActivity extends AppCompatActivity {
                     Log.e("Consent", "Fehler beim Aktualisieren der ConsentInfo: " + formError.getMessage());
                 }
         );
+    }
+
+    private void setStatusBarAppearance() {
+        // Farbe der Statusleiste setzen
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.blue_700));
+
+        // Textfarbe der Statusleiste anpassen (Light oder Dark Content)
+        View decor = getWindow().getDecorView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().getInsetsController().setSystemBarsAppearance(
+                    AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO ?
+                            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS : 0,
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            );
+        } else {
+            int flags = decor.getSystemUiVisibility();
+            if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO) {
+                flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            } else {
+                flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            }
+            decor.setSystemUiVisibility(flags);
+        }
     }
 }

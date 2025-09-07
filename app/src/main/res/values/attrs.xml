@@ -6,6 +6,7 @@
         <attr name="appWidgetRadius" format="dimension" />
     </declare-styleable>
     <attr name="colorTextNormal" format="color" />
+    <attr name="blueText" format="color" />
     <attr name="dialog_background" format="color" />
     <attr name="greyslider" format="color" />
     <attr name="backcolor" format="color" />

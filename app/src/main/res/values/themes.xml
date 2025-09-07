@@ -13,6 +13,7 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- New color attribute -->
         <item name="colorTextNormal">@color/black</item>
+        <item name="blueText">@color/blue_700</item>
         <item name="dialog_background">@color/white</item>
         <item name="greyslider">#DEDEDE</item>
         <item name="backcolor">#FDFDFD</item>
@@ -72,6 +73,14 @@
         <item name="backcolor">#FDFDFD</item>
         <item name="android:textColor">?attr/colorTextNormal</item>
         <item name="android:textColorPrimary">?attr/colorTextNormal</item>
+    </style>
+    <!-- res/values/styles.xml -->
+    <style name="Theme.UCrop.StatusBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor">?attr/dialog_background</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
     </style>
 
 </resources>

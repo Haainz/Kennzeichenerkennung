@@ -47,6 +47,11 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Kennzeichenerkennung.NoActionBar" />
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:theme="@style/Theme.UCrop.StatusBar"
+            android:exported="false"
+            tools:replace="android:theme"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

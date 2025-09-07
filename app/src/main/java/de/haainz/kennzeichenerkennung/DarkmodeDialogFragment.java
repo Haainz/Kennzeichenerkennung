@@ -13,9 +13,6 @@ import androidx.fragment.app.DialogFragment;
 
 public class DarkmodeDialogFragment extends DialogFragment {
 
-    private static final String PREFS_NAME = "settings";
-    private static final String THEME_KEY = "theme_mode";
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

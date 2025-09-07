@@ -13,6 +13,7 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="colorTextNormal">@color/white</item>
+        <item name="blueText">@color/blue_200</item>
         <item name="dialog_background">@color/dialog_background</item>
         <item name="greyslider">@color/darkgreyslider</item>
         <item name="backcolor">#303030</item>
@@ -46,4 +47,13 @@
         <item name="greyslider">@color/darkgreyslider</item>
         <item name="backcolor">#303030</item>
     </style>
+    <!-- res/values/styles.xml -->
+    <style name="Theme.UCrop.TransparentStatusBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
 </resources>

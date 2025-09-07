@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:text="* Pflichtfeld"
             android:textStyle="italic|bold"
-            android:textColor="@color/red"
+            android:textColor="@color/yellow"
             android:textSize="14sp"/>
 
         <EditText

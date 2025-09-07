@@ -54,13 +54,13 @@
             android:layout_height="wrap_content"
             android:text="ACHTUNG!\nDu wirst den API-Key nicht mehr einsehen können!\nWenn der Speicherinhalt der App gelöscht wird oder die App deinstalliert wird, so geht der Schlüssel auch verloren! Speichere ihn dir daher unbedingt sicher ab!"
             android:textStyle="bold"
-            android:textColor="@color/red"
+            android:textColor="?attr/blueText"
             android:textSize="13dp"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Klicke um mehr zu erfahren"
+            android:text="Klicke hier um mehr zu erfahren"
             android:textStyle="italic|bold"
             android:layout_marginTop="5dp"
             android:textColor="@color/yellow"

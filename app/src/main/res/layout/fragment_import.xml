@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:text="ACHTUNG: Die Datei muss alle Anforderungen erfüllen."
-            android:textColor="@color/red"
+            android:textColor="?attr/blueText"
             android:textStyle="bold"
             android:textSize="14dp"/>
 

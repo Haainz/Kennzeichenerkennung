@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>📄 Datenschutz und Nutzungsbedingungen</h1>
-<p><strong>Stand:</strong> 05. September 2025</p>
+<p><strong>Stand:</strong> 07. September 2025</p>
 
 <h2>1. Allgemeines</h2>
 <p>
@@ -53,9 +53,10 @@
   <strong>spätestens nach 6 Monaten gelöscht</strong>, sofern keine gesetzlichen Aufbewahrungspflichten bestehen.
 </p>
 <p>
-  Die App verwendet den ImagePicker (von Dhaval2404) sowie Google Play Services Vision zur Bilderkennung. Diese Funktionen arbeiten vollständig offline.
-  Bilder werden ausschließlich lokal auf dem Gerät verarbeitet und verlassen dieses nicht. Ein Zugriff auf die Fotos erfolgt nur temporär und nur während der aktiven Sitzung,
-  in der das Bild ausgewählt wurde. Es findet keine dauerhafte Speicherung oder Übertragung an Server statt.
+  Die App verwendet zur Bildauswahl das native Android-System (Kamera- und Galerie-Zugriff per Intent) sowie die Open-Source-Bibliothek <strong>uCrop</strong> zum optionalen Bildzuschnitt.
+  Die Bildverarbeitung erfolgt vollständig <strong>lokal auf dem Gerät</strong>. Bilder werden <strong>nicht dauerhaft gespeichert</strong> und <strong>nicht an Server oder Dritte übermittelt</strong>.
+  Der Zugriff auf die Kamera oder Galerie erfolgt nur temporär im Rahmen der aktiven Nutzersitzung, in der das Bild manuell ausgewählt oder aufgenommen wurde.
+  Eine dauerhafte Speicherung oder Hintergrundübertragung von Bilddaten findet <strong>nicht</strong> statt.
 </p>
 
 <h2>4. Rechtsgrundlage der Verarbeitung</h2>
@@ -215,7 +216,7 @@
 </p>
 <ul>
   <li>Speicherung von Einstellungen wie Dark-/Light-Mode oder Aussehen in <strong>SharedPreferences oder csv-Dateien</strong>, die exportiert werden können</li>
-  <li>Verwendung von Bildern über den <strong>ImagePicker</strong> – Bilder verbleiben auf dem Gerät</li>
+  <li>Verwendung von Bildern über Kamera- oder Galerie-Intents sowie Verarbeitung mit <strong>uCrop</strong> – Bilder verbleiben lokal auf dem Gerät</li>
   <li>Bildverarbeitung mit <strong>Google Play Services Vision</strong> erfolgt ausschließlich lokal</li>
 </ul>
 <p>
@@ -259,7 +260,7 @@
   <li>Android Lifecycle-Komponenten wie LiveData und ViewModel</li>
   <li>Navigation-Komponenten für eine fragmentbasierte Navigation</li>
   <li>JUnit und Espresso für Unit- und UI-Tests</li>
-  <li>ImagePicker (von Dhaval2404) und Glide für Bildverarbeitung</li>
+  <li>Glide für Bildanzeige sowie uCrop (Yalantis) für optionalen Bildzuschnitt</li>
   <li>OpenCSV und Apache Commons CSV für die Arbeit mit CSV-Dateien</li>
   <li>Google Play Services Vision für einfache Bilderkennung</li>
   <li>OSMDroid zur Kartendarstellung auf OpenStreetMap-Basis</li>

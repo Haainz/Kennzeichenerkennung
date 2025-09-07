@@ -10,8 +10,8 @@ android {
         applicationId "de.haainz.kennzeichenerkennung"
         minSdk 26
         targetSdk 35
-        versionCode 6006
-        versionName "6.0.0f"
+        versionCode 6011
+        versionName "6.0.1a"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -62,4 +62,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:24.5.0'
     implementation 'com.google.android.ump:user-messaging-platform:2.1.0'
     implementation 'com.getkeepsafe.taptargetview:taptargetview:1.15.0'
+    implementation 'com.github.yalantis:ucrop:2.2.8'
 }

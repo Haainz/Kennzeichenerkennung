@@ -1,14 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
     tools:context=".SettingsActivity">
 
     <View
         android:id="@+id/statusbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="0dp"
         android:background="@color/blue_700" />
 
     <RelativeLayout
@@ -59,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Aussehen:"
-            android:textColor="@color/red"
+            android:textColor="?attr/blueText"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -88,7 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="35dp"
             android:text="Sonstiges:"
-            android:textColor="@color/red"
+            android:textColor="?attr/blueText"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -198,6 +200,7 @@
             android:textColor="@color/white"
             android:textSize="15sp" />
     </RelativeLayout>
+
     <View
         android:id="@+id/navigation_bar_spacer"
         android:layout_width="match_parent"

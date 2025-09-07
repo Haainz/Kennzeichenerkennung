@@ -4,6 +4,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,6 +19,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
@@ -64,6 +66,10 @@ import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
+import com.yalantis.ucrop.UCrop;
+import com.yalantis.ucrop.UCropActivity;
+import com.yalantis.ucrop.UCropFragment;
+import com.yalantis.ucrop.view.UCropView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -92,7 +98,6 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private Kennzeichen_KI kennzeichenKI;
-    private ActivityResultLauncher<Intent> imagePickLauncher;
     private Uri selectedImageUri;
     private ImageView searchPic;
     private Button buttongenerate;
@@ -109,17 +114,46 @@ public class HomeFragment extends Fragment {
     private int aistatus = 0;
     private ConstraintLayout mapconstlayout;
     private TextView tourBtn;
+    private Uri cameraImageUri;
+    private ActivityResultLauncher<Intent> pickImageLauncher;
+    private ActivityResultLauncher<Intent> cropImageLauncher;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        imagePickLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+        pickImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent data = result.getData();
-                        if (data != null && data.getData() != null)
-                            selectedImageUri = data.getData();
-                        Glide.with(getContext()).load(selectedImageUri).apply(RequestOptions.circleCropTransform()).into(searchPic);
+
+                        Uri selectedUri = null;
+
+                        if (data != null && data.getData() != null) {
+                            // Galerie-Auswahl
+                            selectedUri = data.getData();
+                        } else if (cameraImageUri != null) {
+                            // Kameraaufnahme
+                            selectedUri = cameraImageUri;
+                        }
+
+                        if (selectedUri != null) {
+                            Uri destinationUri = Uri.fromFile(
+                                    new File(requireContext().getCacheDir(), "cropped_" + System.currentTimeMillis() + ".jpg")
+                            );
+
+                            UCrop.Options options = new UCrop.Options();
+                            options.setCompressionQuality(90);
+                            options.setFreeStyleCropEnabled(true);
+                            options.setHideBottomControls(false);
+                            options.setToolbarTitle("Bild zuschneiden");
+
+                            UCrop.of(selectedUri, destinationUri)
+                                    .withOptions(options)
+                                    .withAspectRatio(1, 1)
+                                    .withMaxResultSize(512, 512)
+                                    .start(requireContext(), this);
+                        }
                     }
                 }
         );
@@ -355,17 +389,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        searchPic.setOnClickListener(v -> {
-            ImagePicker.with(HomeFragment.this).cropSquare().compress(512).maxResultSize(512, 512)
-                    .createIntent(intent -> {
-                        imagePickLauncher.launch(intent);
-                        deleteBtn.setVisibility(View.VISIBLE);
-                        saveBtn.setVisibility(View.VISIBLE);
-                        shareBtn.setVisibility(View.VISIBLE);
-                        picinfoBtn.setVisibility(View.VISIBLE);
-                        return null;
-                    });
-        });
+        searchPic.setOnClickListener(v -> showImageSourceDialog());
 
         textViewAusgabe.setOnClickListener(v -> {
             if (ausgabe != null) {
@@ -402,7 +426,8 @@ public class HomeFragment extends Fragment {
             if (!kuerzelEingabe.getText().toString().isEmpty()) {
                 deleteText.setVisibility(View.VISIBLE);
             }
-            if (String.valueOf(kuerzelEingabe.getText()).isEmpty()) {
+            //if (String.valueOf(kuerzelEingabe.getText()).isEmpty()) {
+            if (!searchPic.getDrawable().equals(R.drawable.camera_pic)) {
                 recognizeTextInImage();
             } else {
                 recognizeCity(String.valueOf(kuerzelEingabe.getText()));
@@ -854,6 +879,87 @@ public class HomeFragment extends Fragment {
     public void performTourClick() {
         if (tourBtn != null) {
             tourBtn.performClick();
+        }
+    }
+
+    private void launchCrop(Uri sourceUri) {
+        Uri destinationUri = Uri.fromFile(new File(requireContext().getCacheDir(), "cropped_image.jpg"));
+        UCrop.Options options = new UCrop.Options();
+        options.setCircleDimmedLayer(false);
+        options.setCompressionQuality(90);
+        options.setToolbarTitle("Bild zuschneiden");
+        options.setFreeStyleCropEnabled(false);
+        options.withMaxResultSize(512, 512);
+
+        Intent intent = UCrop.of(sourceUri, destinationUri)
+                .withAspectRatio(1, 1)
+                .withOptions(options)
+                .getIntent(requireContext());
+
+        cropImageLauncher.launch(intent);
+    }
+
+    private void showImageSourceDialog() {
+        String[] options = {"Kamera", "Galerie"};
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Bild auswählen")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        // Kamera
+                        openCamera();
+                    } else {
+                        // Galerie
+                        openGallery();
+                    }
+                })
+                .show();
+    }
+
+    private void openCamera() {
+        File photoFile = new File(requireContext().getCacheDir(), "camera_" + System.currentTimeMillis() + ".jpg");
+        cameraImageUri = FileProvider.getUriForFile(
+                requireContext(),
+                "de.haainz.kennzeichenerkennung.fileprovider",  // Achte auf deinen authority
+                photoFile
+        );
+
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri);
+        pickImageLauncher.launch(cameraIntent);
+    }
+
+    private void openGallery() {
+        Intent pickIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        pickIntent.setType("image/*");
+        pickImageLauncher.launch(pickIntent);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == UCrop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {
+            final Uri croppedUri = UCrop.getOutput(data);
+            if (croppedUri != null) {
+                selectedImageUri = croppedUri;
+
+                Glide.with(requireContext())
+                        .load(croppedUri)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(searchPic);
+
+                binding.deleteBtn.setVisibility(View.VISIBLE);
+                binding.saveBtn.setVisibility(View.VISIBLE);
+                binding.shareBtn.setVisibility(View.VISIBLE);
+                binding.picinfoBtn.setVisibility(View.VISIBLE);
+            }
+
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            final Throwable cropError = UCrop.getError(data);
+            if (cropError != null) {
+                Log.e("UCrop", "Crop error: ", cropError);
+            }
         }
     }
 }
