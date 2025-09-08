@@ -153,7 +153,7 @@ public class AIManager {
     }
 
     private void showRewardedAd(Runnable onRewardEarned) {
-        Activity activity = (Activity) context;
+        /*Activity activity = (Activity) context;
 
         RequestConfiguration configuration = new RequestConfiguration.Builder().build();
         MobileAds.setRequestConfiguration(configuration);
@@ -166,9 +166,9 @@ public class AIManager {
             @Override
             public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
                 rewardedAd.show(activity, rewardItem -> {
-                    if (onRewardEarned != null) {
+                    if (onRewardEarned != null) {*/
                         onRewardEarned.run();
-                    }
+                    /*}
                 });
             }
 
@@ -176,12 +176,12 @@ public class AIManager {
             public void onAdFailedToLoad(@NonNull com.google.android.gms.ads.LoadAdError loadAdError) {
                 Toast.makeText(context, "Fehler beim Laden der Werbung", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
     }
 
     private void generateAITextInternal(Kennzeichen kennzeichen, AICallback callback, int wordLimit) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String aiModel = sharedPreferences.getString("selectedAIModel", "DeepSeek V3");
+        String aiModel = sharedPreferences.getString("selectedAIModel", "Google Gemma 3 27b");
 
         checkModelWorking(aiModel, modelWorking -> {
             if (!modelWorking) {
