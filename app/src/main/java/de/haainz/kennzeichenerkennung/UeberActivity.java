@@ -11,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -41,6 +42,23 @@ public class UeberActivity extends AppCompatActivity {
                 ViewGroup.LayoutParams params = v.getLayoutParams();
                 params.height = navInsets.bottom;
                 v.setLayoutParams(params);
+                return insets;
+            });
+        }
+
+        View statusbarView = findViewById(R.id.statusbar);
+        if (statusbarView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(statusbarView, (v, insets) -> {
+                Insets sysInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+                // Höhe manuell setzen
+                ViewGroup.LayoutParams params = v.getLayoutParams();
+                params.height = sysInsets.top;
+                v.setLayoutParams(params);
+
+                // Hintergrundfarbe setzen
+                v.setBackgroundColor(ContextCompat.getColor(this, R.color.blue_700));
+
                 return insets;
             });
         }
