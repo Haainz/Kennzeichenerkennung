@@ -881,23 +881,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void launchCrop(Uri sourceUri) {
-        Uri destinationUri = Uri.fromFile(new File(requireContext().getCacheDir(), "cropped_image.jpg"));
-        UCrop.Options options = new UCrop.Options();
-        options.setCircleDimmedLayer(false);
-        options.setCompressionQuality(90);
-        options.setToolbarTitle("Bild zuschneiden");
-        options.setFreeStyleCropEnabled(false);
-        options.withMaxResultSize(512, 512);
-
-        Intent intent = UCrop.of(sourceUri, destinationUri)
-                .withAspectRatio(1, 1)
-                .withOptions(options)
-                .getIntent(requireContext());
-
-        cropImageLauncher.launch(intent);
-    }
-
     private void showImageSourceDialog() {
         String[] options = {"Kamera", "Galerie"};
 
@@ -939,21 +922,18 @@ public class HomeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == UCrop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {
-            final Uri croppedUri = UCrop.getOutput(data);
-            if (croppedUri != null) {
-                selectedImageUri = croppedUri;
+            Uri sourceUri = data.getData();
+            Uri destinationUri = Uri.fromFile(new File(requireContext().getCacheDir(), "cropped_" + System.currentTimeMillis() + ".jpg"));
 
-                Glide.with(requireContext())
-                        .load(croppedUri)
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(searchPic);
+            UCrop.Options options = new UCrop.Options();
+            options.setFreeStyleCropEnabled(false);
+            options.setHideBottomControls(true);
+            options.setToolbarTitle("Zuschneiden");
 
-                binding.deleteBtn.setVisibility(View.VISIBLE);
-                binding.saveBtn.setVisibility(View.VISIBLE);
-                binding.shareBtn.setVisibility(View.VISIBLE);
-                binding.picinfoBtn.setVisibility(View.VISIBLE);
-            }
-
+            UCrop.of(sourceUri, destinationUri)
+                    .withAspectRatio(3, 2)
+                    .withOptions(options)
+                    .start(requireContext(), this);
         } else if (resultCode == UCrop.RESULT_ERROR) {
             final Throwable cropError = UCrop.getError(data);
             if (cropError != null) {
