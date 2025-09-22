@@ -9,7 +9,7 @@
     <View
         android:id="@+id/statusbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="0dp"
         android:background="@color/blue_700" />
 
     <RelativeLayout

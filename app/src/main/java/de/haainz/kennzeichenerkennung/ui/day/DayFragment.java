@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -94,8 +95,8 @@ public class DayFragment extends Fragment {
     private float originalScale = 1.0f;
     private float minScale = 0.0f;
     private boolean isSnapping = false;
-    private int snapDistance = 1300; // Höhe des schrumpfenden Elements (kannst du dynamisch setzen)
-    private int snapThreshold = 500;
+    private int snapDistance = 1180; // Höhe des schrumpfenden Elements (kannst du dynamisch setzen)
+    private int snapThreshold = 450;
     private TextView title1, title2;
     private int titleStartMargin = 80; // dp
     private int titleEndMargin = -15;   // dp
@@ -196,27 +197,49 @@ public class DayFragment extends Fragment {
         });
 
         binding.shareBtn.setOnClickListener(v -> {
-            try {
-                Bitmap croppedBitmap = cropImage(imageBitmap); // Zuschneiden des Bildes
-                String filename = "bild_" + System.currentTimeMillis() + ".jpg";
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Kennzeichenerkennung");
-                if (!file.exists()) {
-                    file.mkdirs();
-                }
-                File outputFile = new File(file, filename);
-                FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
-                croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-                fileOutputStream.close();
+            new Thread(() -> {
+                try {
+                    Bitmap croppedBitmap = cropImage(imageBitmap); // Zeitintensiv
+                    String filename = "bild_" + System.currentTimeMillis() + ".jpg";
+                    File directory = new File(Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_PICTURES), "Kennzeichenerkennung");
 
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("image/jpeg");
-                Uri contentUri = FileProvider.getUriForFile(getContext(), "de.haainz.kennzeichenerkennung.fileprovider", outputFile);
-                intent.putExtra(Intent.EXTRA_STREAM, contentUri);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(Intent.createChooser(intent, "Teilen"));
-            } catch (Exception e) {
-                Toast.makeText(getContext(), "Fehler beim Teilen des Bildes", Toast.LENGTH_SHORT).show();
-            }
+                    if (!directory.exists()) {
+                        directory.mkdirs();
+                    }
+
+                    File outputFile = new File(directory, filename);
+                    FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+                    croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                    fileOutputStream.close();
+
+                    Uri contentUri = FileProvider.getUriForFile(
+                            getContext(),
+                            "de.haainz.kennzeichenerkennung.fileprovider",
+                            outputFile
+                    );
+
+                    // Intent auf dem Hauptthread starten!
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        try {
+                            Intent intent = new Intent(Intent.ACTION_SEND);
+                            intent.setType("image/jpeg");
+                            intent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            startActivity(Intent.createChooser(intent, "Teilen"));
+                        } catch (Exception e) {
+                            Toast.makeText(getContext(), "Fehler beim Starten des Intents", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Fehler-Toast ebenfalls auf dem Hauptthread
+                    new Handler(Looper.getMainLooper()).post(() ->
+                            Toast.makeText(getContext(), "Fehler beim Teilen des Bildes", Toast.LENGTH_SHORT).show()
+                    );
+                }
+            }).start();
         });
 
         binding.picinfoBtn.setOnClickListener(v -> {

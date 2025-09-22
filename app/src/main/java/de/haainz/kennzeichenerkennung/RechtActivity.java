@@ -2,11 +2,16 @@ package de.haainz.kennzeichenerkennung;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class RechtActivity extends AppCompatActivity {
 
@@ -17,6 +22,23 @@ public class RechtActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recht);
+
+        View statusbarView = findViewById(R.id.statusbar);
+        if (statusbarView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(statusbarView, (v, insets) -> {
+                Insets sysInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+                // Höhe manuell setzen
+                ViewGroup.LayoutParams params = v.getLayoutParams();
+                params.height = sysInsets.top;
+                v.setLayoutParams(params);
+
+                // Hintergrundfarbe setzen
+                v.setBackgroundColor(ContextCompat.getColor(this, R.color.blue_700));
+
+                return insets;
+            });
+        }
 
         webView = findViewById(R.id.webview_recht);
         backButton = findViewById(R.id.backbtn);
