@@ -7,6 +7,7 @@ Eine einfache App über Kennzeichen.
 
 Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles über dieses heraus. Nutze auch die Liste mit Filtern mit allen deutschen Kennzeichen, merke (like) deine Lieblingskennzeichen und erstelle sogar eigene Kennzeichen. Sei gespannt auf das neue Kennzeichen des Tages jeden Tag und teile es auch mit deinen Freunden oder speichere es in deiner Galerie. Solltest du immer noch nicht genug haben, kannst du dir auch einen KI-generierten Text über die Region des Kennzeichen mit interessanten Fakten durchlesen.
 
+# Ab sofort werden Tester für die App-Freigabe im Playstore gesucht! Bitte wende dich mit deiner Google Mailadresse an kennzeichenerkennung@gmail.com um zum geschlossenen Test hinzugefügt zu werden und alle zukünftigen Updates zu erhalten.
 
 # Funktionen:
 - Kennzeichen aus Bild erkennen
@@ -25,7 +26,6 @@ Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles übe
 - Offline-Modus (hier werden die Karten nicht angezeigt + Updates nicht empfangen + keine Texte KI-generiert)
 - immer den Offline-Modus verwenden
 - Dark- und Lightmode
-- automatische Updateprüfung
 
 
 # Galerie:
