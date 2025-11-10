@@ -2,7 +2,7 @@
 Eine einfache App über Kennzeichen.
 
 <div style="flex: 0 0 auto; width: 200px;">
-    <img src="https://github.com/user-attachments/assets/3d71fc9f-b215-4b22-8689-1dad96f5cd53" style="width: 55%; height: auto;">
+    <img src="https://github.com/user-attachments/assets/3df98963-d7b2-44c6-a7b7-00a3fccda6f0" style="width: 55%; height: auto;">
 </div>
 
 Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles über dieses heraus. Nutze auch die Liste mit Filtern mit allen deutschen Kennzeichen, merke (like) deine Lieblingskennzeichen und erstelle sogar eigene Kennzeichen. Sei gespannt auf das neue Kennzeichen des Tages jeden Tag und teile es auch mit deinen Freunden oder speichere es in deiner Galerie. Solltest du immer noch nicht genug haben, kannst du dir auch einen KI-generierten Text über die Region des Kennzeichen mit interessanten Fakten durchlesen.
@@ -31,12 +31,14 @@ Mache ein Bild eines Kennzeichens oder gebe ein Kürzel ein und finde alles übe
 # Galerie:
 <table>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/afc2a096-3c26-4507-9aac-6fcd0d5d7374" width="200"></td>
-    <td><img src="https://github.com/user-attachments/assets/3b017ad2-f7dd-4d9f-a46e-75c244b9710f" width="200"></td>
-    <td><img src="https://github.com/user-attachments/assets/e66005a7-8af2-486a-8ee4-278b3bd64547" width="200"></td>
-    <td><img src="https://github.com/user-attachments/assets/9f46a537-f3ce-4509-ad61-2006bfdadba6" width="200"></td>
-    <td><img src="https://github.com/user-attachments/assets/1bc4c328-461f-438a-b5d5-314a1f3749d3" width="200"></td>
+    <td><img src="https://github.com/user-attachments/assets/906e38e0-c6f9-4cdd-853f-38579ba141cf" width="200"></td>
+    <td><img src="https://github.com/user-attachments/assets/5cd4ff89-eb0f-41d5-93fe-5c5be54daa1b" width="200"></td>
+    <td><img src="https://github.com/user-attachments/assets/cf28b5cd-2cfc-4d32-a384-859ca58f565c" width="200"></td>
+    <td><img src="https://github.com/user-attachments/assets/9dbd13c7-5c3c-4bfb-b76c-302d58fd3a55" width="200"></td>
+    <td><img src="https://github.com/user-attachments/assets/3d8a0c95-fee1-476b-9daf-c78a9bfa927f" width="200"></td>
+    <td><img src="https://github.com/user-attachments/assets/8426ee1e-3f63-44f0-a544-e64ed1a93ecb" width="200"></td>
   </tr>
+
 </table>
 
 
