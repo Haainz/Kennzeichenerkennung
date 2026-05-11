@@ -1,32 +1,32 @@
 {
     "ai_models": [
         {
-            "id": "deepseek/deepseek-chat-v3-0324:free",
-            "name": "DeepSeek V3",
-            "brand": "Deepseek",
+            "id": "openrouter/free",
+            "name": "Zufälliges OpenRouter-Modell",
+            "brand": "OpenRouter",
             "working": true
         },
         {
-            "id": "google/gemini-2.0-flash-exp:free",
-            "name": "Google Gemini Flash 2.0",
+            "id": "google/gemma-4-26b-a4b-it:free",
+            "name": "Google Gemma 4 26B",
             "brand": "Google",
             "working": false
         },
         {
-            "id": "google/gemma-3-27b-it:free",
-            "name": "Google Gemma 3 27b",
-            "brand": "Google",
+            "id": "openrouter/owl-alpha",
+            "name": "Owl-Alpha",
+            "brand": "OpenRouter",
             "working": true
         },
         {
-            "id": "mistralai/mistral-7b-instruct:free",
-            "name": "MistralAI Mistral 7B Instruct",
-            "brand": "MistralAI",
+            "id": "openai/gpt-oss-120b:free",
+            "name": "OpenAI gpt-oss-120B",
+            "brand": "OpenAI",
             "working": true
         },
         {
-            "id": "nvidia/llama-3.1-nemotron-ultra-253b-v1:free",
-            "name": "NVIDIA Llama 3.3 Nemotron",
+            "id": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+            "name": "NVIDIA Nemotron 3 nano",
             "brand": "NVIDIA",
             "working": false
         }
