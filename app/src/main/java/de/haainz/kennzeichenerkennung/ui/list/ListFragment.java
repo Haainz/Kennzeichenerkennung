@@ -367,7 +367,7 @@ public class ListFragment extends Fragment {
                                 .titleTextColor(android.R.color.black)
                                 .descriptionTextColor(android.R.color.black)
                                 .targetRadius(30)
-                                .cancelable(false),
+                                .cancelable(true),
 
                         TapTarget.forView(listItem, "Details anzeigen", "Tippe ein Kennzeichen an, um mehr zu erfahren und halte es gedrückt um mehrere auszuwählen.")
                                 .outerCircleColor(R.color.red)
@@ -376,8 +376,9 @@ public class ListFragment extends Fragment {
                                 .titleTextColor(android.R.color.black)
                                 .descriptionTextColor(android.R.color.black)
                                 .targetRadius(45)
-                                .cancelable(false)
+                                .cancelable(true)
                 )
+                .continueOnCancel(true)
                 .listener(new TapTargetSequence.Listener() {
                     @Override
                     public void onSequenceFinish() {

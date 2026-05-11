@@ -4,10 +4,12 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -24,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceManager;
 
@@ -62,6 +65,14 @@ public class InfosFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NO_TITLE, R.style.CustomDialogTheme);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
     }
 
     @Override
@@ -130,11 +141,15 @@ public class InfosFragment extends DialogFragment {
                         "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.\n",
                         "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Sachsen-Anhalt im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Baden-Württemberg.\n",
                         "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n",
-                        "amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.\n",
+                        "amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung for deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.\n",
                         "---\n",
                         "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n\nweiterer amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.\n",
                 };
-                fussnotenWert.setText(fussnoten[fussnoteNummer]);
+                if (fussnoteNummer >= 0 && fussnoteNummer < fussnoten.length) {
+                    fussnotenWert.setText(fussnoten[fussnoteNummer]);
+                } else {
+                    fussnotenWert.setText(fussnoteString + "\n");
+                }
             } catch (NumberFormatException e) {
                 fussnotenWert.setText(fussnoteString + "\n");
             }
@@ -349,81 +364,97 @@ public class InfosFragment extends DialogFragment {
     }
 
     private void showTextPopup(String title, String fullText) {
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme);
         builder.setTitle(title);
         builder.setMessage(fullText);
         builder.setPositiveButton("Schließen", null);
-        builder.show();
+        AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_background);
+        }
+        dialog.show();
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        if (positiveButton != null) {
+            positiveButton.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue_700));
+        }
     }
 
     public void showAITextPopup(Kennzeichen kennzeichen) {
-        Activity activity = (Activity) getContext();
-        activity.runOnUiThread(() -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_ai_text_popup, null);
-            builder.setView(dialogView);
+        Context context = getContext();
+        if (context == null) return;
+        
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomDialogTheme);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_ai_text_popup, null);
+        builder.setView(dialogView);
 
-            AlertDialog dialog = builder.create();
-            dialog.setCancelable(false);
-            dialog.show();
+        AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+        dialog.setCancelable(false);
+        dialog.show();
 
-            TextView aiTextView = dialogView.findViewById(R.id.ai_text_view);
-            EditText aiEditText = dialogView.findViewById(R.id.ai_edit_text);
-            Button btnGenerate = dialogView.findViewById(R.id.button_generate);
-            Button btnEdit = dialogView.findViewById(R.id.button_edit);
-            ImageButton btnClose = dialogView.findViewById(R.id.button_close);
+        TextView aiTextView = dialogView.findViewById(R.id.ai_text_view);
+        EditText aiEditText = dialogView.findViewById(R.id.ai_edit_text);
+        Button btnGenerate = dialogView.findViewById(R.id.button_generate);
+        Button btnEdit = dialogView.findViewById(R.id.button_edit);
+        ImageButton btnClose = dialogView.findViewById(R.id.button_close);
 
-            // Starte mit aktuellem KI-Text
-            String existingText = kennzeichen.aiTextGeben();
-            if (!existingText.isEmpty()) {
-                aiTextView.setText(existingText);
-            } else {
-                aiTextView.setText("Es wurde noch kein Text generiert.");
-            }
+        // Starte mit aktuellem KI-Text
+        String existingText = kennzeichen.aiTextGeben();
+        if (!existingText.isEmpty()) {
+            aiTextView.setText(existingText);
+        } else {
+            aiTextView.setText("Es wurde noch kein Text generiert.");
+        }
 
-            if (isNetworkAvailable() && !isOfflineMode()) {
-                btnGenerate.setVisibility(VISIBLE);
-            } else {
-                btnGenerate.setVisibility(GONE);
-            }
+        if (isNetworkAvailable() && !isOfflineMode()) {
+            btnGenerate.setVisibility(VISIBLE);
+        } else {
+            btnGenerate.setVisibility(GONE);
+        }
 
-            AIManager aiManager = new AIManager(requireContext(), null, null);
+        AIManager aiManager = new AIManager(requireContext(), null, null);
 
-            btnGenerate.setOnClickListener(v -> {
-                aiManager.generateAIText(kennzeichen, new AIManager.AICallback() {
-                    @Override
-                    public void onResult(String aiText) {
-                        activity.runOnUiThread(() -> {
+        btnGenerate.setOnClickListener(v -> {
+            aiManager.generateAIText(kennzeichen, new AIManager.AICallback() {
+                @Override
+                public void onResult(String aiText) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
                             aiTextView.setText(aiText);
                             aiEditText.setVisibility(View.GONE);
                             aiTextView.setVisibility(View.VISIBLE);
                         });
                     }
+                }
 
-                    @Override
-                    public void onError(String errorMessage) {
-                        Toast.makeText(getContext(), "Fehler: " + errorMessage, Toast.LENGTH_SHORT).show();
+                @Override
+                public void onError(String errorMessage) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "Fehler: " + errorMessage, Toast.LENGTH_SHORT).show());
                     }
-                });
-            });
-
-            btnEdit.setOnClickListener(v -> {
-                if (aiEditText.getVisibility() == View.GONE) {
-                    aiEditText.setText(aiTextView.getText().toString());
-                    aiTextView.setVisibility(View.GONE);
-                    aiEditText.setVisibility(View.VISIBLE);
-                    btnEdit.setText("Speichern");
-                } else {
-                    String editedText = aiEditText.getText().toString();
-                    aiTextView.setText(editedText);
-                    aiTextView.setVisibility(View.VISIBLE);
-                    aiEditText.setVisibility(View.GONE);
-                    kennzeichenKI.setaiText(kennzeichen, editedText); // Speichern
-                    btnEdit.setText("Bearbeiten");
                 }
             });
-
-            btnClose.setOnClickListener(v -> dialog.dismiss());
         });
+
+        btnEdit.setOnClickListener(v -> {
+            if (aiEditText.getVisibility() == View.GONE) {
+                aiEditText.setText(aiTextView.getText().toString());
+                aiTextView.setVisibility(View.GONE);
+                aiEditText.setVisibility(View.VISIBLE);
+                btnEdit.setText("Speichern");
+            } else {
+                String editedText = aiEditText.getText().toString();
+                aiTextView.setText(editedText);
+                aiTextView.setVisibility(View.VISIBLE);
+                aiEditText.setVisibility(View.GONE);
+                kennzeichenKI.setaiText(kennzeichen, editedText); // Speichern
+                btnEdit.setText("Bearbeiten");
+            }
+        });
+
+        btnClose.setOnClickListener(v -> dialog.dismiss());
     }
 }

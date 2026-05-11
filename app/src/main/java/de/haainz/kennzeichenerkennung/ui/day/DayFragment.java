@@ -509,7 +509,10 @@ public class DayFragment extends Fragment {
         int month = calendar.get(Calendar.MONTH) + 1;
         int year = calendar.get(Calendar.YEAR);
 
-        int index = (day * 31 + month * 12 + year) % filteredList.size();
+        long seed = (long) year * 1000 + (long) month * 100 + (long) day;
+        java.util.Random random = new java.util.Random(seed);
+        int index = random.nextInt(filteredList.size());
+
         Log.e("day", day + " " + month + " " + year + " " + filteredList.size() + " " + index);
         return filteredList.get(index);
     }
@@ -631,8 +634,9 @@ public class DayFragment extends Fragment {
                                 .titleTextColor(android.R.color.black)
                                 .descriptionTextColor(android.R.color.black)
                                 .targetRadius(165)
-                                .cancelable(false)
+                                .cancelable(true)
                 )
+                .continueOnCancel(true)
                 .listener(new TapTargetSequence.Listener() {
                     @Override
                     public void onSequenceFinish() {

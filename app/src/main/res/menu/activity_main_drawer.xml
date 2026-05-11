@@ -6,6 +6,10 @@
         android:icon="@drawable/icon_camera"
         android:title="@string/menu_home" />
     <item
+        android:id="@+id/nav_history"
+        android:icon="@drawable/icon_search"
+        android:title="@string/menu_history" />
+    <item
         android:id="@+id/nav_slideshow"
         android:icon="@drawable/icon_list"
         android:title="Kennzeichenliste" />

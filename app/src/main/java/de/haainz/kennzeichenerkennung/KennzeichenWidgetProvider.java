@@ -94,14 +94,20 @@ public class KennzeichenWidgetProvider extends AppWidgetProvider {
         int year = calendar.get(Calendar.YEAR);
 
         // Hash-Funktion anwenden, um eine eindeutige Zahl zu erzeugen
-        int index = (day * 31 + month * 12 + year) % filteredList.size();
+        long seed = (long) year * 1000 + (long) month * 100 + (long) day;
+        java.util.Random random = new java.util.Random(seed);
+        int index = random.nextInt(filteredList.size());
         return filteredList.get(index);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(intent.getAction())) {
+        String action = intent.getAction();
+        if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(action)
+                || Intent.ACTION_TIME_CHANGED.equals(action)
+                || Intent.ACTION_TIMEZONE_CHANGED.equals(action)
+                || Intent.ACTION_DATE_CHANGED.equals(action)) {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             ComponentName thisWidget = new ComponentName(context, KennzeichenWidgetProvider.class);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);

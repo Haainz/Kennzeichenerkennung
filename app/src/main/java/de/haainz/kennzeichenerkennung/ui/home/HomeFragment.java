@@ -3,6 +3,8 @@ package de.haainz.kennzeichenerkennung.ui.home;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,6 +12,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -46,13 +51,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.preference.PreferenceManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+
+import de.haainz.kennzeichenerkennung.ExportFragment;
 import de.haainz.kennzeichenerkennung.Kennzeichen;
 import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
 import de.haainz.kennzeichenerkennung.MapFragment;
@@ -73,6 +86,10 @@ import com.yalantis.ucrop.view.UCropView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
@@ -91,14 +108,19 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import de.haainz.kennzeichenerkennung.ui.AIManager;
+import de.haainz.kennzeichenerkennung.ui.history.SearchEntry;
+import de.haainz.kennzeichenerkennung.ui.history.SearchHistoryManager;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private Kennzeichen_KI kennzeichenKI;
     private Uri selectedImageUri;
+    private Uri pendingImageUri = null;
     private ImageView searchPic;
     private Button buttongenerate;
     private TextView textViewAusgabe;
@@ -114,33 +136,46 @@ public class HomeFragment extends Fragment {
     private int aistatus = 0;
     private ConstraintLayout mapconstlayout;
     private TextView tourBtn;
+    private SearchHistoryManager historyManager;
+    private String lastSavedSearchKey = "";
     private Uri cameraImageUri;
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private ActivityResultLauncher<Intent> cropImageLauncher;
+    private ActivityResultLauncher<String> requestCameraPermissionLauncher;
+    private static final String TAG_IMG = "HomeFragmentImg";
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        // Wir müssen den SupportFragmentManager der Activity nutzen,
+        // da der Scanner dort manuell hinzugefügt wird.
+        requireActivity().getSupportFragmentManager().setFragmentResultListener("kennzeichen_scan_result", this, (requestKey, bundle) -> {
+            Log.d(TAG_IMG, "Ergebnis von Activity FM erhalten");
+            handleIncomingScanResult(bundle);
+        });
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         pickImageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent data = result.getData();
-
                         Uri selectedUri = null;
 
                         if (data != null && data.getData() != null) {
-                            // Galerie-Auswahl
                             selectedUri = data.getData();
                         } else if (cameraImageUri != null) {
-                            // Kameraaufnahme
                             selectedUri = cameraImageUri;
                         }
 
                         if (selectedUri != null) {
-                            Uri destinationUri = Uri.fromFile(
-                                    new File(requireContext().getCacheDir(), "cropped_" + System.currentTimeMillis() + ".jpg")
-                            );
+                            Uri destinationUri = Uri.fromFile(new File(requireContext().getCacheDir(),
+                                    "cropped_" + System.currentTimeMillis() + ".jpg"));
 
                             UCrop.Options options = new UCrop.Options();
                             options.setCompressionQuality(90);
@@ -151,9 +186,20 @@ public class HomeFragment extends Fragment {
                             UCrop.of(selectedUri, destinationUri)
                                     .withOptions(options)
                                     .withAspectRatio(1, 1)
-                                    .withMaxResultSize(512, 512)
+                                    .withMaxResultSize(2048, 2048)
                                     .start(requireContext(), this);
                         }
+                    }
+                }
+        );
+
+        requestCameraPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        openCamera();
+                    } else {
+                        Toast.makeText(getContext(), "Kamera-Berechtigung wird benötigt, um Kennzeichen zu scannen.", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -170,6 +216,7 @@ public class HomeFragment extends Fragment {
         kuerzelEingabe.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
         textViewAusgabe2 = binding.textViewAusgabe2;
         kennzeichenKI = new Kennzeichen_KI(getContext());
+        historyManager = new SearchHistoryManager(requireContext());
 
         Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));
 
@@ -226,7 +273,7 @@ public class HomeFragment extends Fragment {
                                 .descriptionTextColor(android.R.color.black)
                                 .transparentTarget(true)
                                 .targetRadius(100)
-                                .cancelable(false);
+                                .cancelable(true);
 
                         TapTarget target2 = TapTarget.forView(binding.imagekennzeichen, "Kürzel eingeben", "Du kannst ein Ortskürzel auch direkt eintippen.")
                                 .outerCircleColor(R.color.red)
@@ -235,7 +282,7 @@ public class HomeFragment extends Fragment {
                                 .descriptionTextColor(android.R.color.black)
                                 .transparentTarget(true)
                                 .targetRadius(100)
-                                .cancelable(false);
+                                .cancelable(true);
 
                         TapTarget target3 = TapTarget.forView(binding.likeBtn, "Kennzeichen liken", "Klicke hier, um dieses Kennzeichen zu speichern.")
                                 .outerCircleColor(R.color.blue_200)
@@ -244,7 +291,7 @@ public class HomeFragment extends Fragment {
                                 .descriptionTextColor(android.R.color.black)
                                 .transparentTarget(true)
                                 .targetRadius(50)
-                                .cancelable(false);
+                                .cancelable(true);
 
                         TapTarget target4 = TapTarget.forView(offlineButton, "Offline-Modus", "Dieser Button zeigt an, dass du im Offlinemodus bist. Klicke auf ihn, um zu erfahren warum du im Offlinemodus bist.")
                                 .outerCircleColor(R.color.yellow)
@@ -253,7 +300,7 @@ public class HomeFragment extends Fragment {
                                 .descriptionTextColor(android.R.color.black)
                                 .transparentTarget(true)
                                 .targetRadius(50)
-                                .cancelable(false);
+                                .cancelable(true);
 
                         TapTarget target5 = TapTarget.forView(menuButton, "Menü öffnen", "Hier findest du weitere Seiten, Einstellungen und Funktionen.")
                                 .outerCircleColor(R.color.red)
@@ -262,10 +309,11 @@ public class HomeFragment extends Fragment {
                                 .descriptionTextColor(android.R.color.black)
                                 .transparentTarget(true)
                                 .targetRadius(50)
-                                .cancelable(false);
+                                .cancelable(true);
 
                         new TapTargetSequence(requireActivity())
                                 .targets(target1, target2, target3, target4, target5)
+                                .continueOnCancel(true)
                                 .listener(new TapTargetSequence.Listener() {
                                     @Override
                                     public void onSequenceFinish() {}
@@ -418,151 +466,11 @@ public class HomeFragment extends Fragment {
 
         buttongenerate = binding.buttongenerate;
         buttongenerate.setOnClickListener(v -> {
-            binding.fussnotenwert.setVisibility(VISIBLE);
-            binding.fussnotentitel.setVisibility(VISIBLE);
-            aistatus=0;
-            hideKeyboard(v);
-            updateTextViewAusgabe2();
-            if (!kuerzelEingabe.getText().toString().isEmpty()) {
-                deleteText.setVisibility(View.VISIBLE);
-            }
-            if (String.valueOf(kuerzelEingabe.getText()).isEmpty()) {
+            String kuerzel = String.valueOf(kuerzelEingabe.getText());
+            if (kuerzel.isEmpty()) {
                 recognizeTextInImage();
             } else {
-                recognizeCity(String.valueOf(kuerzelEingabe.getText()));
-            }
-            Log.d("Kennzeichen", "Ausgabe: " + ausgabe);
-            Kennzeichen kennzeichen = kennzeichenKI.getKennzeichen(String.valueOf(kuerzelEingabe.getText()));
-
-            Log.d("Kennzeichen", "Eingegebenes Kürzel: " + kuerzelEingabe.getText());
-            Log.d("Kennzeichen", "Ausgabe: " + ausgabe);
-            Log.d("Kennzeichen", "Gefundenes Kennzeichen: " + (kennzeichen != null ? kennzeichen.OertskuerzelGeben() : "null"));
-
-            if (kennzeichen != null) {
-                binding.sliderview.setVisibility(View.VISIBLE);
-                binding.kuerzelwert.setText(kennzeichen.OertskuerzelGeben());
-                binding.herleitungswert.setText(kennzeichen.OrtGeben());
-                binding.stadtoderkreiswert.setText(kennzeichen.StadtKreisGeben());
-                if(!Objects.equals(kennzeichen.BundeslandGeben(), "---")) {
-                    binding.bundeslandwert.setText(kennzeichen.BundeslandGeben());
-                } else {
-                    binding.bundeslandwert.setVisibility(GONE);
-                    binding.bundeslandtitel.setVisibility(GONE);
-                }
-                if(!Objects.equals(kennzeichen.BundeslandIsoGeben(), "---")) {
-                    binding.bundeslandIsoWert.setText(kennzeichen.BundeslandIsoGeben());
-                } else {
-                    binding.bundeslandIsoWert.setVisibility(GONE);
-                    binding.bundeslandIsoTitel.setVisibility(GONE);
-                }
-                binding.landwert.setText(kennzeichen.LandGeben());
-                if (kennzeichen.isSaved()) {
-                    binding.likedBtn.setVisibility(VISIBLE);
-                    Log.d("Kennzeichen", "1");
-                } else {
-                    binding.likedBtn.setVisibility(GONE);
-                    Log.d("Kennzeichen", "2");
-                }
-                int fussnoteNummer = 6;
-                if (!Objects.equals(kennzeichen.FussnoteGeben(), "")) {
-                    fussnoteNummer = Integer.parseInt(kennzeichen.FussnoteGeben());
-                }
-                String[] fussnoten = {
-                        "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungs nummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzliche Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
-                        "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle stellt durch geeignete verwaltungsinterne Maßnahmen sicher, dass eine Doppelvergabe desselben Kennzeichens ausgeschlossen ist.",
-                        "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
-                                "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
-                        "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
-                                "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Sachsen-Anhalt im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Baden-Württemberg.",
-                        "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
-                                "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.",
-                        "amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde " +
-                                "oder die nach Landesrecht zuständige Stelle.",
-                        "---",
-                        "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen " +
-                                "ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n\n- weiterer amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen " +
-                                "führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
-                };
-                if (kennzeichen.FussnoteGeben().isEmpty() || Objects.equals(kennzeichen.FussnoteGeben(), "6")) {
-                    if (kennzeichen.BemerkungenGeben().isEmpty() || Objects.equals(kennzeichen.BemerkungenGeben(), "---")) {
-                        binding.fussnotencard.setVisibility(GONE);
-                    } else {
-                        binding.fussnotencard.setVisibility(VISIBLE);
-                        binding.fussnotenwert.setText("- " + kennzeichen.BemerkungenGeben());
-                    }
-                } else if (kennzeichen.BemerkungenGeben().isEmpty() || Objects.equals(kennzeichen.BemerkungenGeben(), "---")) {
-                    binding.fussnotencard.setVisibility(VISIBLE);
-                    binding.fussnotenwert.setText("- " + fussnoten[fussnoteNummer]);
-                } else {
-                    binding.fussnotencard.setVisibility(VISIBLE);
-                    binding.fussnotenwert.setText("- " + kennzeichen.BemerkungenGeben() + "\n\n- " + fussnoten[fussnoteNummer]);
-                }
-                checkNetworkAndGenerateText(kennzeichen);
-
-                binding.maprel.setOnClickListener(view -> {
-                    MapFragment mapFragment = new MapFragment(kennzeichen);
-                    mapFragment.show(getParentFragmentManager(), "MapFragment");
-                });
-
-                binding.infotextwert.setOnClickListener(view2 -> {
-                    if (!binding.infotextwert.getText().toString().startsWith("Analysiere Informationen")) {
-                        checkNetworkAndGenerateText(kennzeichen);
-                    }
-                });
-
-                if (kennzeichen.isSonderDE()) {
-                    binding.bundeslandIsoWert.setVisibility(GONE);
-                    binding.bundeslandIsoTitel.setVisibility(GONE);
-                    binding.stadtoderkreistitel.setText("Typ:  ");
-                    binding.herleitungstitel.setText("Bedeutung:  ");
-                    binding.bundeslandtitel.setText("Zulassungsbehörde:  ");
-                } else if (kennzeichen.isAuslaufendDE()) {
-                    binding.bundeslandwert.setVisibility(GONE);
-                    binding.bundeslandtitel.setVisibility(GONE);
-                    binding.bundeslandIsoWert.setVisibility(GONE);
-                    binding.bundeslandIsoTitel.setVisibility(GONE);
-                    binding.stadtoderkreistitel.setText("Bisheriger Verwaltungsbezirk/-kreis:  ");
-                    binding.stadtoderkreistitel.setTextSize(13.5F);
-                    binding.herleitungstitel.setText("Abwicklung:  ");
-                } else {
-                    binding.bundeslandIsoWert.setVisibility(VISIBLE);
-                    binding.bundeslandIsoTitel.setVisibility(VISIBLE);
-                    binding.stadtoderkreistitel.setText("Stadt/Kreis:  ");
-                    binding.stadtoderkreistitel.setTextSize(17);
-                    binding.herleitungstitel.setText("Herleitung:  ");
-                    binding.bundeslandtitel.setText("Bundesland:  ");
-                }
-
-                if (isNetworkAvailable()) {
-                    mapView = binding.map;
-                    mapRel = binding.maprel;
-                    mapCardView = binding.mapcardview;
-                    mapView.setTileSource(TileSourceFactory.MAPNIK);
-                    mapView.setBuiltInZoomControls(true);
-                    mapView.setMultiTouchControls(true);
-                    mapCardView.setVisibility(View.VISIBLE);
-                    binding.kurzCard.setVisibility(GONE);
-                    showaiText(kennzeichen, "on");
-
-                    if(!kennzeichen.isSonderDE()) {
-                        getCoordinates(kennzeichen.OrtGeben() + "_" + kennzeichen.BundeslandGeben());
-                    } else {
-                        mapconstlayout.setVisibility(GONE);
-                    }
-                } else {
-                    if(kennzeichen.isSonderDE()) {
-                        mapconstlayout.setVisibility(GONE);
-                    } else {
-                        mapconstlayout.setVisibility(VISIBLE);
-                        binding.mapcardview.setVisibility(GONE);
-                    }
-                    binding.kurzCard.setVisibility(VISIBLE);
-                    binding.kurzCardText.setText(kennzeichen.oertskuerzel);
-                    showaiText(kennzeichen, "off");
-                }
-            } else {
-                binding.sliderview.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), "Kein Kennzeichen gefunden", Toast.LENGTH_SHORT).show();
+                performAnalysis(kuerzel);
             }
         });
 
@@ -590,7 +498,50 @@ public class HomeFragment extends Fragment {
             textViewAusgabe2.setVisibility(View.GONE);
         }
 
+        if (pendingImageUri != null) {
+            applySelectedImage(pendingImageUri);
+            pendingImageUri = null;
+        }
+
         return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Check for history arguments
+        if (getArguments() != null) {
+            String histKuerzel = getArguments().getString("history_kuerzel");
+            String histImageUri = getArguments().getString("history_image_uri");
+            if (histKuerzel != null) {
+                kuerzelEingabe.setText(histKuerzel);
+                if (histImageUri != null && !histImageUri.isEmpty()) {
+                    if (histImageUri.startsWith("/")) {
+                        selectedImageUri = Uri.fromFile(new File(histImageUri));
+                    } else {
+                        selectedImageUri = Uri.parse(histImageUri);
+                    }
+                    applySelectedImageNoOCR(selectedImageUri);
+                } else {
+                    selectedImageUri = null;
+                    Glide.with(this).load(R.drawable.camera_pic).apply(RequestOptions.circleCropTransform()).into(searchPic);
+                    binding.deleteBtn.setVisibility(GONE);
+                    binding.saveBtn.setVisibility(GONE);
+                    binding.shareBtn.setVisibility(GONE);
+                    binding.picinfoBtn.setVisibility(GONE);
+                }
+                performAnalysis(histKuerzel);
+            }
+            setArguments(null);
+        }
+
+        // Falls vorher URI gependet wurde -> jetzt anwenden
+        if (pendingImageUri != null) {
+            Uri uri = pendingImageUri;
+            pendingImageUri = null;
+            handleIncomingUriOnMainThread(uri);
+        }
     }
 
     @Override
@@ -632,27 +583,194 @@ public class HomeFragment extends Fragment {
                 text.append(textBlock.getValue());
                 text.append("\n");
             }
-            String kennzeichen = text.toString();
-            textViewAusgabe2.setText(kennzeichen);
+            String resultText = text.toString();
+            textViewAusgabe2.setText(resultText);
 
-            String kuerzel = kennzeichen.replaceAll("[^A-ZÄÜÖ]", " ").trim();
+            String kuerzel = resultText.replaceAll("[^A-ZÄÜÖ]", " ").trim();
             String[] kuerzelArray = kuerzel.split("\\s+");
             String kuerzelAusgabe = kuerzelArray.length > 0 ? kuerzelArray[0] : "";
-            kuerzelEingabe.setText(kuerzelAusgabe);
-            ausgabe = kennzeichenKI.OrtZuKennzeichenAusgeben(kuerzelAusgabe) + kennzeichenKI.BundeslandZuKennzeichenAusgeben(kuerzelAusgabe);
-            if (ausgabe.equals("Dieses Kennzeichen kenne ich leider nicht 😒!")) {
-                String modifiedText = text.toString().replace("M", "W").replace("H", "W");
+            
+            // Erst prüfen ob das Kürzel existiert, sonst Fallback-M/W-Tausch
+            if (kennzeichenKI.getKennzeichen(kuerzelAusgabe) == null) {
+                String modifiedText = resultText.replace("M", "W").replace("H", "W");
                 String kuerzel1 = modifiedText.replaceAll("[^A-ZÄÜÖ]", " ").trim();
                 String[] kuerzelArray1 = kuerzel1.split("\\s+");
                 String kuerzelAusgabe1 = kuerzelArray1.length > 0 ? kuerzelArray1[0] : "";
-                kuerzelEingabe.setText(kuerzelAusgabe1);
-                ausgabe = kennzeichenKI.OrtZuKennzeichenAusgeben(kuerzelAusgabe1) + kennzeichenKI.BundeslandZuKennzeichenAusgeben(kuerzelAusgabe1);
+                if (kennzeichenKI.getKennzeichen(kuerzelAusgabe1) != null) {
+                    kuerzelAusgabe = kuerzelAusgabe1;
+                }
             }
-            textViewAusgabe.setText(ausgabe);
+            
+            kuerzelEingabe.setText(kuerzelAusgabe);
+            performAnalysis(kuerzelAusgabe);
 
         } catch (FileNotFoundException e) {
             Log.e("Error", "Datei nicht gefunden", e);
             kuerzelEingabe.setText(e.toString());
+        }
+    }
+
+    private void performAnalysis(String kuerzel) {
+        binding.fussnotenwert.setVisibility(VISIBLE);
+        binding.fussnotentitel.setVisibility(VISIBLE);
+        aistatus = 0;
+        hideKeyboard(binding.getRoot());
+        updateTextViewAusgabe2();
+
+        if (kuerzel != null && !kuerzel.isEmpty()) {
+            binding.x.setVisibility(View.VISIBLE);
+        }
+
+        recognizeCity(kuerzel);
+        Kennzeichen kennzeichen = kennzeichenKI.getKennzeichen(kuerzel);
+
+        Log.d("Kennzeichen", "Analyse für Kürzel: " + kuerzel);
+        Log.d("Kennzeichen", "Gefundenes Kennzeichen: " + (kennzeichen != null ? kennzeichen.OertskuerzelGeben() : "null"));
+
+        if (kennzeichen != null) {
+            binding.sliderview.setVisibility(View.VISIBLE);
+            binding.kuerzelwert.setText(kennzeichen.OertskuerzelGeben());
+            binding.herleitungswert.setText(kennzeichen.OrtGeben());
+            binding.stadtoderkreiswert.setText(kennzeichen.StadtKreisGeben());
+            if (!Objects.equals(kennzeichen.BundeslandGeben(), "---")) {
+                binding.bundeslandwert.setText(kennzeichen.BundeslandGeben());
+                binding.bundeslandwert.setVisibility(VISIBLE);
+                binding.bundeslandtitel.setVisibility(VISIBLE);
+            } else {
+                binding.bundeslandwert.setVisibility(GONE);
+                binding.bundeslandtitel.setVisibility(GONE);
+            }
+            if (!Objects.equals(kennzeichen.BundeslandIsoGeben(), "---")) {
+                binding.bundeslandIsoWert.setText(kennzeichen.BundeslandIsoGeben());
+                binding.bundeslandIsoWert.setVisibility(VISIBLE);
+                binding.bundeslandIsoTitel.setVisibility(VISIBLE);
+            } else {
+                binding.bundeslandIsoWert.setVisibility(GONE);
+                binding.bundeslandIsoTitel.setVisibility(GONE);
+            }
+            binding.landwert.setText(kennzeichen.LandGeben());
+            if (kennzeichen.isSaved()) {
+                binding.likedBtn.setVisibility(VISIBLE);
+            } else {
+                binding.likedBtn.setVisibility(GONE);
+            }
+
+            int fussnoteNummer = 6;
+            if (!Objects.equals(kennzeichen.FussnoteGeben(), "")) {
+                try {
+                    fussnoteNummer = Integer.parseInt(kennzeichen.FussnoteGeben());
+                } catch (NumberFormatException ignored) {}
+            }
+            String[] fussnoten = {
+                    "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungs nummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzliche Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
+                    "Stadt- und Landkreis führen das gleiche Unterscheidungszeichen. Die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle stellt durch geeignete verwaltungsinterne Maßnahmen sicher, dass eine Doppelvergabe desselben Kennzeichens ausgeschlossen ist.",
+                    "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
+                    "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Sachsen-Anhalt im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Baden-Württemberg.",
+                    "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.",
+                    "amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
+                    "---",
+                    "amtlicher Hinweis: Das Unterscheidungszeichen wird durch mehrere Verwaltungsbezirke verwaltet. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung, die in den jeweiligen Verwaltungsbezirken durch die dort zuständigen Behörden oder zusätzliche Verwaltungsstellen ausgegeben werden, erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle in Baden-Württemberg im Einvernehmen mit der obersten Landesbehörde oder der nach Landesrecht zuständigen Stelle in Sachsen-Anhalt.\n\n- weiterer amtlicher Hinweis: Die Stadt und die Landespolizei Sachsen führen das gleiche Unterscheidungszeichen. Die Festlegung der Gruppen oder Nummerngruppen der Erkennungsnummer nach Anlage 2 der Fahrzeug-Zulassungsverordnung für deren Behörden oder zusätzlichen Verwaltungsstellen erfolgt durch die zuständige oberste Landesbehörde oder die nach Landesrecht zuständige Stelle.",
+            };
+
+            String fussnoteText = "";
+            if (fussnoteNummer >= 0 && fussnoteNummer < fussnoten.length) {
+                fussnoteText = fussnoten[fussnoteNummer];
+            } else {
+                fussnoteText = String.valueOf(fussnoteNummer);
+            }
+
+            binding.fussnotenwert.setText(fussnoteText);
+
+            if (kennzeichen.FussnoteGeben().isEmpty() || Objects.equals(kennzeichen.FussnoteGeben(), "6")) {
+                if (kennzeichen.BemerkungenGeben().isEmpty() || Objects.equals(kennzeichen.BemerkungenGeben(), "---")) {
+                    binding.fussnotencard.setVisibility(GONE);
+                } else {
+                    binding.fussnotencard.setVisibility(VISIBLE);
+                    binding.fussnotenwert.setText("- " + kennzeichen.BemerkungenGeben());
+                }
+            } else if (kennzeichen.BemerkungenGeben().isEmpty() || Objects.equals(kennzeichen.BemerkungenGeben(), "---")) {
+                binding.fussnotencard.setVisibility(VISIBLE);
+                binding.fussnotenwert.setText("- " + fussnoteText);
+            } else {
+                binding.fussnotencard.setVisibility(VISIBLE);
+                binding.fussnotenwert.setText("- " + kennzeichen.BemerkungenGeben() + "\n\n- " + fussnoteText);
+            }
+
+            // Save to history if not same as last one
+            String imageUriString = selectedImageUri != null ? selectedImageUri.toString() : null;
+            String currentSearchKey = kennzeichen.OertskuerzelGeben() + (imageUriString != null ? imageUriString : "");
+            if (!currentSearchKey.equals(lastSavedSearchKey)) {
+                historyManager.addEntry(new SearchEntry(kennzeichen.OertskuerzelGeben(), kennzeichen.OrtGeben(), imageUriString));
+                lastSavedSearchKey = currentSearchKey;
+            }
+
+            checkNetworkAndGenerateText(kennzeichen);
+
+            binding.maprel.setOnClickListener(view -> {
+                MapFragment mapFragment = new MapFragment(kennzeichen);
+                mapFragment.show(getParentFragmentManager(), "MapFragment");
+            });
+
+            binding.infotextwert.setOnClickListener(view2 -> {
+                if (!binding.infotextwert.getText().toString().startsWith("Analysiere Informationen")) {
+                    checkNetworkAndGenerateText(kennzeichen);
+                }
+            });
+
+            if (kennzeichen.isSonderDE()) {
+                binding.bundeslandIsoWert.setVisibility(GONE);
+                binding.bundeslandIsoTitel.setVisibility(GONE);
+                binding.stadtoderkreistitel.setText("Typ:  ");
+                binding.herleitungstitel.setText("Bedeutung:  ");
+                binding.bundeslandtitel.setText("Zulassungsbehörde:  ");
+            } else if (kennzeichen.isAuslaufendDE()) {
+                binding.bundeslandwert.setVisibility(GONE);
+                binding.bundeslandtitel.setVisibility(GONE);
+                binding.bundeslandIsoWert.setVisibility(GONE);
+                binding.bundeslandIsoTitel.setVisibility(GONE);
+                binding.stadtoderkreistitel.setText("Bisheriger Verwaltungsbezirk/-kreis:  ");
+                binding.stadtoderkreistitel.setTextSize(13.5F);
+                binding.herleitungstitel.setText("Abwicklung:  ");
+            } else {
+                binding.bundeslandIsoWert.setVisibility(VISIBLE);
+                binding.bundeslandIsoTitel.setVisibility(VISIBLE);
+                binding.stadtoderkreistitel.setText("Stadt/Kreis:  ");
+                binding.stadtoderkreistitel.setTextSize(17);
+                binding.herleitungstitel.setText("Herleitung:  ");
+                binding.bundeslandtitel.setText("Bundesland:  ");
+            }
+
+            if (isNetworkAvailable()) {
+                mapView = binding.map;
+                mapRel = binding.maprel;
+                mapCardView = binding.mapcardview;
+                mapView.setTileSource(TileSourceFactory.MAPNIK);
+                mapView.setBuiltInZoomControls(true);
+                mapView.setMultiTouchControls(true);
+                mapCardView.setVisibility(View.VISIBLE);
+                binding.kurzCard.setVisibility(GONE);
+                showaiText(kennzeichen, "on");
+
+                if (!kennzeichen.isSonderDE()) {
+                    getCoordinates(kennzeichen.OrtGeben() + "_" + kennzeichen.BundeslandGeben());
+                } else {
+                    binding.mapconstlayout.setVisibility(GONE);
+                }
+            } else {
+                if (kennzeichen.isSonderDE()) {
+                    binding.mapconstlayout.setVisibility(GONE);
+                } else {
+                    binding.mapconstlayout.setVisibility(VISIBLE);
+                    binding.mapcardview.setVisibility(GONE);
+                }
+                binding.kurzCard.setVisibility(VISIBLE);
+                binding.kurzCardText.setText(kennzeichen.OertskuerzelGeben());
+                showaiText(kennzeichen, "off");
+            }
+        } else {
+            binding.sliderview.setVisibility(View.GONE);
+            textViewAusgabe.setText("Dieses Kennzeichen kenne ich leider nicht 😒!");
+            Toast.makeText(getActivity(), "Kein Kennzeichen gefunden", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -882,33 +1000,15 @@ public class HomeFragment extends Fragment {
     }
 
     private void showImageSourceDialog() {
-        String[] options = {"Kamera", "Galerie"};
-
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Bild auswählen")
-                .setItems(options, (dialog, which) -> {
-                    if (which == 0) {
-                        // Kamera
-                        openCamera();
-                    } else {
-                        // Galerie
-                        openGallery();
-                    }
-                })
-                .show();
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            openCamera();
+        } else {
+            requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
     }
 
     private void openCamera() {
-        File photoFile = new File(requireContext().getCacheDir(), "camera_" + System.currentTimeMillis() + ".jpg");
-        cameraImageUri = FileProvider.getUriForFile(
-                requireContext(),
-                "de.haainz.kennzeichenerkennung.fileprovider",  // Achte auf deinen authority
-                photoFile
-        );
-
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri);
-        pickImageLauncher.launch(cameraIntent);
+        NavHostFragment.findNavController(this).navigate(R.id.nav_scanner);
     }
 
     private void openGallery() {
@@ -921,24 +1021,306 @@ public class HomeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == UCrop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {
-            Uri sourceUri = data.getData();
-            Uri destinationUri = Uri.fromFile(new File(requireContext().getCacheDir(), "cropped_" + System.currentTimeMillis() + ".jpg"));
-
-            UCrop.Options options = new UCrop.Options();
-            options.setFreeStyleCropEnabled(false);
-            options.setHideBottomControls(true);
-            options.setToolbarTitle("Zuschneiden");
-
-            UCrop.of(sourceUri, destinationUri)
-                    .withAspectRatio(3, 2)
-                    .withOptions(options)
-                    .start(requireContext(), this);
-        } else if (resultCode == UCrop.RESULT_ERROR) {
-            final Throwable cropError = UCrop.getError(data);
-            if (cropError != null) {
-                Log.e("UCrop", "Crop error: ", cropError);
+        if (requestCode == UCrop.REQUEST_CROP) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                // UCrop liefert die Ergebnis-Uri so:
+                Uri resultUri = UCrop.getOutput(data);
+                if (resultUri != null) {
+                    // Setze selektierte URI und wende sie sofort an
+                    selectedImageUri = resultUri;
+                    // Falls binding noch nicht vorhanden ist (sehr selten), pendenz
+                    if (binding == null) {
+                        pendingImageUri = resultUri;
+                    } else {
+                        requireActivity().runOnUiThread(() -> applySelectedImage(resultUri));
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Zuschneiden fehlgeschlagen (kein Ergebnis).", Toast.LENGTH_SHORT).show();
+                }
+            } else if (resultCode == UCrop.RESULT_ERROR) {
+                final Throwable cropError = UCrop.getError(data);
+                if (cropError != null) {
+                    Log.e("UCrop", "Crop error: ", cropError);
+                }
+                Toast.makeText(getContext(), "Fehler beim Zuschneiden", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    // verarbeite Bundle-Ergebnis (verschiedene Keys möglich)
+    private void handleIncomingScanResult(Bundle bundle) {
+        if (bundle == null) {
+            Log.w(TAG_IMG, "handleIncomingScanResult: bundle == null");
+            return;
+        }
+
+        Uri imageUri;
+        if (bundle.containsKey("image_uri")) {
+            imageUri = bundle.getParcelable("image_uri");
+        } else if (bundle.containsKey("scanned_plate_uri")) {
+            String s = bundle.getString("scanned_plate_uri");
+            if (s != null) imageUri = Uri.parse(s);
+            else {
+                imageUri = null;
+            }
+        } else if (bundle.containsKey("imageUri")) {
+            imageUri = bundle.getParcelable("imageUri");
+        } else {
+            imageUri = null;
+        }
+
+        if (imageUri == null) {
+            Log.w(TAG_IMG, "handleIncomingScanResult: no uri found in bundle");
+            return;
+        }
+
+        Log.d(TAG_IMG, "handleIncomingScanResult: got imageUri=" + imageUri);
+
+        // Wenn Fragment noch nicht bereit ist, cache die URI
+        if (!isAdded() || getActivity() == null || binding == null) {
+            Log.d(TAG_IMG, "handleIncomingScanResult: fragment not ready, caching pendingImageUri");
+            pendingImageUri = imageUri;
+            return;
+        }
+
+        // Auf Main thread anwenden
+        requireActivity().runOnUiThread(() -> applySelectedImage(imageUri));
+    }
+
+    // sorgt dafür, dass UI-Update sicher ausgeführt wird (oder cached)
+    private void handleIncomingUriOnMainThread(Uri uri) {
+        if (uri == null) return;
+
+        if (binding == null) {
+            Log.d(TAG_IMG, "handleIncomingUriOnMainThread: binding null - caching pendingImageUri=" + uri);
+            pendingImageUri = uri;
+            return;
+        }
+
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            requireActivity().runOnUiThread(() -> applySelectedImage(uri));
+        } else {
+            applySelectedImage(uri);
+        }
+    }
+
+    private void applySelectedImageNoOCR(Uri imageUri) {
+        if (imageUri == null || binding == null) return;
+        Glide.with(this)
+                .load(imageUri)
+                .apply(RequestOptions.fitCenterTransform())
+                .into(binding.imageView2);
+        binding.deleteBtn.setVisibility(View.VISIBLE);
+        binding.saveBtn.setVisibility(View.VISIBLE);
+        binding.shareBtn.setVisibility(View.VISIBLE);
+        binding.picinfoBtn.setVisibility(View.VISIBLE);
+        binding.x.setVisibility(View.VISIBLE);
+    }
+
+    // setzt das Bild in imageView2 (Glide) + sichtbar machen Buttons + startet OCR
+    private void applySelectedImage(Uri imageUri) {
+        if (imageUri == null) {
+            Log.w(TAG_IMG, "applySelectedImage: imageUri == null");
+            return;
+        }
+
+        // binding prüfen
+        if (binding == null) {
+            Log.d(TAG_IMG, "applySelectedImage: binding null -> caching pendingImageUri=" + imageUri);
+            pendingImageUri = imageUri;
+            return;
+        }
+
+        // Sicherstellen Main-Thread
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            requireActivity().runOnUiThread(() -> applySelectedImage(imageUri));
+            return;
+        }
+
+        try {
+            Log.d(TAG_IMG, "applySelectedImage: loading uri=" + imageUri);
+
+            binding.imageView2.setAdjustViewBounds(true);
+            binding.imageView2.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+            // Versuche Glide
+            Glide.with(requireActivity())
+                    .asBitmap()
+                    .load(imageUri)
+                    .apply(RequestOptions.fitCenterTransform())
+                    .into(new com.bumptech.glide.request.target.ImageViewTarget<Bitmap>(binding.imageView2) {
+                        @Override
+                        protected void setResource(@Nullable Bitmap resource) {
+                            if (resource != null) {
+                                binding.imageView2.setImageBitmap(resource);
+                                // Buttons sichtbar
+                                binding.deleteBtn.setVisibility(View.VISIBLE);
+                                binding.saveBtn.setVisibility(View.VISIBLE);
+                                binding.shareBtn.setVisibility(View.VISIBLE);
+                                binding.picinfoBtn.setVisibility(View.VISIBLE);
+                                binding.x.setVisibility(View.VISIBLE);
+
+                                selectedImageUri = imageUri;
+                                // OCR starten (nutzt selectedImageUri)
+                                recognizeTextInImage();
+                            } else {
+                                // Glide lieferte null -> fallback
+                                Log.w(TAG_IMG, "Glide returned null bitmap, falling back to manual load");
+                                runFallbackLoad(imageUri);
+                            }
+                        }
+
+                        @Override
+                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                            Log.e(TAG_IMG, "Glide failed to load image, falling back to manual load");
+                            runFallbackLoad(imageUri);
+                        }
+                    });
+
+        } catch (Exception e) {
+            Log.e(TAG_IMG, "applySelectedImage error -> fallback", e);
+            runFallbackLoad(imageUri);
+        }
+    }
+
+    private void runFallbackLoad(Uri imageUri) {
+        // Manuelles Laden mit Sampling (falls Glide scheitert)
+        try {
+            Bitmap bmp = loadBitmapFromUriWithSampling(requireContext(), imageUri, 1200, 1200);
+            if (bmp != null) {
+                binding.imageView2.setImageBitmap(bmp);
+                binding.imageView2.setAdjustViewBounds(true);
+                binding.imageView2.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                binding.deleteBtn.setVisibility(View.VISIBLE);
+                binding.saveBtn.setVisibility(View.VISIBLE);
+                binding.shareBtn.setVisibility(View.VISIBLE);
+                binding.picinfoBtn.setVisibility(View.VISIBLE);
+                binding.x.setVisibility(View.VISIBLE);
+
+                selectedImageUri = imageUri;
+                recognizeTextInImage();
+            } else {
+                Log.e(TAG_IMG, "runFallbackLoad: loaded bitmap == null");
+                Toast.makeText(getContext(), "Bild konnte nicht geladen werden", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e(TAG_IMG, "runFallbackLoad: exception", e);
+            Toast.makeText(getContext(), "Fehler beim Laden des Bildes", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private static Bitmap loadBitmapFromUriWithSampling(Context ctx, Uri uri, int reqWidth, int reqHeight) {
+        if (ctx == null || uri == null) return null;
+
+        try {
+            // 1) nur Maße auslesen
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            try (InputStream is = ctx.getContentResolver().openInputStream(uri)) {
+                if (is == null) return null;
+                BitmapFactory.decodeStream(is, null, options);
+            }
+
+            // 2) inSampleSize berechnen
+            options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+            // 3) Bitmap tatsächlich laden
+            options.inJustDecodeBounds = false;
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            options.inMutable = true; // erlaubt evtl. spätere Bearbeitung
+            Bitmap bitmap;
+            try (InputStream is2 = ctx.getContentResolver().openInputStream(uri)) {
+                if (is2 == null) return null;
+                bitmap = BitmapFactory.decodeStream(is2, null, options);
+            }
+
+            if (bitmap == null) return null;
+
+            // 4) EXIF-Rotation berücksichtigen (falls vorhanden)
+            try (InputStream exifStream = ctx.getContentResolver().openInputStream(uri)) {
+                if (exifStream != null) {
+                    ExifInterface exif = new ExifInterface(exifStream);
+                    int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+                    Matrix matrix = new Matrix();
+                    boolean needTransform = false;
+
+                    switch (orientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            matrix.postRotate(90);
+                            needTransform = true;
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            matrix.postRotate(180);
+                            needTransform = true;
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            matrix.postRotate(270);
+                            needTransform = true;
+                            break;
+                        case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                            matrix.postScale(-1, 1);
+                            needTransform = true;
+                            break;
+                        case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                            matrix.postScale(1, -1);
+                            needTransform = true;
+                            break;
+                        case ExifInterface.ORIENTATION_TRANSPOSE:
+                            matrix.postRotate(90);
+                            matrix.postScale(-1, 1);
+                            needTransform = true;
+                            break;
+                        case ExifInterface.ORIENTATION_TRANSVERSE:
+                            matrix.postRotate(270);
+                            matrix.postScale(-1, 1);
+                            needTransform = true;
+                            break;
+                        default:
+                            // ORIENTATION_UNDEFINED or normal -> nichts zu tun
+                    }
+
+                    if (needTransform) {
+                        Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                        if (rotated != bitmap) {
+                            bitmap.recycle();
+                            bitmap = rotated;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // EXIF lesen darf nicht fehlschlagen — falls doch, benutzen wir das unveränderte Bitmap
+                e.printStackTrace();
+            }
+
+            return bitmap;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        int height = options.outHeight;
+        int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            int halfHeight = height / 2;
+            int halfWidth = width / 2;
+
+            // wähle größtes inSampleSize (Potenz von 2), das noch >= requirments ist
+            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+
+            // zusätzlicher Feinabgleich: wenn noch zu groß, erhöhe weiter
+            while ((height / inSampleSize) > reqHeight * 2 || (width / inSampleSize) > reqWidth * 2) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
     }
 }

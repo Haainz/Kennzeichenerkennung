@@ -18,6 +18,7 @@
         <item name="greyslider">#DEDEDE</item>
         <item name="backcolor">#FDFDFD</item>
         <!-- Customize your theme here. -->
+        <item name="alertDialogTheme">@style/Theme.Kennzeichenerkennung.CompactDialog</item>
     </style>
 
     <style name="Theme.Kennzeichenerkennung.NoActionBar">

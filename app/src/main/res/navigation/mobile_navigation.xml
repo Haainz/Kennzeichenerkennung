@@ -22,4 +22,16 @@
         android:name="de.haainz.kennzeichenerkennung.ui.day.DayFragment"
         android:label="Kennzeichen des Tages"
         tools:layout="@layout/fragment_day" />
+
+    <fragment
+        android:id="@+id/nav_scanner"
+        android:name="de.haainz.kennzeichenerkennung.ui.home.KennzeichenScannerFragment"
+        android:label="Kennzeichen Scanner"
+        tools:layout="@layout/fragment_kennzeichen_scanner" />
+
+    <fragment
+        android:id="@+id/nav_history"
+        android:name="de.haainz.kennzeichenerkennung.ui.history.SearchHistoryFragment"
+        android:label="@string/menu_history"
+        tools:layout="@layout/fragment_search_history" />
 </navigation>

@@ -67,6 +67,11 @@ public class MainActivity extends AppCompatActivity {
         setNightMode();
         super.onCreate(savedInstanceState);
 
+        // Statusbar Farbe explizit setzen
+        getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.blue_700));
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -83,19 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
         View statusbarView = findViewById(R.id.statusbar);
         if (statusbarView != null) {
-            ViewCompat.setOnApplyWindowInsetsListener(statusbarView, (v, insets) -> {
-                Insets sysInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-
-                // Höhe manuell setzen
-                ViewGroup.LayoutParams params = v.getLayoutParams();
-                params.height = sysInsets.top;
-                v.setLayoutParams(params);
-
-                // Hintergrundfarbe setzen
-                v.setBackgroundColor(ContextCompat.getColor(this, R.color.blue_700));
-
-                return insets;
-            });
+            statusbarView.setVisibility(View.GONE);
         }
 
         NavigationView navView = findViewById(R.id.nav_view);
@@ -117,29 +110,8 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
 
-        ConsentRequestParameters params = new ConsentRequestParameters.Builder()
-                .setTagForUnderAgeOfConsent(false)
-                .build();
-
-        consentInformation = UserMessagingPlatform.getConsentInformation(this);
-
-        // ⬇️ Consent-Status anfragen
-        consentInformation.requestConsentInfoUpdate(
-                this,
-                params,
-                () -> {
-                    if (consentInformation.isConsentFormAvailable()) {
-                        loadAndShowConsentForm();
-                    }
-                },
-                formError -> Log.e("Consent", "Consent error: " + formError.getMessage())
-        );
-
-        MobileAds.initialize(this, initializationStatus -> {
-        });
-
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_history)
                 .setOpenableLayout(drawerLayout)
                 .build();
 
@@ -260,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         binding.appBarMain.toolbar.setVisibility(View.VISIBLE);
+        maybeShowNativeAd();
     }
 
     private boolean isNetworkAvailable() {
@@ -295,10 +268,16 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         if (drawerLayout.isOpen()) {
             drawerLayout.close();
-        } else if (navController.getCurrentDestination() != null && navController.getCurrentDestination().getId() != R.id.nav_home) {
-            navController.navigate(R.id.nav_home);
         } else {
-            super.onBackPressed();
+            // Erst versuchen den Backstack des NavControllers zu nutzen
+            if (!navController.popBackStack()) {
+                // Wenn wir nicht mehr zurück poppen können und nicht auf Home sind -> Home erzwingen
+                if (navController.getCurrentDestination() != null && navController.getCurrentDestination().getId() != R.id.nav_home) {
+                    navController.navigate(R.id.nav_home);
+                } else {
+                    super.onBackPressed();
+                }
+            }
         }
     }
 
@@ -307,39 +286,69 @@ public class MainActivity extends AppCompatActivity {
         return prefs.getBoolean("offlineSwitch", false);
     }
 
-    private void loadAndShowConsentForm() {
+    private void loadAndShowConsentForm(Runnable onComplete) {
         UserMessagingPlatform.loadConsentForm(
                 this,
                 form -> {
                     consentForm = form;
-
-                    if (consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
-                        consentForm.show(
-                                this,
-                                dismissError -> {
-                                    // Benutzer hat Formular geschlossen – Consent ggf. erneut prüfen
-                                    Log.d("Consent", "Form closed. Status: " + consentInformation.getConsentStatus());
-                                });
-                    }
+                    consentForm.show(this, dismissError -> {
+                        if (onComplete != null) onComplete.run();
+                    });
                 },
-                formError -> Log.e("Consent", "Form load error: " + formError.getMessage())
+                formError -> {
+                    Log.e("Consent", "Form load error: " + formError.getMessage());
+                    if (onComplete != null) onComplete.run();
+                }
         );
     }
 
     private void maybeShowNativeAd() {
         boolean showAds = sharedPreferences.getBoolean("adSwitch", false); // ad_switch Status aus Settings
-        if (!showAds) return;
-
         NativeAdView adView = findViewById(R.id.native_ad_view);
-        AdLoader adLoader = new AdLoader.Builder(this, this.getString(R.string.admob_native_ad_unit_id)) // Test-ID
-                .forNativeAd(nativeAd -> {
-                    // Ad erfolgreich geladen → Layout befüllen
-                    populateNativeAdView(nativeAd, adView);
-                    adView.setVisibility(View.VISIBLE);
-                })
+        if (adView == null) return;
+
+        if (!showAds) {
+            adView.setVisibility(View.GONE);
+            return;
+        }
+
+        // Wenn die Werbung bereits sichtbar ist, nichts tun
+        if (adView.getVisibility() == View.VISIBLE) return;
+
+        consentInformation = UserMessagingPlatform.getConsentInformation(this);
+        ConsentRequestParameters params = new ConsentRequestParameters.Builder()
+                .setTagForUnderAgeOfConsent(false)
                 .build();
 
-        adLoader.loadAd(new AdRequest.Builder().build());
+        consentInformation.requestConsentInfoUpdate(
+                this,
+                params,
+                () -> {
+                    if (consentInformation.isConsentFormAvailable() &&
+                            consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
+                        loadAndShowConsentForm(() -> startLoadingAd(adView));
+                    } else {
+                        startLoadingAd(adView);
+                    }
+                },
+                formError -> {
+                    Log.e("Consent", "Consent error: " + formError.getMessage());
+                    startLoadingAd(adView);
+                }
+        );
+    }
+
+    private void startLoadingAd(NativeAdView adView) {
+        MobileAds.initialize(this, initializationStatus -> {
+            AdLoader adLoader = new AdLoader.Builder(this, this.getString(R.string.admob_native_ad_unit_id))
+                    .forNativeAd(nativeAd -> {
+                        // Ad erfolgreich geladen → Layout befüllen
+                        populateNativeAdView(nativeAd, adView);
+                        adView.setVisibility(View.VISIBLE);
+                    })
+                    .build();
+            adLoader.loadAd(new AdRequest.Builder().build());
+        });
     }
 
     private void populateNativeAdView(NativeAd nativeAd, NativeAdView adView) {
@@ -369,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
                                 .titleTextColor(android.R.color.black)
                                 .descriptionTextColor(android.R.color.black)
                                 .targetRadius(35)
-                                .cancelable(false),
+                                .cancelable(true),
 
                         TapTarget.forView(updownloadBtn, "Export & Import", "Exportiere und importiere Kennzeichen und ihre Infos, um sie z.B. auf ein anderes Gerät zu übertragen.")
                                 .outerCircleColor(R.color.red)
@@ -378,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
                                 .titleTextColor(android.R.color.black)
                                 .descriptionTextColor(android.R.color.black)
                                 .targetRadius(56)
-                                .cancelable(false),
+                                .cancelable(true),
 
                         TapTarget.forView(settingsBtn, "Einstellungen", "Passe die App nach deinen Wünschen an.")
                                 .outerCircleColor(R.color.yellow)
@@ -387,8 +396,9 @@ public class MainActivity extends AppCompatActivity {
                                 .titleTextColor(android.R.color.black)
                                 .descriptionTextColor(android.R.color.black)
                                 .targetRadius(35)
-                                .cancelable(false)
+                                .cancelable(true)
                 )
+                .continueOnCancel(true)
                 .listener(new TapTargetSequence.Listener() {
                     @Override
                     public void onSequenceFinish() {

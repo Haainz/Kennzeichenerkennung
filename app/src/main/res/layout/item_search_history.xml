@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="?attr/greyslider">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/history_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="10.05.2024 - 14:30"
+            android:textSize="11sp"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/history_delete" />
+
+        <ImageButton
+            android:id="@+id/history_delete"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/icon_x"
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            app:tint="@color/red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/history_image"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:visibility="gone"
+            app:layout_constraintWidth_percent="0.55"
+            app:layout_constraintTop_toBottomOf="@id/history_date"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/text_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/history_date"
+            app:layout_constraintStart_toEndOf="@id/history_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="10dp">
+
+            <TextView
+                android:id="@+id/history_kuerzel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WOB"
+                android:textSize="18sp"
+                android:textColor="?attr/colorTextNormal"
+                android:textStyle="bold"
+                android:fontFamily="@font/schriftkraftfahrzeugkennzeichen" />
+
+            <TextView
+                android:id="@+id/history_herleitung"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wolfsburg"
+                android:textColor="?attr/colorTextNormal"
+                android:textSize="14sp"
+                android:ellipsize="end"
+                android:maxLines="1" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

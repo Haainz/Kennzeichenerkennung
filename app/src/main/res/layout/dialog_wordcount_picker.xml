@@ -45,6 +45,8 @@
             android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_rounded_corner"
+            android:backgroundTint="@color/blue_500"
             android:text="Abbrechen"
             android:textColor="@color/white" />
 
@@ -53,6 +55,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:background="@drawable/edit_text_rounded_corner"
+            android:backgroundTint="@color/blue_500"
             android:text="Generieren"
             android:textColor="@color/white" />
     </LinearLayout>

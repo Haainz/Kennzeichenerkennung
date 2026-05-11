@@ -2,6 +2,8 @@ package de.haainz.kennzeichenerkennung.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -47,6 +49,9 @@ import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.UserMessagingPlatform;
 
 public class AIManager {
 
@@ -74,6 +79,9 @@ public class AIManager {
 
             dialog.setView(activity.getLayoutInflater().inflate(R.layout.dialog_wordcount_picker, null));
             dialog.setCancelable(false);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            }
             dialog.show();
 
             SeekBar slider = dialog.findViewById(R.id.wordcount_slider);
@@ -128,6 +136,9 @@ public class AIManager {
 
             dialog.setView(activity.getLayoutInflater().inflate(R.layout.dialog_ad_confirmation, null));
             dialog.setCancelable(false);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            }
             dialog.show();
 
             Button watchAdBtn = dialog.findViewById(R.id.watch_ad_button);
@@ -153,11 +164,44 @@ public class AIManager {
     }
 
     private void showRewardedAd(Runnable onRewardEarned) {
-        /*Activity activity = (Activity) context;
+        Activity activity = (Activity) context;
 
+        ConsentRequestParameters params = new ConsentRequestParameters.Builder()
+                .setTagForUnderAgeOfConsent(false)
+                .build();
+
+        ConsentInformation consentInformation = UserMessagingPlatform.getConsentInformation(context);
+        consentInformation.requestConsentInfoUpdate(
+                activity,
+                params,
+                () -> {
+                    if (consentInformation.isConsentFormAvailable() &&
+                            consentInformation.getConsentStatus() == ConsentInformation.ConsentStatus.REQUIRED) {
+                        UserMessagingPlatform.loadConsentForm(
+                                context,
+                                consentForm -> consentForm.show(activity, formError -> {
+                                    // Nachdem das Formular geschlossen wurde, Ad laden
+                                    loadAndShowRewardedAd(activity, onRewardEarned);
+                                }),
+                                formError -> {
+                                    Log.e("Consent", "Form load error: " + formError.getMessage());
+                                    loadAndShowRewardedAd(activity, onRewardEarned);
+                                }
+                        );
+                    } else {
+                        loadAndShowRewardedAd(activity, onRewardEarned);
+                    }
+                },
+                requestError -> {
+                    Log.e("Consent", "Consent update error: " + requestError.getMessage());
+                    loadAndShowRewardedAd(activity, onRewardEarned);
+                }
+        );
+    }
+
+    private void loadAndShowRewardedAd(Activity activity, Runnable onRewardEarned) {
         RequestConfiguration configuration = new RequestConfiguration.Builder().build();
         MobileAds.setRequestConfiguration(configuration);
-
 
         MobileAds.initialize(context);
 
@@ -166,9 +210,9 @@ public class AIManager {
             @Override
             public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
                 rewardedAd.show(activity, rewardItem -> {
-                    if (onRewardEarned != null) {*/
+                    if (onRewardEarned != null) {
                         onRewardEarned.run();
-                    /*}
+                    }
                 });
             }
 
@@ -176,7 +220,7 @@ public class AIManager {
             public void onAdFailedToLoad(@NonNull com.google.android.gms.ads.LoadAdError loadAdError) {
                 Toast.makeText(context, "Fehler beim Laden der Werbung", Toast.LENGTH_SHORT).show();
             }
-        });*/
+        });
     }
 
     private void generateAITextInternal(Kennzeichen kennzeichen, AICallback callback, int wordLimit) {
@@ -433,17 +477,22 @@ public class AIManager {
 
     private void openResponse(String response) {
         String cleanedResponse = response.trim();
-                    new AlertDialog.Builder(context)
-                            .setTitle("API-Antwort")
-                            .setMessage(cleanedResponse)
-                            .setPositiveButton("Kopieren", (dialog, which) -> {
-                                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                                ClipData clip = ClipData.newPlainText("API Response", cleanedResponse);
-                                clipboard.setPrimaryClip(clip);
-                                Toast.makeText(context, "Antwort kopiert", Toast.LENGTH_SHORT).show();
-                            })
-                            .setNegativeButton("Abbrechen", null)
-                            .show();
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle("API-Antwort")
+                .setMessage(cleanedResponse)
+                .setPositiveButton("Kopieren", (d, which) -> {
+                    ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("API Response", cleanedResponse);
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(context, "Antwort kopiert", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Abbrechen", null)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_background);
+        }
+        dialog.show();
     }
 
     public interface OnModelIdReceivedListener {
