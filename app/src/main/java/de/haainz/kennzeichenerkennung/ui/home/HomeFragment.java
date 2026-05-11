@@ -77,9 +77,10 @@ import de.haainz.kennzeichenerkennung.databinding.FragmentHomeBinding;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.google.android.gms.vision.Frame;
-import com.google.android.gms.vision.text.TextBlock;
-import com.google.android.gms.vision.text.TextRecognizer;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.Text;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 import com.yalantis.ucrop.UCrop;
 
 import org.json.JSONArray;
@@ -94,6 +95,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
@@ -591,46 +593,41 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        TextRecognizer textRecognizer = new TextRecognizer.Builder(getContext()).build();
-        if (!textRecognizer.isOperational()) {
-            Log.e("Error", "Detector dependencies are not yet available");
-            return;
-        }
+        com.google.mlkit.vision.text.TextRecognizer recognizer =
+                TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
         try {
-            InputStream inputStream = getContext().getContentResolver().openInputStream(selectedImageUri);
-            Frame frame = new Frame.Builder().setBitmap(BitmapFactory.decodeStream(inputStream)).build();
-            SparseArray<TextBlock> textBlocks = textRecognizer.detect(frame);
+            InputImage image = InputImage.fromFilePath(requireContext(), selectedImageUri);
+            recognizer.process(image)
+                    .addOnSuccessListener(visionText -> {
+                        String resultText = visionText.getText();
+                        textViewAusgabe2.setText(resultText);
 
-            StringBuilder text = new StringBuilder();
-            for (int i = 0; i < textBlocks.size(); i++) {
-                TextBlock textBlock = textBlocks.valueAt(i);
-                text.append(textBlock.getValue());
-                text.append("\n");
-            }
-            String resultText = text.toString();
-            textViewAusgabe2.setText(resultText);
+                        String kuerzel = resultText.replaceAll("[^A-ZÄÜÖ]", " ").trim();
+                        String[] kuerzelArray = kuerzel.split("\\s+");
+                        String kuerzelAusgabe = kuerzelArray.length > 0 ? kuerzelArray[0] : "";
 
-            String kuerzel = resultText.replaceAll("[^A-ZÄÜÖ]", " ").trim();
-            String[] kuerzelArray = kuerzel.split("\\s+");
-            String kuerzelAusgabe = kuerzelArray.length > 0 ? kuerzelArray[0] : "";
-            
-            // Erst prüfen ob das Kürzel existiert, sonst Fallback-M/W-Tausch
-            if (kennzeichenKI.getKennzeichen(kuerzelAusgabe) == null) {
-                String modifiedText = resultText.replace("M", "W").replace("H", "W");
-                String kuerzel1 = modifiedText.replaceAll("[^A-ZÄÜÖ]", " ").trim();
-                String[] kuerzelArray1 = kuerzel1.split("\\s+");
-                String kuerzelAusgabe1 = kuerzelArray1.length > 0 ? kuerzelArray1[0] : "";
-                if (kennzeichenKI.getKennzeichen(kuerzelAusgabe1) != null) {
-                    kuerzelAusgabe = kuerzelAusgabe1;
-                }
-            }
-            
-            kuerzelEingabe.setText(kuerzelAusgabe);
-            performAnalysis(kuerzelAusgabe);
+                        // Erst prüfen ob das Kürzel existiert, sonst Fallback-M/W-Tausch
+                        if (kennzeichenKI.getKennzeichen(kuerzelAusgabe) == null) {
+                            String modifiedText = resultText.replace("M", "W").replace("H", "W");
+                            String kuerzel1 = modifiedText.replaceAll("[^A-ZÄÜÖ]", " ").trim();
+                            String[] kuerzelArray1 = kuerzel1.split("\\s+");
+                            String kuerzelAusgabe1 = kuerzelArray1.length > 0 ? kuerzelArray1[0] : "";
+                            if (kennzeichenKI.getKennzeichen(kuerzelAusgabe1) != null) {
+                                kuerzelAusgabe = kuerzelAusgabe1;
+                            }
+                        }
 
-        } catch (FileNotFoundException e) {
-            Log.e("Error", "Datei nicht gefunden", e);
+                        kuerzelEingabe.setText(kuerzelAusgabe);
+                        performAnalysis(kuerzelAusgabe);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Error", "Text recognition failed", e);
+                        kuerzelEingabe.setText("Fehler: " + e.getMessage());
+                    });
+
+        } catch (IOException e) {
+            Log.e("Error", "Fehler beim Laden des Bildes", e);
             kuerzelEingabe.setText(e.toString());
         }
     }
