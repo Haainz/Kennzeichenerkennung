@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowInsetsController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
@@ -28,6 +28,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -99,7 +100,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         ImageButton backBtn = findViewById(R.id.backbtn);
         backBtn.setOnClickListener(v -> {
-            onBackPressed();
+            getOnBackPressedDispatcher().onBackPressed();
         });
 
         darkMode.setOnClickListener(v -> {
@@ -110,9 +111,17 @@ public class SettingsActivity extends AppCompatActivity {
         btnueber.setOnClickListener(v -> {
             Intent intent = new Intent(this, UeberActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_not);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_right, R.anim.slide_not);
+            } else {
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
+            }
         });
-        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_not);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_right, R.anim.slide_not);
+        } else {
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
+        }
 
         Button updateInfo = findViewById(R.id.button_update);
         updateInfo.setOnClickListener(v -> {
@@ -204,6 +213,13 @@ public class SettingsActivity extends AppCompatActivity {
             apitext.setOnClickListener(v -> showDialogFragment(new ApikeyFragment(), "ApikeyFragment"));
         }
         setStatusBarAppearance();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finish();
+            }
+        });
     }
 
     private void loadAIModels() {
@@ -351,21 +367,10 @@ public class SettingsActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.blue_700));
 
         // Textfarbe der Statusleiste anpassen (Light oder Dark Content)
-        View decor = getWindow().getDecorView();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            getWindow().getInsetsController().setSystemBarsAppearance(
-                    AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO ?
-                            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS : 0,
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-            );
-        } else {
-            int flags = decor.getSystemUiVisibility();
-            if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO) {
-                flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            } else {
-                flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            }
-            decor.setSystemUiVisibility(flags);
+        Window window = getWindow();
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(window, window.getDecorView());
+        if (windowInsetsController != null) {
+            windowInsetsController.setAppearanceLightStatusBars(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO);
         }
     }
 }

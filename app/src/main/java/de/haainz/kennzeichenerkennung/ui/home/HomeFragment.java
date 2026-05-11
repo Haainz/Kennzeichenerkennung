@@ -14,12 +14,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
-import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -53,9 +54,9 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.os.BundleCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
@@ -80,16 +81,9 @@ import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 import com.yalantis.ucrop.UCrop;
-import com.yalantis.ucrop.UCropActivity;
-import com.yalantis.ucrop.UCropFragment;
-import com.yalantis.ucrop.view.UCropView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
@@ -134,6 +128,8 @@ public class HomeFragment extends Fragment {
     private Runnable loadingRunnable;
     private int loadingStep = 0;
     private int aistatus = 0;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private ConstraintLayout mapconstlayout;
     private TextView tourBtn;
     private SearchHistoryManager historyManager;
@@ -187,8 +183,37 @@ public class HomeFragment extends Fragment {
                                     .withOptions(options)
                                     .withAspectRatio(1, 1)
                                     .withMaxResultSize(2048, 2048)
-                                    .start(requireContext(), this);
+                                    .getIntent(requireContext());
+
+                            cropImageLauncher.launch(UCrop.of(selectedUri, destinationUri)
+                                    .withOptions(options)
+                                    .withAspectRatio(1, 1)
+                                    .withMaxResultSize(2048, 2048)
+                                    .getIntent(requireContext()));
                         }
+                    }
+                }
+        );
+
+        cropImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Uri resultUri = UCrop.getOutput(result.getData());
+                        if (resultUri != null) {
+                            selectedImageUri = resultUri;
+                            if (binding == null) {
+                                pendingImageUri = resultUri;
+                            } else {
+                                requireActivity().runOnUiThread(() -> applySelectedImage(resultUri));
+                            }
+                        }
+                    } else if (result.getResultCode() == UCrop.RESULT_ERROR && result.getData() != null) {
+                        final Throwable cropError = UCrop.getError(result.getData());
+                        if (cropError != null) {
+                            Log.e("UCrop", "Crop error: ", cropError);
+                        }
+                        Toast.makeText(getContext(), "Fehler beim Zuschneiden", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -745,14 +770,13 @@ public class HomeFragment extends Fragment {
                 mapRel = binding.maprel;
                 mapCardView = binding.mapcardview;
                 mapView.setTileSource(TileSourceFactory.MAPNIK);
-                mapView.setBuiltInZoomControls(true);
                 mapView.setMultiTouchControls(true);
                 mapCardView.setVisibility(View.VISIBLE);
                 binding.kurzCard.setVisibility(GONE);
                 showaiText(kennzeichen, "on");
 
                 if (!kennzeichen.isSonderDE()) {
-                    getCoordinates(kennzeichen.OrtGeben() + "_" + kennzeichen.BundeslandGeben());
+                    setMarkerOnMap(kennzeichen.OrtGeben() + "_" + kennzeichen.BundeslandGeben());
                 } else {
                     binding.mapconstlayout.setVisibility(GONE);
                 }
@@ -798,80 +822,70 @@ public class HomeFragment extends Fragment {
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected() && !isOfflineMode();
+        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) return false;
+        Network network = connectivityManager.getActiveNetwork();
+        if (network == null) return false;
+        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && !isOfflineMode();
     }
 
-    private void getCoordinates(String locationName) {
-        new GetCoordinatesTask(this).execute(locationName);
-    }
-
-    private static class GetCoordinatesTask extends AsyncTask<String, Void, GeoPoint> {
-        private final WeakReference<HomeFragment> fragmentReference;
-
-        GetCoordinatesTask(HomeFragment fragment) {
-            fragmentReference = new WeakReference<>(fragment);
-        }
-
-        @Override
-        protected GeoPoint doInBackground(String... params) {
-            String location = params[0];
-            Log.e("Achtung", location);
-            try {
-                String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location + "_", "UTF-8") + "&format=json&addressdetails=1";
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("User-Agent", "de.haainz.kennzeichenerkennung/1.0 (mailto:kennzeichenerkennung@gmail.com)");
-                connection.setRequestProperty("Accept-Language", "de");
-                connection.connect();
-
-                int responseCode = connection.getResponseCode();
-                if (responseCode != HttpURLConnection.HTTP_OK) {
-                    throw new Exception("HTTP error code: " + responseCode);
-                }
-
-                InputStream inputStream = connection.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                StringBuilder jsonResponse = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    jsonResponse.append(line);
-                }
-                reader.close();
-
-                JSONArray jsonArray = new JSONArray(jsonResponse.toString());
-                if (jsonArray.length() > 0) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(0);
-                    double latitude = jsonObject.getDouble("lat");
-                    double longitude = jsonObject.getDouble("lon");
-                    return new GeoPoint(latitude, longitude);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(GeoPoint geoPoint) {
-            HomeFragment fragment = fragmentReference.get();
-            if (fragment != null) {
+    private void setMarkerOnMap(String locationName) {
+        executor.execute(() -> {
+            GeoPoint geoPoint = getCoordinates(locationName);
+            mainHandler.post(() -> {
                 if (geoPoint != null) {
-                    fragment.mapconstlayout.setVisibility(VISIBLE);
-                    fragment.mapView.getOverlays().clear();
-                    fragment.mapView.getController().setZoom(6.25);
-                    fragment.mapView.getController().setCenter(new GeoPoint(51.163409, 10.447718));
-                    Marker marker = new Marker(fragment.mapView);
+                    mapconstlayout.setVisibility(VISIBLE);
+                    mapView.getOverlays().clear();
+                    mapView.getController().setZoom(6.25);
+                    mapView.getController().setCenter(new GeoPoint(51.163409, 10.447718));
+                    Marker marker = new Marker(mapView);
                     marker.setPosition(geoPoint);
                     marker.setTitle("Gesuchtes Kennzeichen");
-                    fragment.mapView.getOverlays().add(marker);
-                    fragment.mapView.invalidate();
+                    mapView.getOverlays().add(marker);
+                    mapView.invalidate();
                 } else {
-                    fragment.mapconstlayout.setVisibility(GONE);
+                    mapconstlayout.setVisibility(GONE);
                 }
+            });
+        });
+    }
+
+    private GeoPoint getCoordinates(String location) {
+        Log.e("Achtung", location);
+        try {
+            String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location + "_", "UTF-8") + "&format=json&addressdetails=1";
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "de.haainz.kennzeichenerkennung/1.0 (mailto:kennzeichenerkennung@gmail.com)");
+            connection.setRequestProperty("Accept-Language", "de");
+            connection.connect();
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                return null;
             }
+
+            InputStream inputStream = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder jsonResponse = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonResponse.append(line);
+            }
+            reader.close();
+
+            JSONArray jsonArray = new JSONArray(jsonResponse.toString());
+            if (jsonArray.length() > 0) {
+                JSONObject jsonObject = jsonArray.getJSONObject(0);
+                double latitude = jsonObject.getDouble("lat");
+                double longitude = jsonObject.getDouble("lon");
+                return new GeoPoint(latitude, longitude);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     private String formatAIText(String aiText) {
@@ -939,7 +953,7 @@ public class HomeFragment extends Fragment {
             binding.infotextwert.setVisibility(View.VISIBLE);
             binding.infotextwert.setText("Analysiere Informationen");
 
-            loadingHandler = new Handler();
+            loadingHandler = new Handler(Looper.getMainLooper());
             loadingRunnable = new Runnable() {
                 private final WeakReference<HomeFragment> fragmentRef = new WeakReference<>(HomeFragment.this);
 
@@ -1012,39 +1026,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void openGallery() {
-        Intent pickIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        pickIntent.setType("image/*");
+        Intent pickIntent = new Intent(Intent.ACTION_PICK);
+        pickIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
         pickImageLauncher.launch(pickIntent);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == UCrop.REQUEST_CROP) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                // UCrop liefert die Ergebnis-Uri so:
-                Uri resultUri = UCrop.getOutput(data);
-                if (resultUri != null) {
-                    // Setze selektierte URI und wende sie sofort an
-                    selectedImageUri = resultUri;
-                    // Falls binding noch nicht vorhanden ist (sehr selten), pendenz
-                    if (binding == null) {
-                        pendingImageUri = resultUri;
-                    } else {
-                        requireActivity().runOnUiThread(() -> applySelectedImage(resultUri));
-                    }
-                } else {
-                    Toast.makeText(getContext(), "Zuschneiden fehlgeschlagen (kein Ergebnis).", Toast.LENGTH_SHORT).show();
-                }
-            } else if (resultCode == UCrop.RESULT_ERROR) {
-                final Throwable cropError = UCrop.getError(data);
-                if (cropError != null) {
-                    Log.e("UCrop", "Crop error: ", cropError);
-                }
-                Toast.makeText(getContext(), "Fehler beim Zuschneiden", Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     // verarbeite Bundle-Ergebnis (verschiedene Keys möglich)
@@ -1056,7 +1040,7 @@ public class HomeFragment extends Fragment {
 
         Uri imageUri;
         if (bundle.containsKey("image_uri")) {
-            imageUri = bundle.getParcelable("image_uri");
+            imageUri = BundleCompat.getParcelable(bundle, "image_uri", Uri.class);
         } else if (bundle.containsKey("scanned_plate_uri")) {
             String s = bundle.getString("scanned_plate_uri");
             if (s != null) imageUri = Uri.parse(s);
@@ -1064,7 +1048,7 @@ public class HomeFragment extends Fragment {
                 imageUri = null;
             }
         } else if (bundle.containsKey("imageUri")) {
-            imageUri = bundle.getParcelable("imageUri");
+            imageUri = BundleCompat.getParcelable(bundle, "imageUri", Uri.class);
         } else {
             imageUri = null;
         }

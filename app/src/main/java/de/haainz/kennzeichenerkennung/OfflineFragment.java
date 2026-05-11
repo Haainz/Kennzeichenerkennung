@@ -2,10 +2,8 @@ package de.haainz.kennzeichenerkennung;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -47,15 +45,9 @@ public class OfflineFragment extends DialogFragment {
         Button wlanBtn = view.findViewById(R.id.wlan_btn);
         wlanBtn.setText("Internet-Settings");
         wlanBtn.setOnClickListener(v -> {
-            WifiManager wifiManager = (WifiManager) requireContext().getSystemService(Context.WIFI_SERVICE);
-            if (!wifiManager.isWifiEnabled()) {
-                wifiManager.setWifiEnabled(true);
-                // Leite den Benutzer zu den WLAN-Einstellungen weiter
-                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                startActivity(intent);
-            } else {
-                Toast.makeText(requireContext(), "WLAN ist bereits aktiviert", Toast.LENGTH_SHORT).show();
-            }
+            // Leite den Benutzer zu den Internet-Einstellungen weiter
+            Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+            startActivity(intent);
         });
 
         TextView offlinetext = view.findViewById(R.id.offlinetext);

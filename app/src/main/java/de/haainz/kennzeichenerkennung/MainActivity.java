@@ -1,27 +1,34 @@
 package de.haainz.kennzeichenerkennung;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -62,15 +69,19 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_FIRST_TOUR_SHOWN = "first_nav_tour_shown";
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
         sharedPreferences = getSharedPreferences("settings", MODE_PRIVATE);
         setNightMode();
         super.onCreate(savedInstanceState);
 
         // Statusbar Farbe explizit setzen
-        getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.blue_700));
+        Window window = getWindow();
+        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.blue_700));
+
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(window, window.getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(false); // false for dark background, true for light
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -149,6 +160,25 @@ public class MainActivity extends AppCompatActivity {
             de.haainz.kennzeichenerkennung.ui.FirstStartDialogFragment.markShown(this);
             new de.haainz.kennzeichenerkennung.ui.FirstStartDialogFragment().show(getSupportFragmentManager(), "FirstStartDialog");
         }
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_content_main);
+                if (drawerLayout.isOpen()) {
+                    drawerLayout.close();
+                } else {
+                    if (!navController.popBackStack()) {
+                        if (navController.getCurrentDestination() != null && navController.getCurrentDestination().getId() != R.id.nav_home) {
+                            navController.navigate(R.id.nav_home);
+                        } else {
+                            setEnabled(false);
+                            getOnBackPressedDispatcher().onBackPressed();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private void setNightMode() {
@@ -162,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void setupSettingsButtons() {
         ImageButton donateButton = findViewById(R.id.button_donate);
         donateButton.setOnClickListener(v -> {
@@ -182,7 +213,11 @@ public class MainActivity extends AppCompatActivity {
         settingsButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_right, R.anim.slide_not);
+            } else {
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
+            }
         });
     }
 
@@ -237,8 +272,13 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected() && !isOfflineMode();
+        if (connectivityManager == null) return false;
+        
+        Network network = connectivityManager.getActiveNetwork();
+        if (network == null) return false;
+        
+        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && !isOfflineMode();
     }
 
     private void startNetworkCheck() {
@@ -261,24 +301,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         handler.removeCallbacks(networkCheckRunnable);
-    }
-
-    @Override
-    public void onBackPressed() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        if (drawerLayout.isOpen()) {
-            drawerLayout.close();
-        } else {
-            // Erst versuchen den Backstack des NavControllers zu nutzen
-            if (!navController.popBackStack()) {
-                // Wenn wir nicht mehr zurück poppen können und nicht auf Home sind -> Home erzwingen
-                if (navController.getCurrentDestination() != null && navController.getCurrentDestination().getId() != R.id.nav_home) {
-                    navController.navigate(R.id.nav_home);
-                } else {
-                    super.onBackPressed();
-                }
-            }
-        }
     }
 
     private boolean isOfflineMode() {

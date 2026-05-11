@@ -18,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -65,6 +67,10 @@ public class ListFragment extends Fragment {
 
         setupButtonColors();
         updateList();
+
+        getParentFragmentManager().setFragmentResultListener("history_update", getViewLifecycleOwner(), (requestKey, result) -> {
+            updateList();
+        });
 
         SharedPreferences prefs = requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE);
         boolean tourShown = prefs.getBoolean(PREF_TOUR_LIST_SHOWN, false);
@@ -170,12 +176,12 @@ public class ListFragment extends Fragment {
     }
 
     private void setupButtonColors() {
-        binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
-        binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
-        binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+        DrawableCompat.setTint(binding.buttonNormal.getBackground(), ContextCompat.getColor(requireContext(), R.color.yellow));
+        DrawableCompat.setTint(binding.buttonSonder.getBackground(), ContextCompat.getColor(requireContext(), R.color.yellow));
+        DrawableCompat.setTint(binding.buttonAuslaufend.getBackground(), ContextCompat.getColor(requireContext(), R.color.yellow));
 
-        binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
-        binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+        DrawableCompat.setTint(binding.buttonAlle.getBackground(), ContextCompat.getColor(requireContext(), R.color.yellow));
+        DrawableCompat.setTint(binding.buttonEigene.getBackground(), ContextCompat.getColor(requireContext(), R.color.yellow));
 
         binding.buttonLike1.setVisibility(VISIBLE);
         binding.buttonLike2.setVisibility(GONE);
@@ -197,11 +203,11 @@ public class ListFragment extends Fragment {
             int color = allActive ? R.color.white : R.color.yellow;
 
             // Farben der Buttons entsprechend setzen
-            binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
-            binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
-            binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
-            binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
-            binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            DrawableCompat.setTint(binding.buttonAlle.getBackground(), ContextCompat.getColor(requireContext(), color));
+            DrawableCompat.setTint(binding.buttonNormal.getBackground(), ContextCompat.getColor(requireContext(), color));
+            DrawableCompat.setTint(binding.buttonSonder.getBackground(), ContextCompat.getColor(requireContext(), color));
+            DrawableCompat.setTint(binding.buttonAuslaufend.getBackground(), ContextCompat.getColor(requireContext(), color));
+            DrawableCompat.setTint(binding.buttonEigene.getBackground(), ContextCompat.getColor(requireContext(), color));
 
             updateList();
         });
@@ -209,7 +215,7 @@ public class ListFragment extends Fragment {
         binding.buttonNormal.setOnClickListener(v -> {
             showNormal = !showNormal;
             int color = showNormal ? R.color.yellow : R.color.white;
-            binding.buttonNormal.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            DrawableCompat.setTint(binding.buttonNormal.getBackground(), ContextCompat.getColor(requireContext(), color));
             updateDeButtonColor();
             updateList();
         });
@@ -217,7 +223,7 @@ public class ListFragment extends Fragment {
         binding.buttonSonder.setOnClickListener(v -> {
             showSonder = !showSonder;
             int color = showSonder ? R.color.yellow : R.color.white;
-            binding.buttonSonder.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            DrawableCompat.setTint(binding.buttonSonder.getBackground(), ContextCompat.getColor(requireContext(), color));
             updateDeButtonColor();
             updateList();
         });
@@ -225,7 +231,7 @@ public class ListFragment extends Fragment {
         binding.buttonAuslaufend.setOnClickListener(v -> {
             showAuslaufend = !showAuslaufend;
             int color = showAuslaufend ? R.color.yellow : R.color.white;
-            binding.buttonAuslaufend.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            DrawableCompat.setTint(binding.buttonAuslaufend.getBackground(), ContextCompat.getColor(requireContext(), color));
             updateDeButtonColor();
             updateList();
         });
@@ -233,7 +239,7 @@ public class ListFragment extends Fragment {
         binding.buttonEigene.setOnClickListener(v -> {
             showEigene = !showEigene;
             int color = showEigene ? R.color.yellow : R.color.white;
-            binding.buttonEigene.getBackground().setColorFilter(getResources().getColor(color), PorterDuff.Mode.SRC_ATOP);
+            DrawableCompat.setTint(binding.buttonEigene.getBackground(), ContextCompat.getColor(requireContext(), color));
             updateDeButtonColor();
             updateList();
         });
@@ -309,9 +315,9 @@ public class ListFragment extends Fragment {
 
     private void updateDeButtonColor() {
         if (showNormal && showSonder && showAuslaufend && showEigene) {
-            binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.yellow), PorterDuff.Mode.SRC_ATOP);
+            DrawableCompat.setTint(binding.buttonAlle.getBackground(), ContextCompat.getColor(requireContext(), R.color.yellow));
         } else {
-            binding.buttonAlle.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+            DrawableCompat.setTint(binding.buttonAlle.getBackground(), ContextCompat.getColor(requireContext(), R.color.white));
         }
     }
 

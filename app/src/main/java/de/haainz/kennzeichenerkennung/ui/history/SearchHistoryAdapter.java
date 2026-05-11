@@ -164,9 +164,12 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
             history.clear();
-            history.addAll((List) results.values);
+            if (results.values != null) {
+                history.addAll((List<SearchEntry>) results.values);
+            }
             notifyDataSetChanged();
         }
     };

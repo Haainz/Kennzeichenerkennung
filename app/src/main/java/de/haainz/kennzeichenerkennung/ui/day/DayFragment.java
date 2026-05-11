@@ -11,9 +11,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -35,8 +35,6 @@ import androidx.core.content.FileProvider;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.preference.PreferenceManager;
@@ -67,7 +65,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -76,6 +73,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import de.haainz.kennzeichenerkennung.ui.AIManager;
 
@@ -90,6 +89,8 @@ public class DayFragment extends Fragment {
     private Handler loadingHandler;
     private Runnable loadingRunnable;
     private int loadingStep = 0;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private NestedScrollView scrollView;
     private View mainContent;
     private float originalScale = 1.0f;
@@ -285,7 +286,6 @@ public class DayFragment extends Fragment {
         if (isNetworkAvailable()) {
             mapView = binding.map;
             mapView.setTileSource(TileSourceFactory.MAPNIK);
-            mapView.setBuiltInZoomControls(false);
             mapView.setMultiTouchControls(false);
             mapView.setVisibility(VISIBLE);
             binding.maprel.setVisibility(VISIBLE);
@@ -295,7 +295,7 @@ public class DayFragment extends Fragment {
             binding.thinkBtn.setVisibility(VISIBLE);
 
             if (mapView.getVisibility() == View.VISIBLE) {
-                getCoordinates(currentKennzeichen.OrtGeben() + "_" + currentKennzeichen.BundeslandGeben());
+                setMarkerOnMap(currentKennzeichen.OrtGeben() + "_" + currentKennzeichen.BundeslandGeben());
             } else {
                 Log.e("DayFragment", "mapView is not visible, cannot get coordinates.");
             }
@@ -342,7 +342,7 @@ public class DayFragment extends Fragment {
             private int lastScrollY = 0;
             private final long SCROLL_IDLE_DELAY = 150; // ms bis wir Scroll-Stillstand annehmen
 
-            private final Handler idleHandler = new Handler();
+            private final Handler idleHandler = new Handler(Looper.getMainLooper());
             private Runnable idleRunnable = null;
 
             @Override
@@ -395,92 +395,79 @@ public class DayFragment extends Fragment {
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected() && !isOfflineMode();
+        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) return false;
+        Network network = connectivityManager.getActiveNetwork();
+        if (network == null) return false;
+        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && !isOfflineMode();
     }
 
-    private void getCoordinates(String locationName) {
-        new GetCoordinatesTask(this, currentKennzeichen).execute(locationName);
+    private void setMarkerOnMap(String locationName) {
+        executor.execute(() -> {
+            GeoPoint geoPoint = getCoordinates(locationName);
+            mainHandler.post(() -> {
+                try {
+                    if (binding != null && binding.map != null) {
+                        if (geoPoint != null) {
+                            binding.map.getController().setZoom(6.25);
+                            binding.map.getController().setCenter(new GeoPoint(51.163409, 10.447718));
+                            Marker marker = new Marker(binding.map);
+                            marker.setPosition(geoPoint);
+
+                            String bundesland = currentKennzeichen.BundeslandGeben();
+                            String title = formatLabel(locationName) + "<br>" + bundesland;
+                            marker.setTitle(String.valueOf(Html.fromHtml(title, Html.FROM_HTML_MODE_LEGACY)));
+
+                            binding.map.getOverlays().add(marker);
+                            binding.map.invalidate();
+                        }
+                    } else {
+                        Log.e("DayFragment", "mapView is null, cannot add marker.");
+                    }
+                } catch (Exception e) {
+                    if (binding != null && binding.map != null) binding.map.setVisibility(GONE);
+                    e.printStackTrace();
+                }
+            });
+        });
     }
 
-    private static class GetCoordinatesTask extends AsyncTask<String, Void, GeoPoint> {
-        private final WeakReference<DayFragment> fragmentReference;
-        private final Kennzeichen kennzeichen;
-        String label;
+    private GeoPoint getCoordinates(String location) {
+        Log.e("location", location);
+        try {
+            String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location, "UTF-8") + "&format=json&addressdetails=1";
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "de.haainz.kennzeichenerkennung/1.0 (mailto:kennzeichenerkennung@gmail.com)");
+            connection.setRequestProperty("Accept-Language", "de");
+            connection.connect();
 
-        GetCoordinatesTask(DayFragment fragment, Kennzeichen kennzeichen) {
-            fragmentReference = new WeakReference<>(fragment);
-            this.kennzeichen = kennzeichen;
-        }
-
-        @Override
-        protected GeoPoint doInBackground(String... params) {
-            String location = params[0];
-            Log.e("location", location);
-            label = location;
-            try {
-                String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location, "UTF-8") + "&format=json&addressdetails=1";
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection ();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("User-Agent", "de.haainz.kennzeichenerkennung/1.0 (mailto:kennzeichenerkennung@gmail.com)");
-                connection.setRequestProperty("Accept-Language", "de");
-                connection.connect();
-
-                int responseCode = connection.getResponseCode();
-                if (responseCode != HttpURLConnection.HTTP_OK) {
-                    throw new Exception("HTTP error code: " + responseCode);
-                }
-
-                InputStream inputStream = connection.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                StringBuilder jsonResponse = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    jsonResponse.append(line);
-                }
-                reader.close();
-
-                JSONArray jsonArray = new JSONArray(jsonResponse.toString());
-                if (jsonArray.length() > 0) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(0);
-                    double latitude = jsonObject.getDouble("lat");
-                    double longitude = jsonObject.getDouble("lon");
-                    return new GeoPoint(latitude, longitude);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                return null;
             }
-            return null;
-        }
 
-        @Override
-        protected void onPostExecute(GeoPoint geoPoint) {
-            DayFragment fragment = fragmentReference.get();
-            try {
-            if (fragment != null && fragment.mapView != null) { // Überprüfe, ob mapView nicht null ist
-                if (geoPoint != null) {
-                    fragment.mapView.getController().setZoom(6.25);
-                    fragment.mapView.getController().setCenter(new GeoPoint(51.163409, 10.447718));
-                    Marker marker = new Marker(fragment.mapView);
-                    marker.setPosition(geoPoint);
-                    String formattedLabel = formatLabel(label);
-
-                    String bundesland = kennzeichen.BundeslandGeben();
-                    String title = formattedLabel + "<br>" + bundesland;
-                    marker.setTitle(String.valueOf(Html.fromHtml(title, Html.FROM_HTML_MODE_LEGACY)));
-
-                    fragment.mapView.getOverlays().add(marker);
-                    fragment.mapView.invalidate();
-                }
-            } else {
-                Log.e("DayFragment", "mapView is null, cannot add marker.");
+            InputStream inputStream = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder jsonResponse = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonResponse.append(line);
             }
-            } catch (Exception e) {
-                fragment.mapView.setVisibility(GONE);
-                e.printStackTrace();
+            reader.close();
+
+            JSONArray jsonArray = new JSONArray(jsonResponse.toString());
+            if (jsonArray.length() > 0) {
+                JSONObject jsonObject = jsonArray.getJSONObject(0);
+                double latitude = jsonObject.getDouble("lat");
+                double longitude = jsonObject.getDouble("lon");
+                return new GeoPoint(latitude, longitude);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     public static String formatLabel(String label) {
@@ -563,7 +550,7 @@ public class DayFragment extends Fragment {
         if (binding != null) {
             binding.aitextOftheday.setText("Analysiere Informationen");
 
-            loadingHandler = new Handler();
+            loadingHandler = new Handler(Looper.getMainLooper());
             loadingRunnable = new Runnable() {
                 @Override
                 public void run() {
@@ -601,6 +588,7 @@ public class DayFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         stopLoadingAnimation();
+        executor.shutdown();
         binding = null;
     }
 

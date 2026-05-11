@@ -32,6 +32,8 @@ import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
+import androidx.camera.core.resolutionselector.ResolutionSelector;
+import androidx.camera.core.resolutionselector.ResolutionStrategy;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
@@ -89,7 +91,7 @@ public class KennzeichenScannerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!OpenCVLoader.initDebug()) {
+        if (!OpenCVLoader.initLocal()) {
             Log.e(KS_TAG, "OpenCV initialization failed");
         }
         detector = new KennzeichenDetector(getContext());
@@ -236,17 +238,21 @@ public class KennzeichenScannerFragment extends Fragment {
     private void bindCameraUseCases(@NonNull ProcessCameraProvider cameraProvider) {
         cameraProvider.unbindAll();
 
+        ResolutionSelector resolutionSelector = new ResolutionSelector.Builder()
+                .setResolutionStrategy(new ResolutionStrategy(new Size(1280, 720), ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER))
+                .build();
+
         Preview preview = new Preview.Builder()
-                .setTargetResolution(new Size(1280, 720))
+                .setResolutionSelector(resolutionSelector)
                 .build();
 
         imageCapture = new ImageCapture.Builder()
-                .setTargetResolution(new Size(1280, 720))
+                .setResolutionSelector(resolutionSelector)
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .build();
 
         ImageAnalysis analysis = new ImageAnalysis.Builder()
-                .setTargetResolution(new Size(1280, 720))
+                .setResolutionSelector(resolutionSelector)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
 
@@ -416,7 +422,11 @@ public class KennzeichenScannerFragment extends Fragment {
 
     private void sendResultAndClose(Uri uri) {
         Bundle result = new Bundle();
-        result.putParcelable("image_uri", uri);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            result.putParcelable("image_uri", uri);
+        } else {
+            result.putParcelable("image_uri", uri);
+        }
         result.putString("scanned_plate_uri", uri.toString());
 
         requireActivity().runOnUiThread(() -> {

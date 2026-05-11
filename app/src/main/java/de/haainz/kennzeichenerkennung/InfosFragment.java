@@ -11,9 +11,11 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,17 +40,19 @@ import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class InfosFragment extends DialogFragment {
 
@@ -56,6 +60,8 @@ public class InfosFragment extends DialogFragment {
     private Kennzeichen_KI kennzeichenKI;
     private MapView mapView;
     private CardView mapCardView;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public InfosFragment(Kennzeichen kennzeichen) {
         this.kennzeichen = kennzeichen;
@@ -212,10 +218,8 @@ public class InfosFragment extends DialogFragment {
             kennzeichenKI.changesavestatus(kennzeichen, "nein");
             Toast.makeText(getActivity(), "Kennzeichen entfernt.", Toast.LENGTH_SHORT).show();
 
-            // Hier sollten Sie die updateList() Methode aufrufen, um die Anzeige zu aktualisieren
-            if (getTargetFragment() instanceof ListFragment) {
-                ((ListFragment) getTargetFragment()).updateList();
-            }
+            // Notify ListFragment that data has changed
+            getParentFragmentManager().setFragmentResult("history_update", new Bundle());
         });
 
         sharebtn.setOnClickListener(v -> shareKennzeichen(kennzeichen));
@@ -229,7 +233,7 @@ public class InfosFragment extends DialogFragment {
             mapCardView = view.findViewById(R.id.cardviewmap);
             Configuration.getInstance().load(getContext(), PreferenceManager.getDefaultSharedPreferences(getContext()));
             mapView.setTileSource(TileSourceFactory.MAPNIK);
-            mapView.setBuiltInZoomControls(true);
+            mapView.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT);
             mapView.setMultiTouchControls (true);
             mapCardView.setVisibility(View.VISIBLE);
 
@@ -243,9 +247,12 @@ public class InfosFragment extends DialogFragment {
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected() && !isOfflineMode();
+        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) return false;
+        Network network = connectivityManager.getActiveNetwork();
+        if (network == null) return false;
+        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && !isOfflineMode();
     }
 
     private void shareKennzeichen(Kennzeichen kennzeichen) {
@@ -268,85 +275,72 @@ public class InfosFragment extends DialogFragment {
     }
 
     private void setMarkerOnMap(String location) {
-        new GetCoordinatesTask(this).execute(location);
+        executor.execute(() -> {
+            GeoPoint geoPoint = getCoordinates(location);
+            mainHandler.post(() -> {
+                try {
+                    if (geoPoint != null) {
+                        mapCardView.setVisibility(VISIBLE);
+                        mapView.getController().setZoom(6.25);
+                        mapView.getController().setCenter(new GeoPoint(51.163409, 10.447718));
+                        Marker marker = new Marker(mapView);
+                        marker.setPosition(geoPoint);
+                        marker.setTitle(formatLabel(kennzeichen.OrtGeben()));
+                        mapView.getOverlays().add(marker);
+                        mapView.invalidate();
+                    } else {
+                        mapCardView.setVisibility(GONE);
+                    }
+                } catch (Exception e) {
+                    if (mapCardView != null) mapCardView.setVisibility(GONE);
+                    e.printStackTrace();
+                }
+            });
+        });
     }
 
-    private static class GetCoordinatesTask extends AsyncTask<String, Void, GeoPoint> {
-        private final WeakReference<InfosFragment> fragmentReference;
-
-        GetCoordinatesTask(InfosFragment fragment) {
-            fragmentReference = new WeakReference<>(fragment);
+    private GeoPoint getCoordinates(String location) {
+        if (Objects.equals(location, "WeißenbUrG")) {
+            location = "Weißenburg-Gunzenhausen";
+        } else if (Objects.equals(location, "HOhensTein")) {
+            location = "Hohenstein, Zwickau";
         }
+        Log.e("Achtung", location);
+        try {
+            String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location, "UTF-8") + "&format=json&addressdetails=1";
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "de.haainz.kennzeichenerkennung/1.0 (mailto:kennzeichenerkennung@gmail.com)");
+            connection.setRequestProperty("Accept-Language", "de");
+            connection.connect();
 
-        @Override
-        protected GeoPoint doInBackground(String ...params) {
-            String location = params[0];
-            if (Objects.equals(location, "WeißenbUrG")) {
-                location = "Weißenburg-Gunzenhausen";
-            } else if (Objects.equals(location, "HOhensTein")) {
-                location = "Hohenstein, Zwickau";
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                return null;
             }
-            Log.e("Achtung", location);
-            try {
-                String url = "https://nominatim.openstreetmap.org/search?q=" + URLEncoder.encode(location, "UTF-8") + "&format=json&addressdetails=1";
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("User-Agent", "de.haainz.kennzeichenerkennung/1.0 (mailto:kennzeichenerkennung@gmail.com)");
-                connection.setRequestProperty("Accept-Language", "de");
-                connection.connect();
 
-                int responseCode = connection.getResponseCode();
-                if (responseCode != HttpURLConnection.HTTP_OK) {
-                    throw new Exception("HTTP error code: " + responseCode);
-                }
-
-                InputStream inputStream = connection.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                StringBuilder jsonResponse = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    jsonResponse.append(line);
-                }
-                reader.close();
-
-                JSONArray jsonArray = new JSONArray(jsonResponse.toString());
-                if (jsonArray.length() > 0) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(0);
-                    double latitude = jsonObject.getDouble("lat");
-                    double longitude = jsonObject.getDouble("lon");
-                    return new GeoPoint(latitude, longitude);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            InputStream inputStream = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder jsonResponse = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonResponse.append(line);
             }
-            return null;
+            reader.close();
+
+            JSONArray jsonArray = new JSONArray(jsonResponse.toString());
+            if (jsonArray.length() > 0) {
+                JSONObject jsonObject = jsonArray.getJSONObject(0);
+                double latitude = jsonObject.getDouble("lat");
+                double longitude = jsonObject.getDouble("lon");
+                return new GeoPoint(latitude, longitude);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        @Override
-        protected void onPostExecute(GeoPoint geoPoint) {
-            InfosFragment fragment = fragmentReference.get();
-            try {
-            if (fragment != null) {
-                if (geoPoint != null) {
-                    fragment.mapCardView.setVisibility(VISIBLE);
-                    fragment.mapView.getController().setZoom(6.25);
-                    fragment.mapView.getController().setCenter(new GeoPoint(51.163409, 10.447718));
-                    Marker marker = new Marker(fragment.mapView);
-                    marker.setPosition(geoPoint);
-                    marker.setTitle(formatLabel(fragment.kennzeichen.OrtGeben()));
-                    fragment.mapView.getOverlays().add(marker);
-                    fragment.mapView.invalidate();
-                } else {
-                    fragment.mapCardView.setVisibility(GONE);
-                    //Toast.makeText(fragment.getContext(), "Koordinaten konnten nicht gefunden werden", Toast.LENGTH_SHORT).show();
-                }
-            }
-            } catch (Exception e) {
-                fragment.mapCardView.setVisibility(GONE);
-                e.printStackTrace();
-            }
-        }
+        return null;
     }
+
     public static String formatLabel(String label) {
         if (label == null || label.isEmpty()) {
             return label;

@@ -1,7 +1,9 @@
 package de.haainz.kennzeichenerkennung;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -70,7 +72,7 @@ public class UeberActivity extends AppCompatActivity {
         });
 
         ImageButton xBtn = findViewById(R.id.backbtn);
-        xBtn.setOnClickListener(v -> onBackPressed());
+        xBtn.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
 
         TextView versionText = findViewById(R.id.versiontext);
         versionText.setText("\n App-Version:\nV" + getCurrentAppVersion() + " ⓘ\n");
@@ -86,9 +88,17 @@ public class UeberActivity extends AppCompatActivity {
         rechtlichesBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, RechtActivity.class);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right,R.anim.slide_not);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_right, R.anim.slide_not);
+            } else {
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
+            }
         });
-        overridePendingTransition(R.anim.slide_in_right,R.anim.slide_not);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_right, R.anim.slide_not);
+        } else {
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
+        }
 
         Button kontaktBtn = findViewById(R.id.button_kontakt);
         kontaktBtn.setOnClickListener(v -> showDialogFragment(new ContactFragment(), "ContactFragment"));
