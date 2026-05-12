@@ -80,7 +80,13 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
             ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) holder.textContainer.getLayoutParams();
             lp.startToEnd = holder.image.getId();
             lp.startToStart = ConstraintLayout.LayoutParams.UNSET;
+            lp.setMarginStart((int) (8 * holder.itemView.getContext().getResources().getDisplayMetrics().density));
             holder.textContainer.setLayoutParams(lp);
+
+            // Sicherstellen, dass Herleitung keinen Versatz zum Kürzel hat
+            LinearLayout.LayoutParams llp = (LinearLayout.LayoutParams) holder.herleitung.getLayoutParams();
+            llp.setMarginStart(0);
+            holder.herleitung.setLayoutParams(llp);
         } else {
             holder.image.setVisibility(View.GONE);
             // Ohne Bild: Kürzel und Herleitung nebeneinander (Horizontal)
@@ -88,7 +94,7 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
             ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) holder.textContainer.getLayoutParams();
             lp.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
             lp.startToEnd = ConstraintLayout.LayoutParams.UNSET;
-            lp.setMarginStart(10);
+            lp.setMarginStart((int) (10 * holder.itemView.getContext().getResources().getDisplayMetrics().density));
             holder.textContainer.setLayoutParams(lp);
 
             // Sicherstellen, dass Herleitung Abstand zum Kürzel hat

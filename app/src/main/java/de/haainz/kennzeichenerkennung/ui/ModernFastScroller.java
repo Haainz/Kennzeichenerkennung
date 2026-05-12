@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -44,6 +45,11 @@ public class ModernFastScroller extends FrameLayout {
     public ModernFastScroller(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
+    }
+
+    public void setThemeColor(int color) {
+        handle.setBackgroundTintList(ColorStateList.valueOf(color));
+        centerText.setTextColor(color);
     }
 
     private void init(Context context) {
@@ -137,8 +143,8 @@ public class ModernFastScroller extends FrameLayout {
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (getVisibility() != VISIBLE) return false;
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            // Check if touch is in the right area (100dp from edge)
-            float edgeThreshold = 100 * getResources().getDisplayMetrics().density;
+            // Check if touch is in the right area (40dp from edge)
+            float edgeThreshold = 40 * getResources().getDisplayMetrics().density;
             if (ev.getX() >= getWidth() - edgeThreshold) {
                 return true;
             }
@@ -149,7 +155,7 @@ public class ModernFastScroller extends FrameLayout {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float edgeThreshold = 100 * getResources().getDisplayMetrics().density;
+        float edgeThreshold = 40 * getResources().getDisplayMetrics().density;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (event.getX() < getWidth() - edgeThreshold) return false;

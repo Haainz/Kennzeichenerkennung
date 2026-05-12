@@ -19,11 +19,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="10.05.2024 - 14:30"
-            android:textSize="11sp"
             android:textColor="@android:color/darker_gray"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@id/history_delete"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/history_delete" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/history_delete"
