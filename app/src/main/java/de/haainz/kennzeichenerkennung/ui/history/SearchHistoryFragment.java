@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.haainz.kennzeichenerkennung.R;
+import de.haainz.kennzeichenerkennung.ui.ModernFastScroller;
 
 public class SearchHistoryFragment extends Fragment {
 
@@ -183,6 +184,10 @@ public class SearchHistoryFragment extends Fragment {
                 }
             });
             recyclerView.setAdapter(adapter);
+            ModernFastScroller fastScroller = getView().findViewById(R.id.fast_scroller);
+            if (fastScroller != null) {
+                fastScroller.attachToRecyclerView(recyclerView);
+            }
         }
     }
 }

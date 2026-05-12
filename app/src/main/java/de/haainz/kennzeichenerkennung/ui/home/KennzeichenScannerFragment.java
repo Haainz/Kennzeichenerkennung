@@ -43,6 +43,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.yalantis.ucrop.UCrop;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Point;
@@ -87,6 +88,7 @@ public class KennzeichenScannerFragment extends Fragment {
     private Runnable notificationRunnable;
 
     private ActivityResultLauncher<Intent> pickImageLauncher;
+    private ActivityResultLauncher<Intent> cropImageLauncher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,8 +104,23 @@ public class KennzeichenScannerFragment extends Fragment {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         Uri selectedUri = result.getData().getData();
                         if (selectedUri != null) {
-                            sendResultAndClose(selectedUri);
+                            startCrop(selectedUri);
                         }
+                    }
+                }
+        );
+
+        cropImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        final Uri resultUri = UCrop.getOutput(result.getData());
+                        if (resultUri != null) {
+                            sendResultAndClose(resultUri);
+                        }
+                    } else if (result.getResultCode() == UCrop.RESULT_ERROR && result.getData() != null) {
+                        final Throwable cropError = UCrop.getError(result.getData());
+                        Log.e(KS_TAG, "Crop error", cropError);
                     }
                 }
         );
@@ -319,9 +336,9 @@ public class KennzeichenScannerFragment extends Fragment {
                                         // NORMALER SCANNER-ABLAUF
                                         Point[] quad = detector.detectLicensePlate(bitmap);
                                         if (quad != null) {
-                                            performCropAndReturn(bitmap, quad, 2.0);
+                                            performCropAndReturn(bitmap, quad, 2.5);
                                         } else {
-                                            showNotification("Kein Kennzeichen erkannt");
+                                            showNotification("Kein Kennzeichen erkannt.\nZoome etwas näher hin.");
                                         }
                                     } else {
                                         // FOTO-MODUS: Ausschnitt aus dem Hilfsrechteck
@@ -333,7 +350,7 @@ public class KennzeichenScannerFragment extends Fragment {
                                                 new Point(guideRect.left, guideRect.bottom)
                                         };
                                         Point[] quadBitmap = ImageUtil.mapViewPointsToBitmap(previewView, bitmap, quadInView);
-                                        performCropAndReturn(bitmap, quadBitmap, 2.4); // Auf 1.3 erhöht, um sicherzustellen, dass das Bild nicht zu klein wirkt
+                                        performCropAndReturn(bitmap, quadBitmap, 2.4); // Auf 2.4 erhöht, um sicherzustellen, dass das Bild nicht zu klein wirkt
                                     }
                                 }
                             } catch (Exception e) {
@@ -366,7 +383,7 @@ public class KennzeichenScannerFragment extends Fragment {
                                     // WICHTIG: Die View-Koordinaten müssen auf die tatsächliche
                                     // Bitmap-Größe des Fotos gemappt werden!
                                     Point[] quadBitmap = ImageUtil.mapViewPointsToBitmap(previewView, bitmap, quadInViewCoords);
-                                    performCropAndReturn(bitmap, quadBitmap, 2.0);
+                                    performCropAndReturn(bitmap, quadBitmap, 1.2);
                                 }
                             } catch (Exception e) {
                                 Log.e(KS_TAG, "Processing failed", e);
@@ -413,6 +430,24 @@ public class KennzeichenScannerFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void startCrop(@NonNull Uri uri) {
+        String destinationFileName = "cropped_image_" + System.currentTimeMillis() + ".jpg";
+        Uri destinationUri = Uri.fromFile(new File(requireContext().getCacheDir(), destinationFileName));
+
+        UCrop.Options options = new UCrop.Options();
+        options.setCompressionFormat(Bitmap.CompressFormat.JPEG);
+        options.setCompressionQuality(90);
+        options.setToolbarColor(Color.WHITE);
+        options.setActiveControlsWidgetColor(ContextCompat.getColor(requireContext(), R.color.yellow));
+        options.setToolbarWidgetColor(Color.BLACK);
+        options.setToolbarTitle("Bild zuschneiden");
+
+        Intent intent = UCrop.of(uri, destinationUri)
+                .withOptions(options)
+                .getIntent(requireContext());
+        cropImageLauncher.launch(intent);
     }
 
     private File createImageFile() {

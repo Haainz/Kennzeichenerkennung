@@ -275,7 +275,15 @@
         <ListView
             android:id="@+id/list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:scrollbars="none" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <de.haainz.kennzeichenerkennung.ui.ModernFastScroller
+        android:id="@+id/fast_scroller"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topbar_layout" />
+
 </RelativeLayout>

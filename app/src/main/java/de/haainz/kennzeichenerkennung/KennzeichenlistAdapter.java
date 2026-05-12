@@ -14,14 +14,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import de.haainz.kennzeichenerkennung.ui.ModernFastScroller;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> {
+public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> implements ModernFastScroller.SectionIndexer {
     private final Context context;
     private final List<Kennzeichen> kennzeichenList;
     private List<Kennzeichen> selectedItems = new ArrayList<>();
+    private boolean onlyOneTypeSelected = false;
 
     public KennzeichenlistAdapter(Context context, List<Kennzeichen> kennzeichenList) {
         super(context, R.layout.list_item_kennzeichen, kennzeichenList);
@@ -94,5 +97,30 @@ public class KennzeichenlistAdapter extends ArrayAdapter<Kennzeichen> {
     public void setSelectedItems(List<Kennzeichen> selected) {
         this.selectedItems = selected;
         notifyDataSetChanged();
+    }
+
+    public void setOnlyOneTypeSelected(boolean onlyOneTypeSelected) {
+        this.onlyOneTypeSelected = onlyOneTypeSelected;
+    }
+
+    @Override
+    public String getSectionText(int position) {
+        if (position >= 0 && position < kennzeichenList.size()) {
+            Kennzeichen k = kennzeichenList.get(position);
+            if (onlyOneTypeSelected || k.isNormalDE()) {
+                String kuerzel = k.OertskuerzelGeben();
+                return kuerzel.isEmpty() ? "" : kuerzel.substring(0, 1).toUpperCase();
+            } else if (k.isSonderDE()) {
+                return "Sonder";
+            } else if (k.isAuslaufendDE()) {
+                return "Auslaufend";
+            } else if (k.isEigene()) {
+                return "Eigene";
+            } else {
+                String kuerzel = k.OertskuerzelGeben();
+                return kuerzel.isEmpty() ? "" : kuerzel.substring(0, 1).toUpperCase();
+            }
+        }
+        return "";
     }
 }

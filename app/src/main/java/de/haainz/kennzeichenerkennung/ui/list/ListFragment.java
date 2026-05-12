@@ -34,6 +34,7 @@ import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
 import de.haainz.kennzeichenerkennung.KennzeichenlistAdapter;
 import de.haainz.kennzeichenerkennung.R;
 import de.haainz.kennzeichenerkennung.databinding.FragmentListBinding;
+import de.haainz.kennzeichenerkennung.ui.ModernFastScroller;
 
 import java.util.ArrayList;
 
@@ -297,9 +298,12 @@ public class ListFragment extends Fragment {
         }
 
         adapter = new KennzeichenlistAdapter(getActivity(), filteredList);
+        int activeTypes = (showNormal ? 1 : 0) + (showSonder ? 1 : 0) + (showAuslaufend ? 1 : 0) + (showEigene ? 1 : 0);
+        ((KennzeichenlistAdapter) adapter).setOnlyOneTypeSelected(activeTypes == 1);
         ((KennzeichenlistAdapter) adapter).setSelectedItems(selectedKennzeichen);
         binding.textViewAnzahl.setText(filteredList.size() + " Kennzeichen gefunden");
         binding.list.setAdapter(adapter);
+        binding.fastScroller.attachToListView(binding.list);
     }
 
     private boolean matchesQuery(Kennzeichen k, String q) {

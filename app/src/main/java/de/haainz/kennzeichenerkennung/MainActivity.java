@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Statusbar Farbe explizit setzen
         Window window = getWindow();
-        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        WindowCompat.setDecorFitsSystemWindows(window, false);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.blue_700));
 
         WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(window, window.getDecorView());
@@ -99,7 +99,19 @@ public class MainActivity extends AppCompatActivity {
 
         View statusbarView = findViewById(R.id.statusbar);
         if (statusbarView != null) {
-            statusbarView.setVisibility(View.GONE);
+            ViewCompat.setOnApplyWindowInsetsListener(statusbarView, (v, insets) -> {
+                Insets sysInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+                // Höhe manuell setzen
+                ViewGroup.LayoutParams params = v.getLayoutParams();
+                params.height = sysInsets.top;
+                v.setLayoutParams(params);
+
+                // Hintergrundfarbe setzen
+                v.setBackgroundColor(ContextCompat.getColor(this, R.color.blue_700));
+
+                return insets;
+            });
         }
 
         NavigationView navView = findViewById(R.id.nav_view);

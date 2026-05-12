@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import de.haainz.kennzeichenerkennung.ui.ModernFastScroller;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
@@ -26,12 +27,13 @@ import java.util.Locale;
 
 import de.haainz.kennzeichenerkennung.R;
 
-public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdapter.ViewHolder> implements Filterable {
+public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdapter.ViewHolder> implements Filterable, ModernFastScroller.SectionIndexer {
 
     private final List<SearchEntry> historyFull;
     private List<SearchEntry> history;
     private final OnHistoryClickListener listener;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy - HH:mm", Locale.getDefault());
+    private final SimpleDateFormat dayFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
 
     public interface OnHistoryClickListener {
         void onDeleteClick(SearchEntry entry);
@@ -78,7 +80,6 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
             ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) holder.textContainer.getLayoutParams();
             lp.startToEnd = holder.image.getId();
             lp.startToStart = ConstraintLayout.LayoutParams.UNSET;
-            lp.setMarginStart((int) (8 * holder.itemView.getContext().getResources().getDisplayMetrics().density));
             holder.textContainer.setLayoutParams(lp);
         } else {
             holder.image.setVisibility(View.GONE);
@@ -87,7 +88,7 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
             ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) holder.textContainer.getLayoutParams();
             lp.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
             lp.startToEnd = ConstraintLayout.LayoutParams.UNSET;
-            lp.setMarginStart(0);
+            lp.setMarginStart(10);
             holder.textContainer.setLayoutParams(lp);
 
             // Sicherstellen, dass Herleitung Abstand zum Kürzel hat
@@ -173,6 +174,14 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
             notifyDataSetChanged();
         }
     };
+
+    @Override
+    public String getSectionText(int position) {
+        if (position >= 0 && position < history.size()) {
+            return dayFormat.format(new Date(history.get(position).getTimestamp()));
+        }
+        return "";
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
