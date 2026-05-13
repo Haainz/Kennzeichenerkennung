@@ -1,7 +1,6 @@
 package de.haainz.kennzeichenerkennung;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -19,10 +18,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -59,11 +60,9 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
-        Window window = getWindow();
-        WindowCompat.setDecorFitsSystemWindows(window, false);
 
         View spacer = findViewById(R.id.navigation_bar_spacer);
         if (spacer != null) {
@@ -110,18 +109,9 @@ public class SettingsActivity extends AppCompatActivity {
         Button btnueber = findViewById(R.id.button_ueber);
         btnueber.setOnClickListener(v -> {
             Intent intent = new Intent(this, UeberActivity.class);
-            startActivity(intent);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_right, R.anim.slide_not);
-            } else {
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
-            }
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_not);
+            startActivity(intent, options.toBundle());
         });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_right, R.anim.slide_not);
-        } else {
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
-        }
 
         Button updateInfo = findViewById(R.id.button_update);
         updateInfo.setOnClickListener(v -> {
@@ -213,6 +203,7 @@ public class SettingsActivity extends AppCompatActivity {
             apitext.setOnClickListener(v -> showDialogFragment(new ApikeyFragment(), "ApikeyFragment"));
         }
         setStatusBarAppearance();
+        applyEnterTransition();
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -220,6 +211,15 @@ public class SettingsActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @SuppressWarnings("deprecation")
+    private void applyEnterTransition() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_right, R.anim.slide_not);
+        } else {
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
+        }
     }
 
     private void loadAIModels() {
@@ -363,14 +363,9 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void setStatusBarAppearance() {
-        // Farbe der Statusleiste setzen
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.blue_700));
-
         // Textfarbe der Statusleiste anpassen (Light oder Dark Content)
         Window window = getWindow();
         WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(window, window.getDecorView());
-        if (windowInsetsController != null) {
-            windowInsetsController.setAppearanceLightStatusBars(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO);
-        }
+        windowInsetsController.setAppearanceLightStatusBars(AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO);
     }
 }

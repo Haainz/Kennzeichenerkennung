@@ -35,8 +35,13 @@ import de.haainz.kennzeichenerkennung.KennzeichenlistAdapter;
 import de.haainz.kennzeichenerkennung.R;
 import de.haainz.kennzeichenerkennung.databinding.FragmentListBinding;
 import de.haainz.kennzeichenerkennung.ui.ModernFastScroller;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.nativead.NativeAd;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ListFragment extends Fragment {
     private FragmentListBinding binding;
@@ -48,10 +53,13 @@ public class ListFragment extends Fragment {
     private boolean showEigene = true;
     private boolean showOnlyLiked = false;
     private boolean showOnlyNotLiked = false;
-    public ArrayAdapter<Kennzeichen> adapter;
+    public ArrayAdapter<Object> adapter;
     private boolean selectionMode = false;
     private ArrayList<Kennzeichen> selectedKennzeichen = new ArrayList<>();
+    private List<NativeAd> nativeAds = new ArrayList<>();
     private static final String PREF_TOUR_LIST_SHOWN = "tour_list_shown";
+    private final android.os.Handler adHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable adRunnable;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -67,6 +75,10 @@ public class ListFragment extends Fragment {
         binding.scroll.setHorizontalScrollBarEnabled(false);
 
         setupButtonColors();
+        
+        // MobileAds nur einmal initialisieren
+        MobileAds.initialize(requireContext(), initializationStatus -> {});
+
         updateList();
 
         getParentFragmentManager().setFragmentResultListener("history_update", getViewLifecycleOwner(), (requestKey, result) -> {
@@ -86,7 +98,10 @@ public class ListFragment extends Fragment {
         });
 
         binding.list.setOnItemClickListener((parent, view, position, id) -> {
-            Kennzeichen k = (Kennzeichen) parent.getItemAtPosition(position);
+            Object item = parent.getItemAtPosition(position);
+            if (!(item instanceof Kennzeichen)) return;
+            
+            Kennzeichen k = (Kennzeichen) item;
 
             if (selectionMode) {
                 toggleSelection(k);
@@ -97,7 +112,10 @@ public class ListFragment extends Fragment {
         });
 
         binding.list.setOnItemLongClickListener((parent, view, position, id) -> {
-            Kennzeichen k = (Kennzeichen) parent.getItemAtPosition(position);
+            Object item = parent.getItemAtPosition(position);
+            if (!(item instanceof Kennzeichen)) return true;
+            
+            Kennzeichen k = (Kennzeichen) item;
             if (!selectionMode) {
                 enterSelectionMode();
             }
@@ -275,8 +293,12 @@ public class ListFragment extends Fragment {
     public void updateList() {
         String searchQuery = binding.searchInput.getText().toString().toLowerCase();
         ArrayList<Kennzeichen> filteredList = new ArrayList<>();
-        Kennzeichen_KI kennzeichenKI2 = new Kennzeichen_KI(getActivity());
-        kennzeichenListe = kennzeichenKI2.getKennzeichenListe();
+        
+        // Nicht jedes Mal neu instanziieren, das ist extrem langsam!
+        if (kennzeichenKI == null) {
+            kennzeichenKI = new Kennzeichen_KI(getActivity());
+        }
+        kennzeichenListe = kennzeichenKI.getKennzeichenListe();
 
         for (Kennzeichen k : kennzeichenListe) {
             boolean matchesType =
@@ -297,11 +319,107 @@ public class ListFragment extends Fragment {
             }
         }
 
-        adapter = new KennzeichenlistAdapter(getActivity(), filteredList);
+        List<Object> combinedList = new ArrayList<>(filteredList);
+        setListAdapter(combinedList);
+
+        SharedPreferences prefs = requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE);
+        boolean showAds = prefs.getBoolean("adSwitch", false);
+        Log.d("ListFragmentAds", "showAds: " + showAds + ", listSize: " + filteredList.size());
+
+        if (showAds && !filteredList.isEmpty()) {
+            if (adRunnable != null) adHandler.removeCallbacks(adRunnable);
+            adRunnable = () -> loadAdsAsync();
+            if (searchQuery.isEmpty()) {
+                loadAdsAsync(); // Load immediately if no search
+            } else {
+                adHandler.postDelayed(adRunnable, 500); // Debounce search
+            }
+        }
+    }
+
+    private void loadAdsAsync() {
+        if (adapter == null || !isAdded()) return;
+
+        // Clear previous ads
+        for (NativeAd ad : nativeAds) ad.destroy();
+        nativeAds.clear();
+
+        AdLoader.Builder builder = new AdLoader.Builder(requireContext(), getString(R.string.admob_native_ad_unit_id_list));
+
+        builder.withAdListener(new com.google.android.gms.ads.AdListener() {
+            @Override
+            public void onAdFailedToLoad(@NonNull com.google.android.gms.ads.LoadAdError adError) {
+                Log.e("ListFragmentAds", "Werbung konnte nicht geladen werden. Grund: " + adError.getMessage() + " (Code: " + adError.getCode() + ")");
+                // Wenn Werbung fehlschlägt, tun wir nichts weiter - die Liste ist bereits durch updateList() korrekt gesetzt.
+            }
+
+            @Override
+            public void onAdLoaded() {
+                Log.d("ListFragmentAds", "Werbung erfolgreich geladen!");
+            }
+        });
+
+        builder.forNativeAd(nativeAd -> {
+            if (!isAdded() || adapter == null) {
+                nativeAd.destroy();
+                return;
+            }
+            nativeAds.add(nativeAd);
+
+            // Rebuild items from current adapter
+            List<Kennzeichen> currentKennzeichen = new ArrayList<>();
+            for (int i = 0; i < adapter.getCount(); i++) {
+                Object item = adapter.getItem(i);
+                if (item instanceof Kennzeichen) {
+                    currentKennzeichen.add((Kennzeichen) item);
+                }
+            }
+
+            // Sicherstellen, dass wir Daten haben
+            if (currentKennzeichen.isEmpty()) return;
+
+            adapter.setNotifyOnChange(false);
+            adapter.clear();
+            int adIndex = 0;
+
+            for (int i = 0; i < currentKennzeichen.size(); i++) {
+                Kennzeichen k = currentKennzeichen.get(i);
+                adapter.add(k);
+
+                boolean isEndOfList = (i == currentKennzeichen.size() - 1);
+                boolean isTypeChange = false;
+
+                if (!isEndOfList) {
+                    String thisType = k.getTyp();
+                    String nextType = currentKennzeichen.get(i + 1).getTyp();
+                    if (thisType != null && !thisType.equals(nextType)) {
+                        isTypeChange = true;
+                    }
+                }
+
+                if ((isEndOfList || isTypeChange) && adIndex < nativeAds.size()) {
+                    adapter.add(nativeAds.get(adIndex++));
+                }
+            }
+            adapter.setNotifyOnChange(true);
+            adapter.notifyDataSetChanged();
+        });
+
+        AdLoader adLoader = builder.build();
+        adLoader.loadAds(new AdRequest.Builder().build(), 5);
+    }
+
+    private void setListAdapter(List<Object> list) {
+        adapter = new KennzeichenlistAdapter(getActivity(), list);
         int activeTypes = (showNormal ? 1 : 0) + (showSonder ? 1 : 0) + (showAuslaufend ? 1 : 0) + (showEigene ? 1 : 0);
         ((KennzeichenlistAdapter) adapter).setOnlyOneTypeSelected(activeTypes == 1);
         ((KennzeichenlistAdapter) adapter).setSelectedItems(selectedKennzeichen);
-        binding.textViewAnzahl.setText(filteredList.size() + " Kennzeichen gefunden");
+        
+        // Count only Kennzeichen for the text view
+        int kennzeichenCount = 0;
+        for (Object o : list) if (o instanceof Kennzeichen) kennzeichenCount++;
+        binding.textViewAnzahl.setText(kennzeichenCount + " Kennzeichen gefunden");
+
         binding.list.setAdapter(adapter);
         binding.fastScroller.attachToListView(binding.list);
     }
@@ -363,6 +481,9 @@ public class ListFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        for (NativeAd ad : nativeAds) {
+            ad.destroy();
+        }
         binding = null;
     }
 

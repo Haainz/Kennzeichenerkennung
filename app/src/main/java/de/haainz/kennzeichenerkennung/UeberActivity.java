@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -87,21 +88,22 @@ public class UeberActivity extends AppCompatActivity {
         Button rechtlichesBtn = findViewById(R.id.button_rechtliches);
         rechtlichesBtn.setOnClickListener(v -> {
             Intent intent = new Intent(this, RechtActivity.class);
-            startActivity(intent);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_right, R.anim.slide_not);
-            } else {
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
-            }
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_not);
+            startActivity(intent, options.toBundle());
         });
+        applyEnterTransition();
+
+        Button kontaktBtn = findViewById(R.id.button_kontakt);
+        kontaktBtn.setOnClickListener(v -> showDialogFragment(new ContactFragment(), "ContactFragment"));
+    }
+
+    @SuppressWarnings("deprecation")
+    private void applyEnterTransition() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_right, R.anim.slide_not);
         } else {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
         }
-
-        Button kontaktBtn = findViewById(R.id.button_kontakt);
-        kontaktBtn.setOnClickListener(v -> showDialogFragment(new ContactFragment(), "ContactFragment"));
     }
 
     private String getCurrentAppVersion() {

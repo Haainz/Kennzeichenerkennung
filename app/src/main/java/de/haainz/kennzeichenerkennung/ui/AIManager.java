@@ -206,7 +206,7 @@ public class AIManager {
         MobileAds.initialize(context);
 
         AdRequest adRequest = new AdRequest.Builder().build();
-        RewardedAd.load(context, context.getString(R.string.admob_rewarded_ad_unit_id), adRequest, new RewardedAdLoadCallback() {
+        RewardedAd.load(context, context.getString(R.string.admob_rewarded_ad_unit_id_ai), adRequest, new RewardedAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
                 rewardedAd.show(activity, rewardItem -> {

@@ -186,7 +186,7 @@ public class SearchHistoryFragment extends Fragment {
             recyclerView.setAdapter(adapter);
             ModernFastScroller fastScroller = getView().findViewById(R.id.fast_scroller);
             if (fastScroller != null) {
-                fastScroller.setThemeColor(ContextCompat.getColor(requireContext(), R.color.yellow));
+                fastScroller.setThemeColor(Color.WHITE);
                 fastScroller.attachToRecyclerView(recyclerView);
             }
         }

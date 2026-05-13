@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_full_background"
+    android:orientation="vertical">
+
+    <!-- Topbar (Stil wie AddCityFragment) -->
+    <RelativeLayout
+        android:id="@+id/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@drawable/toolbar_dialog_background">
+
+        <TextView
+            android:id="@+id/titletext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:text="Unterstützen"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="normal" />
+
+        <ImageButton
+            android:id="@+id/btn_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@drawable/icon_x"
+            app:tint="@color/white" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/tv_thank_you"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vielen Dank, dass du die App nutzt! Deine Unterstützung hilft mir dabei, die App stetig zu verbessern und neue Funktionen hinzuzufügen."
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_ads_supported"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Du hast mich bereits durch 0 freiwillige Werbeanzeigen unterstützt. Danke!"
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btn_donate_paypal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/button_yellow_rounded"
+            android:backgroundTint="@color/yellow"
+            android:text="Spenden"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/btn_watch_ad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/button_blue_rounded"
+            android:text="Werbung ansehen"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+</LinearLayout>

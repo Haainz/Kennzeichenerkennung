@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,9 +19,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -47,6 +48,9 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.nativead.MediaView;
 import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+import java.util.Arrays;
 import com.google.android.gms.ads.nativead.NativeAdView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.ump.ConsentForm;
@@ -69,17 +73,14 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_FIRST_TOUR_SHOWN = "first_nav_tour_shown";
 
     @Override
-    @SuppressWarnings("deprecation")
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         sharedPreferences = getSharedPreferences("settings", MODE_PRIVATE);
         setNightMode();
         super.onCreate(savedInstanceState);
 
-        // Statusbar Farbe explizit setzen
+        // Statusbar Icons anpassen
         Window window = getWindow();
-        WindowCompat.setDecorFitsSystemWindows(window, false);
-        window.setStatusBarColor(ContextCompat.getColor(this, R.color.blue_700));
-
         WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(window, window.getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false); // false for dark background, true for light
 
@@ -208,8 +209,8 @@ public class MainActivity extends AppCompatActivity {
     private void setupSettingsButtons() {
         ImageButton donateButton = findViewById(R.id.button_donate);
         donateButton.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com/donate/?hosted_button_id=XUTQZBWGBWCLN"));
-            startActivity(browserIntent);
+            SupportDialogFragment supportDialog = new SupportDialogFragment();
+            supportDialog.show(getSupportFragmentManager(), "SupportDialogFragment");
         });
         ImageButton uploadButton = findViewById(R.id.button_download);
         uploadButton.setOnClickListener(v -> {
@@ -224,12 +225,8 @@ public class MainActivity extends AppCompatActivity {
         ImageButton settingsButton = findViewById(R.id.button_settings);
         settingsButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, R.anim.slide_in_right, R.anim.slide_not);
-            } else {
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_not);
-            }
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_not);
+            startActivity(intent, options.toBundle());
         });
     }
 
@@ -374,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startLoadingAd(NativeAdView adView) {
         MobileAds.initialize(this, initializationStatus -> {
-            AdLoader adLoader = new AdLoader.Builder(this, this.getString(R.string.admob_native_ad_unit_id))
+            AdLoader adLoader = new AdLoader.Builder(this, this.getString(R.string.admob_native_ad_unit_id_menu))
                     .forNativeAd(nativeAd -> {
                         // Ad erfolgreich geladen → Layout befüllen
                         populateNativeAdView(nativeAd, adView);
@@ -405,7 +402,7 @@ public class MainActivity extends AppCompatActivity {
 
         new TapTargetSequence(this)
                 .targets(
-                        TapTarget.forView(donateBtn, "Spenden", "Unterstütze mich gerne mit einer kleinen Spende via PayPal")
+                        TapTarget.forView(donateBtn, "Spenden", "Unterstütze mich gerne mit einer kleinen Spende durch ansehen einer Werbung oder via PayPal")
                                 .outerCircleColor(R.color.yellow)
                                 .transparentTarget(true)
                                 .targetCircleColor(android.R.color.white)
