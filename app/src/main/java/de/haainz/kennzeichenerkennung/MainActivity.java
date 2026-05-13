@@ -333,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    private void maybeShowNativeAd() {
+    public void maybeShowNativeAd() {
         boolean showAds = sharedPreferences.getBoolean("adSwitch", false); // ad_switch Status aus Settings
         NativeAdView adView = findViewById(R.id.native_ad_view);
         if (adView == null) return;

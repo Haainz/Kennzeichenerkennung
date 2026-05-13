@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,8 +19,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
+import de.haainz.kennzeichenerkennung.MainActivity;
 import de.haainz.kennzeichenerkennung.R;
 import de.haainz.kennzeichenerkennung.RechtActivity;
 import de.haainz.kennzeichenerkennung.ui.home.HomeFragment;
@@ -27,6 +31,8 @@ import de.haainz.kennzeichenerkennung.ui.home.HomeFragment;
 public class FirstStartDialogFragment extends DialogFragment {
 
     private SharedPreferences sharedPreferences;
+    private SwitchCompat adSwitch;
+    private boolean isHandled = false;
     private static final String PREF_FIRST_START_SHOWN = "first_start_dialog_shown";
     private static final String PREF_FIRST_TOUR_SHOWN = "first_nav_tour_shown";
     private static final String PREF_TOUR_LIST_SHOWN = "tour_list_shown";
@@ -58,39 +64,18 @@ public class FirstStartDialogFragment extends DialogFragment {
         Button tipsBtn = view.findViewById(R.id.button_show_tips);
         ImageButton xBtn = view.findViewById(R.id.x);
         TextView legalLink = view.findViewById(R.id.text_view_link);
+        adSwitch = view.findViewById(R.id.ad_switch);
 
-        closeBtn.setOnClickListener(v -> {
-            sharedPreferences.edit().putBoolean(PREF_FIRST_TOUR_SHOWN, true).apply();
-            sharedPreferences.edit().putBoolean(PREF_TOUR_LIST_SHOWN, true).apply();
-            sharedPreferences.edit().putBoolean(PREF_TOUR_DAY_SHOWN, true).apply();
-            dismiss();
+        boolean currentAdStatus = sharedPreferences.getBoolean("adSwitch", false);
+        adSwitch.setChecked(currentAdStatus);
+
+        adSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sharedPreferences.edit().putBoolean("adSwitch", isChecked).apply();
         });
 
-        xBtn.setOnClickListener(v -> {
-            sharedPreferences.edit().putBoolean(PREF_FIRST_TOUR_SHOWN, true).apply();
-            sharedPreferences.edit().putBoolean(PREF_TOUR_LIST_SHOWN, true).apply();
-            sharedPreferences.edit().putBoolean(PREF_TOUR_DAY_SHOWN, true).apply();
-            dismiss();
-        });
-
-        tipsBtn.setOnClickListener(v -> {
-            sharedPreferences.edit().putBoolean(PREF_FIRST_TOUR_SHOWN, false).apply();
-            sharedPreferences.edit().putBoolean(PREF_TOUR_LIST_SHOWN, false).apply();
-            sharedPreferences.edit().putBoolean(PREF_TOUR_DAY_SHOWN, false).apply();
-            // Finde das HomeFragment und rufe tourBtn.performClick() auf
-            if (getActivity() != null) {
-                HomeFragment homeFragment = (HomeFragment)
-                        getActivity().getSupportFragmentManager()
-                                .findFragmentById(R.id.nav_host_fragment_content_main)
-                                .getChildFragmentManager()
-                                .getPrimaryNavigationFragment();
-
-                if (homeFragment != null && homeFragment.isAdded()) {
-                    homeFragment.performTourClick();
-                }
-            }
-            dismiss();
-        });
+        closeBtn.setOnClickListener(v -> handleDismiss(false));
+        xBtn.setOnClickListener(v -> handleDismiss(false));
+        tipsBtn.setOnClickListener(v -> handleDismiss(true));
 
         legalLink.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), RechtActivity.class);
@@ -98,5 +83,56 @@ public class FirstStartDialogFragment extends DialogFragment {
         });
 
         return view;
+    }
+
+    private void handleDismiss(boolean showTips) {
+        if (isHandled) return;
+        handleDismissLogic(showTips);
+        dismiss();
+    }
+
+    private void handleDismissLogic(boolean showTips) {
+        if (isHandled) return;
+        isHandled = true;
+
+        if (showTips) {
+            sharedPreferences.edit().putBoolean(PREF_FIRST_TOUR_SHOWN, false).apply();
+            sharedPreferences.edit().putBoolean(PREF_TOUR_LIST_SHOWN, false).apply();
+            sharedPreferences.edit().putBoolean(PREF_TOUR_DAY_SHOWN, false).apply();
+
+            FragmentActivity activity = getActivity();
+            if (activity != null) {
+                try {
+                    HomeFragment homeFragment = (HomeFragment)
+                            activity.getSupportFragmentManager()
+                                    .findFragmentById(R.id.nav_host_fragment_content_main)
+                                    .getChildFragmentManager()
+                                    .getPrimaryNavigationFragment();
+
+                    if (homeFragment != null && homeFragment.isAdded()) {
+                        homeFragment.performTourClick();
+                    }
+                } catch (Exception e) {
+                    Log.e("FirstStartDialog", "Error starting tour", e);
+                }
+            }
+        } else {
+            sharedPreferences.edit().putBoolean(PREF_FIRST_TOUR_SHOWN, true).apply();
+            sharedPreferences.edit().putBoolean(PREF_TOUR_LIST_SHOWN, true).apply();
+            sharedPreferences.edit().putBoolean(PREF_TOUR_DAY_SHOWN, true).apply();
+        }
+
+        markShown(requireContext());
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        if (!isHandled) {
+            handleDismissLogic(false);
+        }
+        super.onDismiss(dialog);
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).maybeShowNativeAd();
+        }
     }
 }

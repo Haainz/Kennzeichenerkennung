@@ -83,7 +83,7 @@
             android:id="@+id/ad_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Unterstütze den Entwickler durch einen Werbebanner im Menu und in der Liste am Ende jeder Kategorie (erst nach Neustart der App sichtbar)" />
+            android:text="Unterstütze den Entwickler durch einen Werbebanner im Menu und in der Liste am Ende jeder Kategorie (ggf. erst nach Neustart der App sichtbar)" />
 
         <TextView
             android:layout_width="match_parent"

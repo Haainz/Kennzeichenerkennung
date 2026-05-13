@@ -47,7 +47,7 @@
             android:layout_below="@id/title"
             android:text="Durch die Nutzung der App stimmst du ausdrücklich den rechtlichen Bedingungen und Datenschutzhinweisen zu. Außerdem bestätigst du, mindestens 16 Jahre alt zu sein."
             android:textColor="?attr/colorTextNormal"
-            android:textSize="15dp"
+            android:textSize="14sp"
             android:textStyle="normal" />
 
         <TextView
@@ -57,7 +57,7 @@
             android:layout_below="@id/text_view"
             android:text="Rechtliche Bedingungen und Datenschutzhinweise"
             android:textColor="@color/yellow"
-            android:textSize="15dp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
@@ -68,14 +68,33 @@
             android:layout_marginTop="15dp"
             android:text="Willst du die App direkt kennenlernen, dann aktiviere doch gerne die Tipps, die dir viele Funktionen vorstellen und erklären werden. Viel Spaß!"
             android:textColor="?attr/colorTextNormal"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/ad_explanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_view2"
+            android:layout_marginTop="20dp"
+            android:text="Um die Weiterentwicklung dieser App zu unterstützen, kannst du hier Werbung aktivieren. Diese wird dezent im Menü und am Ende von Listen eingeblendet."
+            android:textColor="?attr/colorTextNormal"
+            android:textSize="14sp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/ad_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ad_explanation"
+            android:layout_marginTop="5dp"
+            android:text="Werbung zur Unterstützung freiwillig aktivieren"
+            android:textColor="?attr/colorTextNormal" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text_view2"
+            android:layout_below="@+id/ad_switch"
             android:layout_marginTop="30dp"
             android:background="@drawable/edit_text_rounded_corner"
             android:backgroundTint="@color/textlight"
@@ -87,7 +106,7 @@
             android:id="@+id/button_show_tips"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text_view2"
+            android:layout_below="@+id/ad_switch"
             android:layout_alignParentRight="true"
             android:layout_marginTop="30dp"
             android:background="@drawable/edit_text_rounded_corner"
