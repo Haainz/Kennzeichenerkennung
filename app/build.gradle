@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace 'de.haainz.kennzeichenerkennung'
-    compileSdk 35
+    compileSdk 37
 
     defaultConfig {
         applicationId "de.haainz.kennzeichenerkennung"
         minSdk 26
-        targetSdk 35
-        versionCode 6121
-        versionName "6.1.2a"
+        targetSdk 37
+        versionCode 6122
+        versionName "6.1.2b"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
