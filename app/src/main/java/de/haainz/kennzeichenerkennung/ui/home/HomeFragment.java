@@ -240,7 +240,7 @@ public class HomeFragment extends Fragment {
         searchPic = binding.imageView2;
         textViewAusgabe = binding.textViewAusgabe;
         kuerzelEingabe = binding.kuerzeleingabe2;
-        kuerzelEingabe.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
+        kuerzelEingabe.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3), new InputFilter.AllCaps()});
         textViewAusgabe2 = binding.textViewAusgabe2;
         kennzeichenKI = new Kennzeichen_KI(getContext());
         historyManager = new SearchHistoryManager(requireContext());
@@ -600,7 +600,7 @@ public class HomeFragment extends Fragment {
             InputImage image = InputImage.fromFilePath(requireContext(), selectedImageUri);
             recognizer.process(image)
                     .addOnSuccessListener(visionText -> {
-                        String resultText = visionText.getText();
+                        String resultText = visionText.getText().toUpperCase();
                         textViewAusgabe2.setText(resultText);
 
                         String kuerzel = resultText.replaceAll("[^A-ZÄÜÖ]", " ").trim();
@@ -632,7 +632,9 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void performAnalysis(String kuerzel) {
+    private void performAnalysis(String inputKuerzel) {
+        if (inputKuerzel == null) return;
+        String kuerzel = inputKuerzel.toUpperCase();
         binding.fussnotenwert.setVisibility(VISIBLE);
         binding.fussnotentitel.setVisibility(VISIBLE);
         aistatus = 0;
@@ -795,7 +797,9 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void recognizeCity(String kennzeichen) {
+    private void recognizeCity(String inputKennzeichen) {
+        if (inputKennzeichen == null) return;
+        String kennzeichen = inputKennzeichen.toUpperCase();
         textViewAusgabe2.setText(kennzeichen);
         String kuerzel = kennzeichen.replaceAll("[^A-ZÄÜÖ]", " ").trim();
         String[] kuerzelArray = kuerzel.split("\\s+");
