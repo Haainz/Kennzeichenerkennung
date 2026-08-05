@@ -10,8 +10,8 @@ android {
         applicationId "de.haainz.kennzeichenerkennung"
         minSdk 26
         targetSdk 37
-        versionCode 6132
-        versionName "6.1.3b"
+        versionCode 6133
+        versionName "6.1.3c"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
