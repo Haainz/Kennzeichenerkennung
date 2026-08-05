@@ -380,6 +380,7 @@ public class ListFragment extends Fragment {
 
             adapter.setNotifyOnChange(false);
             adapter.clear();
+            adapter.add(nativeAds.get(0));
             int adIndex = 0;
 
             for (int i = 0; i < currentKennzeichen.size(); i++) {
