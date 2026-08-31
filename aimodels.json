@@ -16,13 +16,13 @@
             "id": "openrouter/owl-alpha",
             "name": "Owl-Alpha",
             "brand": "OpenRouter",
-            "working": true
+            "working": false
         },
         {
             "id": "openai/gpt-oss-120b:free",
             "name": "OpenAI gpt-oss-120B",
             "brand": "OpenAI",
-            "working": true
+            "working": false
         },
         {
             "id": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
