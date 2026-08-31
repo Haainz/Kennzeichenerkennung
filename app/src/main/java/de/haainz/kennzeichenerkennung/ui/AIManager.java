@@ -1,5 +1,7 @@
 package de.haainz.kennzeichenerkennung.ui;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.graphics.Color;
@@ -31,6 +33,7 @@ import java.util.concurrent.Executors;
 
 import de.haainz.kennzeichenerkennung.Kennzeichen;
 import de.haainz.kennzeichenerkennung.Kennzeichen_KI;
+import de.haainz.kennzeichenerkennung.MainActivity;
 import de.haainz.kennzeichenerkennung.R;
 import de.haainz.kennzeichenerkennung.ui.day.DayFragment;
 import de.haainz.kennzeichenerkennung.ui.home.HomeFragment;
@@ -218,7 +221,10 @@ public class AIManager {
 
             @Override
             public void onAdFailedToLoad(@NonNull com.google.android.gms.ads.LoadAdError loadAdError) {
-                Toast.makeText(context, "Fehler beim Laden der Werbung", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Fehler beim Laden der Werbung. Der KI-Text wird trotzdem generiert.", Toast.LENGTH_SHORT).show();
+                sharedPreferences = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
+                if(sharedPreferences.getBoolean("offlineSwitch", false))
+                onRewardEarned.run();
             }
         });
     }
